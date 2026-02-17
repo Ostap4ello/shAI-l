@@ -1,0 +1,7 @@
+.venv
+
+# Created/used by compile-groff.sh
+.bak
+man-db
+.res
+man-db-src

@@ -5,3 +5,5 @@
 man-db
 .res
 man-db-src
+
+__pycache__

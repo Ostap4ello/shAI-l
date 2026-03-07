@@ -12,7 +12,6 @@ Answer template:
 ```
 Q: <question>
 A: <answer>
-<exact quote from Retrieved data>
 ```
 
 Questions:

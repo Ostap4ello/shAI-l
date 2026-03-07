@@ -12,6 +12,11 @@ from .retrieval import build, search, check
 
 from pathlib import Path
 
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"

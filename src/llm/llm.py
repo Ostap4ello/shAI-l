@@ -3,30 +3,46 @@ from typing import Iterable
 from openai import OpenAI
 from openai.types.responses import ResponseOutputItem, ResponseOutputMessage, ResponseOutputText, ResponseReasoningItem, ResponseTextDeltaEvent, ResponseTextDoneEvent
 
+import logging
+logger = logging.getLogger(__name__)
+
 def generate(client: OpenAI, model: str, user_input: str, do_stream: bool = False) -> str:
     if not model:
-        raise ValueError("Model must be set to generate a response.")
+        logger.error("Model is not set. Please specify a model to generate a response.")
+        raise ValueError("Model is not set.")
 
     if not user_input:
         return ""
 
     response = ""
 
+    logger.debug(f"do_stream={do_stream}")
+    logger.debug(f"Generating response for model={model} with user_input={user_input[:50]}...")
+    logger.info(f"Generating response...")
     if do_stream:
         text_chunks: list[str] = []
-        for chunk in _stream_response_chunks(model, user_input, client):
-            if chunk:
-                text_chunks.append(chunk)
-                print(chunk, end="", flush=True)
+        try:
+            for chunk in _stream_response_chunks(model, user_input, client):
+                if chunk:
+                    text_chunks.append(chunk)
+                    print(chunk, end="", flush=True)
+            print()
 
-        print()
+        except Exception as e:
+            logger.error(f"Error during streaming response: {e}")
+            raise e
+
         response = "".join(text_chunks)
     else:
-        resp = client.responses.create(
-            model=model,
-            input=user_input,
-            stream=False,
-        )
+        try:
+            resp = client.responses.create(
+                model=model,
+                input=user_input,
+                stream=False,
+            )
+        except Exception as e:
+            logger.error(f"Error generating response: {e}")
+            raise e
         for event in resp.output:
             if isinstance(event, ResponseReasoningItem):
                 pass
@@ -34,6 +50,7 @@ def generate(client: OpenAI, model: str, user_input: str, do_stream: bool = Fals
                 for item in event.content:
                     if isinstance(item, ResponseOutputText):
                         response += item.text
+    logger.debug(f"Generated response: {response[:50]}...")
 
     return response
 

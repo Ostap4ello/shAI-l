@@ -52,7 +52,7 @@ def is_ollama_running(name="ollama-node-1") -> bool:
     script_path = os.path.join(os.path.dirname(__file__), 'ollama-docker.sh')
     args = ["--name", name, "status"]
     return_code, stdout, stderr = _call_bash_script(script_path, *args)
-    if stdout == "- Container is up\n- Ollama is up\n":
+    if stdout == "- Container is up.\n- Ollama is up.\n":
         logger.debug("Ollama container is running.")
         return True
     else:

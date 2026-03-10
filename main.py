@@ -1,4 +1,4 @@
-from src.rag import _parse_rag_prompt
+from src.rag import get_docchoice_prompt, get_singledoc_prompt, get_docchoice_answer
 import src.llm
 import src.db_retrieve
 import sys
@@ -88,27 +88,51 @@ def handle_sigint(signum: int, frame: object) -> None:
     raise SystemExit(0)
 
 
-def rag_pipeline(client: OpenAI, query: str) -> str:
+def rag_pipeline(client: OpenAI, query: str, top_k:int = 5) -> str:
     model = _get_model()
 
     # Retrieve relevant documents from the database
-    retrieved_docs = src.db_retrieve.search("man-db", client, query, 1)
-    logger.debug(f"Retrieved docs: {retrieved_docs}")
-
-    # Parse and process the query
-    parsed_query = _parse_rag_prompt("./prompts/ret.txt", retrieved_docs, [query])
-    logger.debug(f"Parsed query for LLM:\n{parsed_query}")
-
+    retrieved_docs = src.db_retrieve.search("man-db", client, query, top_k)
     logger.info("---")
     logger.info(f"Retrieved Documents:")
     for doc in retrieved_docs:
         logger.info(f"- {doc['path']}")
     logger.info("---")
 
+    # Choose the most relevant document
+    chosen_doc = None
+    for i in range(5):
+        parsed_query = get_docchoice_prompt("./prompts/choosing-from-docs.txt", retrieved_docs, query)
+        logger.debug(f"Parsed query for doc choice:\n{parsed_query[:1000]}...")
+        logger.info(f"Choosing the most relevant document (attempt {i+1}/5)...")
+        response = src.llm.generate(client, model, parsed_query)
+        response = get_docchoice_answer(response)
+
+        if response is None:
+            logger.warning(f"({i+1}/5) LLM response is not a valid document path or 'None'.")
+        elif response == "None":
+            logger.warning(f"({i+1}/5) Retrieved documents may not be relevant to the query.")
+            raise RuntimeError("Retrieved documents may not be relevant to the query.")
+        else:
+            chosen_doc = get_docchoice_answer(response)
+            logger.info(f"Chosen document: {chosen_doc}")
+            break
+
+    if not chosen_doc:
+        logger.error("Failed to choose a valid document after 5 attempts. Exiting.")
+        raise RuntimeError("Failed to choose a valid document after 5 attempts.")
+
+    # Parse and process the query
+    # TODO
+    parsed_query = get_singledoc_prompt("./prompts/ret.txt", {"path": chosen_doc}, query)
+    logger.debug(f"Parsed query for LLM:\n{parsed_query[:1000]}...")
+
     # Generate response using LLM with retrieved context
     response = src.llm.generate(client, model, parsed_query)
 
-    response += "\n---\nRetrieved Documents:\n"
+    response += "\n---\n"
+    response += f"Chosen retrieved document: {chosen_doc}\n"
+    response += "Considered Documents:\n"
     for doc in retrieved_docs:
         response += doc["path"] + "\n"
     response += "---\n"
@@ -128,12 +152,12 @@ def loop() -> None:
             logger.warning("\nNo input provided. Exiting.")
             break
         try:
-            result = rag_pipeline(client, user_query)
+            result = rag_pipeline(client, user_query, 5)
         except Exception as e:
             logger.error(f"Error processing query: {e}")
             break
 
-        print(result)
+        print(f"\n{result}\n")
 
 def main() -> None:
     args = parse_args()

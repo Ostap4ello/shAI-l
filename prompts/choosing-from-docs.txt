@@ -1,0 +1,26 @@
+Your task is to select the most relevant document for a given question from a collection of documents, listed below along with snippets of their content. Formulate a reasoning process to justify your selection and provide the path to the retrieved document.
+
+Question:
+<<QUESTION>> <<# user query
+
+Retrieved documents:
+<<DATA>>
+<<# The formatting here should be:
+<<# <document name>
+<<# ```
+<<# <snippet of the document content>
+<<# ```
+<<# <<DATA>> (for next part)
+
+Answer template:
+```
+Reasoning: <the reasoning process you used to select the most relevant document>
+<path to the retrieved document>
+```
+
+Example of answer:
+```
+Reasoning: The question is asking about the content of a specific document. The document that matches the query is "file-5.txt" which contains relevant information about the topic in question.
+
+db/file-5.txt
+```

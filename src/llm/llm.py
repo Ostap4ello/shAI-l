@@ -1,12 +1,23 @@
 from typing import Iterable
 
 from openai import OpenAI
-from openai.types.responses import ResponseOutputItem, ResponseOutputMessage, ResponseOutputText, ResponseReasoningItem, ResponseTextDeltaEvent, ResponseTextDoneEvent
+from openai.types.responses import (
+    ResponseOutputItem,
+    ResponseOutputMessage,
+    ResponseOutputText,
+    ResponseReasoningItem,
+    ResponseTextDeltaEvent,
+    ResponseTextDoneEvent,
+)
 
 import logging
+
 logger = logging.getLogger(__name__)
 
-def generate(client: OpenAI, model: str, user_input: str, do_stream: bool = False) -> str:
+
+def generate(
+    client: OpenAI, model: str, user_input: str, do_stream: bool = False
+) -> str:
     if not model:
         logger.error("Model is not set. Please specify a model to generate a response.")
         raise ValueError("Model is not set.")
@@ -17,7 +28,6 @@ def generate(client: OpenAI, model: str, user_input: str, do_stream: bool = Fals
     response = ""
 
     logger.debug(f"do_stream={do_stream}")
-    logger.debug(f"Generating response for model={model} with user_input={user_input[:50]}...")
     logger.info(f"Generating response...")
     if do_stream:
         text_chunks: list[str] = []
@@ -39,6 +49,7 @@ def generate(client: OpenAI, model: str, user_input: str, do_stream: bool = Fals
                 model=model,
                 input=user_input,
                 stream=False,
+                reasoning={"effort": "medium"},
             )
         except Exception as e:
             logger.error(f"Error generating response: {e}")
@@ -50,7 +61,7 @@ def generate(client: OpenAI, model: str, user_input: str, do_stream: bool = Fals
                 for item in event.content:
                     if isinstance(item, ResponseOutputText):
                         response += item.text
-    logger.debug(f"Generated response: {response[:50]}...")
+    logger.debug(f"Generated response:\n{response}")
 
     return response
 
@@ -62,6 +73,7 @@ def _stream_response_chunks(
         model=model,
         input=user_input,
         stream=True,
+        reasoning={"effort": "medium"},
     )
 
     for event in stream:

@@ -68,6 +68,7 @@ docker_action() {
                 log "Ollama is down."
             ;;
     esac
+    return $?
 }
 
 
@@ -185,7 +186,7 @@ main() {
             ;;
     esac
 
-    exit 0
+    exit $?
 }
 
 # Main #

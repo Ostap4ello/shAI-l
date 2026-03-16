@@ -49,7 +49,6 @@ def generate(
                 model=model,
                 input=user_input,
                 stream=False,
-                reasoning={"effort": "medium"},
             )
         except Exception as e:
             logger.error(f"Error generating response: {e}")
@@ -73,7 +72,6 @@ def _stream_response_chunks(
         model=model,
         input=user_input,
         stream=True,
-        reasoning={"effort": "medium"},
     )
 
     for event in stream:

@@ -15,7 +15,7 @@ out_dir=
 help() {
     echo "
     Usage: $0 [-h] -i <source_directory> -o <output_directory>
-    
+
     This script converts groff files in the chosen directory to ASCII text files
     using the groff command.
     "
@@ -25,21 +25,21 @@ convert() {
 
     local backup_dir=".bak"
 
-	if [[ ! -d "$src_dir" ]]; then
-		echo "Directory '$src_dir' not found." >&2
-		return 1
-	fi
+    if [[ ! -d "$src_dir" ]]; then
+        echo "Directory '$src_dir' not found." >&2
+        return 1
+    fi
 
-	shopt -s nullglob
-	local files=("$src_dir"/*)
-	shopt -u nullglob
+    shopt -s nullglob
+    local files=("$src_dir"/*)
+    shopt -u nullglob
 
-	if [[ ${#files[@]} -eq 0 ]]; then
-		echo "No files found in '$src_dir'." >&2
-		return 1
-	fi
+    if [[ ${#files[@]} -eq 0 ]]; then
+        echo "No files found in '$src_dir'." >&2
+        return 1
+    fi
 
-	if [[ -d "$out_dir" ]]; then
+    if [[ -d "$out_dir" ]]; then
         local backup_number=1
         local backup_base="${backup_dir}/${out_dir}.bak"
         while [[ -d "${backup_base}.${backup_number}" ]]; do
@@ -55,14 +55,14 @@ convert() {
 
     mkdir -p "$out_dir"
 
-	for file in "${files[@]}"; do
-		if [[ -f "$file" ]]; then
+    for file in "${files[@]}"; do
+        if [[ -f "$file" ]]; then
             local base_name
             base_name="$(basename "$file")"
             local out_file="${out_dir}/${base_name}.txt"
             groff -Tascii -P -c -P -b -P -u -man "$file" > "$out_file"
-		fi
-	done
+        fi
+    done
 }
 
 main() {

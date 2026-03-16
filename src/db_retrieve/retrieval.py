@@ -82,9 +82,13 @@ def search(
     distances, indices = index.search(query_vec, top_k)
 
     results: List[dict] = []
-    for idx in indices[0].tolist():
+    for i in range(len(indices[0])):
+        idx = indices[0][i]
         if idx < 0 or idx >= len(metadata):
             continue
-        results.append(metadata[idx])
+        results.append({
+            "metadata": metadata[idx],
+            "distance": distances[0][i],
+        })
 
     return results

@@ -1,5 +1,7 @@
 # ShAI - Minimal Shell Assistant Powered by Local LLM
 
+This is a minimalistic shell assistant that leverages local Large Language Models (LLMs) to provide various functionalities, such as generating text responses, creating embeddings, and performing Retrieval-Augmented Generation (RAG). The assistant is designed to be lightweight and easy to use, with a focus on local execution without relying on external APIs.
+
 ## Installation
 
 1. Clone this repository:
@@ -7,15 +9,23 @@
     git clone https://github.com/Ostap4ello/shAI-l
     cd shAI-l
     ```
-2. Install dependencies:
+2. Install python dependencies:
     ```bash
     pip install -r requirements.txt
     ```
+3. Install system dependencies:
+    - `docker` (for running Ollama). [Instructions](https://docs.docker.com/desktop/setup/install/linux/)  
+        Run:
+        ```bash
+        docker pull ollama/ollama:latest
+        ```
+    - `groff, jq` (for converting man pages)
+
 
 ## Usage
 
 ### CLI Commands
-The application provides a command-line interface (CLI) for interacting with various functionalities.
+For now, the application provides a command-line interface (CLI) for interacting with various functionalities.
 
 ```bash
 py -m src -h

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def generate(
     client: OpenAI, model: str, user_input: str, do_stream: bool = False
-) -> str:
+) -> str | Iterable[str]:
     if not model:
         logger.error("Model is not set. Please specify a model to generate a response.")
         raise ValueError("Model is not set.")

@@ -97,6 +97,15 @@ def _cli_parser() -> argparse.ArgumentParser:
     check_cmd.add_argument("--db-path", default="./man-db", help="Path to document directory")
     check_cmd.add_argument("--index-path-within-db", default=".index", help="Index subdirectory name")
     check_cmd.set_defaults(func=lambda args: print("Index exists." if check(args.db_path, args.index_path_within_db) else "Index not found."))
+
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="INFO",
+        help="Set the logging level (default: INFO)",
+    )
+
     return parser
 
 

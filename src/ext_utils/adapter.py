@@ -30,9 +30,8 @@ def _call_bash_script(script, args) -> tuple[int, str, str]:
         logger.error(f"Script not found: {script_path}")
         raise RuntimeError(f"Script not found: {script_path}") from e
     except subprocess.CalledProcessError as e:
-        logger.error(
-            f"Error executing script: {script_path}. Return code: {e.returncode}, stdout: {e.stdout}, stderr: {e.stderr}"
-        )
+        logger.error(f"Error executing script: {script_path}")
+        logger.debug(f"retcode: {e.returncode}, stdout: {e.stdout}, stderr: {e.stderr}")
         raise RuntimeError(
             f"Error executing script: {script_path}. Return code: {e.returncode}, stdout: {e.stdout}, stderr: {e.stderr}"
         ) from e
@@ -43,10 +42,9 @@ def run_ollama(
     gpus=OLLAMA_DEFAULT_GPUS,
     name=OLLAMA_CONTAINER_DEFAULT_NAME,
 ):
-    logger.debug(
-        f"Running Ollama Docker container with name: {name}, context_length: {context_length}, gpus: {gpus}"
-    )
-    return _call_bash_script(
+    logger.info(f"Running Ollama Docker container")
+    logger.debug(f"name: {name}, context_length: {context_length}, gpus: {gpus}")
+    result = _call_bash_script(
         OLLAMA_DOCKER_SCRIPT,
         [
             "--name",
@@ -58,6 +56,8 @@ def run_ollama(
             gpus,
         ],
     )
+    logger.info(f"Ollama Docker container started successfully.")
+    return result
 
 
 def start_ollama(
@@ -65,18 +65,21 @@ def start_ollama(
     gpus=OLLAMA_DEFAULT_GPUS,
     name=OLLAMA_CONTAINER_DEFAULT_NAME,
 ):
-    logger.debug(
-        f"Starting Ollama Docker container with name: {name}, context_length: {context_length}, gpus: {gpus}"
-    )
+    logger.info(f"Starting Ollama Docker container")
+    logger.debug(f"name: {name}, context_length: {context_length}, gpus: {gpus}")
+    result = None
     try:
-        return _call_bash_script("ollama-docker.sh", ["--name", name, "begin"])
+        result = _call_bash_script("ollama-docker.sh", ["--name", name, "begin"])
+        logger.info(f"Ollama Docker container started successfully.")
     except RuntimeError as e:
         logger.warning(f"Failed to start Ollama container. Trying to run it instead.")
-        return run_ollama(context_length=context_length, gpus=gpus, name=name)
+        result = run_ollama(context_length=context_length, gpus=gpus, name=name)
+    return result
 
 
 def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME):
-    logger.debug(f"Stopping Ollama Docker container with name: {name}")
+    logger.info(f"Stopping Ollama Docker")
+    logger.debug(f"name: {name}")
     return _call_bash_script("ollama-docker.sh", ["--name", name, "stop"])
 
 
@@ -86,13 +89,13 @@ def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:
         "ollama-docker.sh", ["--name", name, "status"]
     )
     if stdout == "- Container is up.\n- Ollama is up.\n":
-        logger.debug("Ollama container is running.")
+        logger.info("Ollama container is up.")
         return True
     else:
-        logger.debug("Ollama container is not running.")
+        logger.info("Ollama container is down")
         return False
 
 
 def convert_man_pages_to_text(src_dir, out_dir):
-    logger.debug(f"Converting Groff files from {src_dir} to {out_dir}")
+    logger.info(f"Converting Groff files from {src_dir} to {out_dir}")
     return _call_bash_script("compile-groff.sh", ["-i", src_dir, "-o", out_dir])

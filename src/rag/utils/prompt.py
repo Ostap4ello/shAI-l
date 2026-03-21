@@ -43,7 +43,7 @@ def get_singledoc_prompt(doc_path: str, query: str) -> str:
     text = get_prompt(prompt_name)
 
     contents = open(doc_path).read()
-    text = sub("<<DATA>>", "```\n" + contents + "\n```\n", text)
+    text = sub("<<DATA>>", f"```\n{contents}\n```\n", text)
     text = sub("<<QUESTION>>", f"{query}\n", text)
 
     return text

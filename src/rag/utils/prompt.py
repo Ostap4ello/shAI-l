@@ -4,34 +4,19 @@ from pathlib import Path
 import logging
 from typing import Iterable
 
+from ...utils.prompt import get_prompt
+
 logger = logging.getLogger(__name__)
 
 
-def _get_stripped_rag_prompt(prompt_path: str) -> str:
-    text = ""
-    try:
-        with open(prompt_path, "r") as f:
-            for line in f.readlines():
-                # Comments
-                if match("^[ \t]*<<#.*$", line):
-                    continue
-                line = sub("<<#.*$", "\n", line)
-                text += line
-    except Exception as e:
-        logger.error(f"Error reading prompt file: {e}")
-        raise RuntimeError(f"Error reading prompt file: {e}")
-    return text
-
-
 def get_docchoice_prompt(
-    prompt_path: str, doc_paths: list[str], query: str, preview_lines: int = 10
+    doc_paths: list[str], query: str, preview_lines: int = 10
 ) -> str:
-    text = _get_stripped_rag_prompt(prompt_path)
+    prompt_name = "choosing-from-docs"
+    text = get_prompt(prompt_name)
 
     paths_str = "\n".join(doc_paths)
-    text = sub(
-        "<<DATA>>", f"Paths:\n{paths_str}\n\n<<DATA>>", text
-    )
+    text = sub("<<DATA>>", f"Paths:\n{paths_str}\n\n<<DATA>>", text)
 
     for doc_path in doc_paths:
         contents = "".join(open(doc_path).readlines()[:preview_lines])
@@ -53,8 +38,9 @@ def get_docchoice_answer(response: str) -> str | None:
     return None
 
 
-def get_singledoc_prompt(prompt_path: str, doc_path: str, query: str) -> str:
-    text = _get_stripped_rag_prompt(prompt_path)
+def get_singledoc_prompt(doc_path: str, query: str) -> str:
+    prompt_name = "ret"
+    text = get_prompt(prompt_name)
 
     contents = open(doc_path).read()
     text = sub("<<DATA>>", "```\n" + contents + "\n```\n", text)
@@ -63,10 +49,9 @@ def get_singledoc_prompt(prompt_path: str, doc_path: str, query: str) -> str:
     return text
 
 
-def get_docscanning_prompts(
-    prompt_path: str, doc_path, query: list[str]
-) -> Iterable[str]:
-    template_text = _get_stripped_rag_prompt(prompt_path)
+def get_docscanning_prompts(doc_path, query: list[str]) -> Iterable[str]:
+    prompt_name = "scanning-single-doc"
+    template_text = get_prompt(prompt_name)
     part_length = 100
 
     lines = open(doc_path, "r").readlines()
@@ -77,5 +62,3 @@ def get_docscanning_prompts(
         part = sub("<<DATA>>", f"```\n{contents}\n```\n", template_text)
         part = sub("<<QUESTION>>", f"{query}\n", part)
         yield part
-
-

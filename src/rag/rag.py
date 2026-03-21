@@ -30,9 +30,7 @@ def rag_pipeline(
     doc_paths = [doc["metadata"]["path"] for doc in results]
     chosen_doc_path = None
     for i in range(5):
-        parsed_query = get_docchoice_prompt(
-            "./prompts/choosing-from-docs.txt", doc_paths, query
-        )
+        parsed_query = get_docchoice_prompt(doc_paths, query)
         logger.debug(f"Parsed query for doc choice:\n{parsed_query[:1000]}...")
         logger.info(f"Choosing the most relevant document (attempt {i+1}/5)...")
         response = llm.generate(client, model, parsed_query, do_stream=False)
@@ -59,7 +57,7 @@ def rag_pipeline(
 
     # Parse and process the query
     # TODO
-    parsed_query = get_singledoc_prompt("./prompts/ret.txt", chosen_doc_path, query)
+    parsed_query = get_singledoc_prompt(chosen_doc_path, query)
     logger.debug(f"Parsed query for LLM:\n{parsed_query[:1000]}...")
 
     # Generate response using LLM with retrieved context

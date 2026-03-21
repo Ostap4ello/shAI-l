@@ -9,9 +9,9 @@ import signal
 from .db_retrieve.__main__ import _cli_parser as _db_cli_parser
 from .rag.__main__ import _cli_parser as _rag_cli_parser
 from .llm.__main__ import _cli_parser as _llm_cli_parser
-from .ext_utils.__main__ import _cli_parser as _utils_cli_parser
+from .utils.__main__ import _cli_parser as _utils_cli_parser
 
-from .ext_utils import is_ollama_running, start_ollama, stop_ollama
+from .utils import is_ollama_running, start_ollama, stop_ollama
 
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"

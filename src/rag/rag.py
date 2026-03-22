@@ -3,9 +3,9 @@ from openai import OpenAI
 import logging
 
 from .utils.prompt import (
-    get_docchoice_prompt,
-    get_singledoc_prompt,
-    get_docchoice_answer,
+    get_doc_choice_prompt,
+    get_single_doc_prompt,
+    get_doc_choice_answer,
 )
 
 from .. import db
@@ -30,12 +30,12 @@ def rag_pipeline(
     doc_paths = [doc["metadata"]["path"] for doc in results]
     chosen_doc_path = None
     for i in range(5):
-        parsed_query = get_docchoice_prompt(doc_paths, query)
+        parsed_query = get_doc_choice_prompt(doc_paths, query)
         logger.debug(f"Parsed query for doc choice:\n{parsed_query[:1000]}...")
         logger.info(f"Choosing the most relevant document (attempt {i+1}/5)...")
         response = llm.generate(client, model, parsed_query, do_stream=False)
         assert isinstance(response, str), "Expected response to be a string"
-        response = get_docchoice_answer(response)
+        response = get_doc_choice_answer(response)
 
         if response is None:
             logger.warning(
@@ -47,7 +47,7 @@ def rag_pipeline(
             )
             raise RuntimeError("Retrieved documents may not be relevant to the query.")
         else:
-            chosen_doc_path = get_docchoice_answer(response)
+            chosen_doc_path = get_doc_choice_answer(response)
             logger.info(f"Chosen document: {chosen_doc_path}")
             break
 
@@ -57,7 +57,7 @@ def rag_pipeline(
 
     # Parse and process the query
     # TODO
-    parsed_query = get_singledoc_prompt(chosen_doc_path, query)
+    parsed_query = get_single_doc_prompt(chosen_doc_path, query)
     logger.debug(f"Parsed query for LLM:\n{parsed_query[:1000]}...")
 
     # Generate response using LLM with retrieved context

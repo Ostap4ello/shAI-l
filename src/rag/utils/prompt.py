@@ -9,10 +9,10 @@ from ...utils.prompt import get_prompt
 logger = logging.getLogger(__name__)
 
 
-def get_docchoice_prompt(
+def get_doc_choice_prompt(
     doc_paths: list[str], query: str, preview_lines: int = 10
 ) -> str:
-    prompt_name = "choosing-from-docs"
+    prompt_name = "rag-choose-document"
     text = get_prompt(prompt_name)
 
     paths_str = "\n".join(doc_paths)
@@ -30,7 +30,7 @@ def get_docchoice_prompt(
     return text
 
 
-def get_docchoice_answer(response: str) -> str | None:
+def get_doc_choice_answer(response: str) -> str | None:
     for line in response.strip().split("\n"):
         line = line.strip()
         if Path(line).is_file() or line == "None":
@@ -38,8 +38,8 @@ def get_docchoice_answer(response: str) -> str | None:
     return None
 
 
-def get_singledoc_prompt(doc_path: str, query: str) -> str:
-    prompt_name = "ret"
+def get_single_doc_prompt(doc_path: str, query: str) -> str:
+    prompt_name = "rag-scan-document"
     text = get_prompt(prompt_name)
 
     contents = open(doc_path).read()
@@ -49,8 +49,8 @@ def get_singledoc_prompt(doc_path: str, query: str) -> str:
     return text
 
 
-def get_docscanning_prompts(doc_path, query: list[str]) -> Iterable[str]:
-    prompt_name = "scanning-single-doc"
+def get_single_doc_scanning_prompts(doc_path, query: list[str]) -> Iterable[str]:
+    prompt_name = "rag-sequentially-can-document"
     template_text = get_prompt(prompt_name)
     part_length = 100
 

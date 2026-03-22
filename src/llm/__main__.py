@@ -10,8 +10,6 @@ from typing import List, Optional
 
 from ..llm import generate, embed_string
 
-from pathlib import Path
-
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,4 @@
-from re import sub, match
+from re import sub
 from pathlib import Path
 
 import logging

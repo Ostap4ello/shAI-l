@@ -6,7 +6,7 @@ import os
 import sys
 import signal
 
-from .db_retrieve.__main__ import _cli_parser as _db_cli_parser
+from .db.__main__ import _cli_parser as _db_cli_parser
 from .rag.__main__ import _cli_parser as _rag_cli_parser
 from .llm.__main__ import _cli_parser as _llm_cli_parser
 from .utils.__main__ import _cli_parser as _utils_cli_parser
@@ -35,7 +35,7 @@ def _cli_parser():
         dest="command", required=True, help="Available commands"
     )
     subparsers.add_parser(
-        "docdb",
+        "db",
         parents=[_db_cli_parser()],
         add_help=False,
         help="Database indexing and retrieval",
@@ -156,7 +156,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     logging.basicConfig(
         level=getattr(logging, args.log_level),
         format="%(asctime)s [%(levelname)s] %(message)s",
-        force=True
+        force=True,
     )
     stop_ollama_on_finish = _ollama_check_or_run()
     args.func(args)

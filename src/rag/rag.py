@@ -8,7 +8,7 @@ from .utils.prompt import (
     get_docchoice_answer,
 )
 
-from .. import db_retrieve
+from .. import db
 from .. import llm
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ def rag_pipeline(
 ) -> str | Iterable[str]:
 
     # Retrieve relevant documents from the database
-    results = db_retrieve.search("man-db", client, query, top_k)
+    results = db.search("man-db", client, query, top_k)
     logger.info("---")
     logger.info(f"Retrieved Documents:")
     for path in results:

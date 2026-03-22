@@ -2,11 +2,11 @@ You are efficient information retriever. Your task is to answer the questions us
 
 Retrieved data:
 <<DATA>>
-<<# The formatting here should be:
-<<# ```
-<<# retrieved part
-<<# ``` 
-<<# <<DATA>> (for next part)
+# The formatting here should be:
+# ```
+# retrieved part
+# ```
+# <<DATA>> (for next part)
 
 Answer template:
 ```
@@ -16,5 +16,5 @@ A: <answer>
 
 Questions:
 ```
-<<QUESTION>> <<# user query
+<<QUESTION>> # user query
 ```

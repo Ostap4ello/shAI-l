@@ -1,3 +1,3 @@
-# from .rag import pass
-#
-# __all__ = ["generate"]
+from .rag import rag_pipeline
+
+__all__ = ["rag_pipeline"]

@@ -89,14 +89,15 @@ def _cli_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[List[str]] = None) -> None:
-
     def handle_sigint(signum: int, frame: object) -> None:
         print("\nInterrupted. Exiting cleanly.", file=sys.stderr)
         raise SystemExit(0)
 
     signal.signal(signal.SIGINT, handle_sigint)
+
     parser = _cli_parser()
     args = parser.parse_args(argv)
+
     logging.basicConfig(
         level=getattr(logging, args.log_level),
         format="%(asctime)s [%(levelname)s] %(message)s",

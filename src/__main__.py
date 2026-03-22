@@ -19,25 +19,9 @@ DEFAULT_MODEL = "qwen3:1.7b"
 
 logger = logging.getLogger(__name__)
 
+
 def _cli_parser():
     parser = argparse.ArgumentParser(description="ShAI-CLI")
-
-    subparsers = parser.add_subparsers(
-        dest="command", required=True, help="Available commands"
-    )
-    subparsers.add_parser("docdb", parents=[_db_cli_parser()], add_help=False, help="Database indexing and retrieval")
-    subparsers.add_parser("rag", parents=[_rag_cli_parser()], add_help=False, help="RAG-enabled generation")
-    subparsers.add_parser("llm", parents=[_llm_cli_parser()], add_help=False, help="Direct LLM interactions")
-    subparsers.add_parser("utils", parents=[_utils_cli_parser()], add_help=False, help="Miscellaneous utilities")
-
-    parser.add_argument(
-        "--log-level",
-        "-L",
-        type=str,
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default="INFO",
-        help="Set the logging level (default: INFO)",
-    )
 
     parser.add_argument(
         "--keep-ollama-running",
@@ -45,6 +29,34 @@ def _cli_parser():
         type=bool,
         default=False,
         help="If true, if this script starts Ollama, it will not stop it on exit",
+    )
+
+    subparsers = parser.add_subparsers(
+        dest="command", required=True, help="Available commands"
+    )
+    subparsers.add_parser(
+        "docdb",
+        parents=[_db_cli_parser()],
+        add_help=False,
+        help="Database indexing and retrieval",
+    )
+    subparsers.add_parser(
+        "rag",
+        parents=[_rag_cli_parser()],
+        add_help=False,
+        help="RAG-enabled generation",
+    )
+    subparsers.add_parser(
+        "llm",
+        parents=[_llm_cli_parser()],
+        add_help=False,
+        help="Direct LLM interactions",
+    )
+    subparsers.add_parser(
+        "utils",
+        parents=[_utils_cli_parser()],
+        add_help=False,
+        help="Miscellaneous utilities",
     )
 
     return parser
@@ -110,7 +122,6 @@ def handle_sigint(signum: int, frame: object) -> None:
     raise SystemExit(0)
 
 
-
 def loop() -> None:
     signal.signal(signal.SIGINT, handle_sigint)
 
@@ -133,20 +144,21 @@ def loop() -> None:
 
 
 def main(argv: Optional[List[str]] = None) -> None:
-
     def handle_sigint(signum: int, frame: object) -> None:
         print("\nInterrupted. Exiting cleanly.", file=sys.stderr)
         raise SystemExit(0)
-    signal.signal(signal.SIGINT, handle_sigint)
 
-    stop_ollama_on_finish = _ollama_check_or_run()
+    signal.signal(signal.SIGINT, handle_sigint)
 
     parser = _cli_parser()
     args = parser.parse_args(argv)
+
     logging.basicConfig(
         level=getattr(logging, args.log_level),
         format="%(asctime)s [%(levelname)s] %(message)s",
+        force=True
     )
+    stop_ollama_on_finish = _ollama_check_or_run()
     args.func(args)
 
     cleanup(stop_ollama_on_finish & (args.keep_ollama_running == False))

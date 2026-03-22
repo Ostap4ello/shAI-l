@@ -11,9 +11,6 @@ import signal
 from .rag import rag_pipeline
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
-)
 
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
@@ -76,6 +73,11 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     parser = _cli_parser()
     args = parser.parse_args(argv)
+
+    logging.basicConfig(
+        level=getattr(logging, args.log_level),
+        format="%(asctime)s [%(levelname)s] %(message)s",
+    )
     args.func(args)
 
 

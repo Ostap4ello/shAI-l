@@ -15,9 +15,6 @@ from pathlib import Path
 import logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
-)
 
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
@@ -52,6 +49,13 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Simple LLM response generator with streaming support.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="INFO",
+        help="Set the logging level (default: INFO)",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -97,8 +101,14 @@ def main(argv: Optional[List[str]] = None) -> None:
         raise SystemExit(0)
 
     signal.signal(signal.SIGINT, handle_sigint)
+
     parser = _cli_parser()
     args = parser.parse_args(argv)
+
+    logging.basicConfig(
+        level=getattr(logging, args.log_level),
+        format="%(asctime)s [%(levelname)s] %(message)s",
+    )
     args.func(args)
 
 

@@ -1,8 +1,8 @@
-import json
 from pathlib import Path
 from typing import List, Tuple
-
 import faiss
+import json
+import os
 import numpy as np
 
 
@@ -12,6 +12,28 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_INDEX_PATH_WITHIN_DB = ".index"
+ALLOWED_EXTENSIONS = [
+    # General text/markdown
+    ".txt", ".md", ".markdown", ".log", ".norg",
+
+    # Typesetting/markup/documentation
+    ".rst", ".tex", ".latex", ".asciidoc", ".adoc", ".org", ".rmd", ".qmd", ".gmi", ".gemini",
+
+    # Tabular/notation
+    ".csv", ".tsv", ".srt", ".vtt", ".bib",
+
+    # Config/human-readable data
+    ".json", ".xml", ".yaml", ".yml", ".ini", ".toml", ".cfg", ".conf", ".properties", ".plist",
+
+    # Diagram/graph formats
+    ".dot", ".plantuml",
+
+    # Notebooks/code-literate
+    ".ipynb",
+
+    # Code (sometimes human-annotated)
+    ".py", ".js", ".ts", ".java", ".c", ".cpp", ".h", ".html", ".css", ".sh", ".bat", ".env"
+]
 
 
 def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
@@ -23,7 +45,16 @@ def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
     texts: List[str] = []
     metadata: List[dict] = []
 
-    file_paths = [path for path in sorted(doc_dir.rglob("*")) if path.is_file()]
+    file_paths = []
+    for root, _, files in os.walk(doc_dir, followlinks=True):
+        for file in files:
+            path = Path(root) / file
+            if (
+                any(part.startswith(".") for part in path.relative_to(doc_dir).parts)
+                or path.suffix not in ALLOWED_EXTENSIONS
+            ):
+                continue
+            file_paths.append(path.absolute())
     total_files = len(file_paths)
 
     for idx, path in enumerate(file_paths, start=1):

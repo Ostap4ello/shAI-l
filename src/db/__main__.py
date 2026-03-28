@@ -58,7 +58,13 @@ def _cmd_search(args: argparse.Namespace) -> None:
         top_k=args.top_k,
     )
     print("Results:")
-    print(results)
+    for i, result in enumerate(results, 1):
+        print(f"[{i}]")
+        print(f"  Distance: {result['distance']:.4f}")
+        print(f"  Metadata:")
+        for key, value in result['metadata'].items():
+            print(f"    {key}: {value}")
+        print()
 
 
 def _cli_parser() -> argparse.ArgumentParser:

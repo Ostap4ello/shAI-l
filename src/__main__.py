@@ -81,15 +81,20 @@ def _ollama_check_or_run() -> bool:
         logger.info("Ollama is running.")
         return False
     else:
-        print("Ollama is not running. Start Ollama? (y/N): ", end="")
+        print("Ollama is not running. Start Ollama?")
+        print("[y]es / Yes and [k]eep Ollama running after this session / [n]o (default):")
+
         choice = input().strip().lower()
-        if choice == "y":
+        if choice == "y" or choice == "k":
             logger.info("Trying to start Ollama...")
             start_ollama()
+            if choice == "k":
+                return False
+            else:
+                return True
         else:
             logger.error("Ollama is required to run this application. Exiting.")
             raise SystemExit(0)
-        return True
 
 
 def _get_client() -> OpenAI:

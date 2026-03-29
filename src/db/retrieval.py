@@ -31,6 +31,10 @@ def build(
     show_progress: bool = False,
     index_path_within_db: str = get_default_index_path_within_db(),
 ) -> None:
+    # Ensure index_path_within_db is a hidden folder
+    if not str(index_path_within_db).startswith('.'):
+        raise ValueError(f"index_path_within_db must start with a dot ('.'): got '{index_path_within_db}'")
+
     doc_dir = Path(db_path)
     index_path, meta_path, config_path = resolve_index_paths(
         db_path, index_path_within_db

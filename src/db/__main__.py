@@ -9,6 +9,7 @@ from openai import OpenAI
 from typing import List, Optional
 
 from .retrieval import build, search, check
+from src.utils.fetch_man import fetch_manpages_to_db, DEFAULT_SECTIONS, MERGE_POLICIES
 
 from pathlib import Path
 
@@ -67,6 +68,7 @@ def _cmd_search(args: argparse.Namespace) -> None:
         print()
 
 
+
 def _cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Local retrieval indexer",
@@ -83,7 +85,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--db-path", default="./man-db", help="Path to document directory"
     )
     build_cmd.add_argument(
-        "--index-path-within-db", default=".index", help="Index subdirectory name"
+        "--index-path-within-db", default=".index", help="Index subdirectory name (must start with a dot to be hidden)"
     )
     build_cmd.add_argument(
         "--batch-size", type=int, default=32, help="Embedding batch size"
@@ -92,6 +94,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"
     )
     build_cmd.set_defaults(func=_cmd_build)
+
 
     search_cmd = sub.add_parser(
         "search",
@@ -102,7 +105,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--db-path", default="./man-db", help="Path to document directory"
     )
     search_cmd.add_argument(
-        "--index-path-within-db", default=".index", help="Index subdirectory name"
+        "--index-path-within-db", default=".index", help="Index subdirectory name (must start with a dot to be hidden)"
     )
     search_cmd.add_argument(
         "--top-k", type=int, default=5, help="Number of results to return"
@@ -119,7 +122,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--db-path", default="./man-db", help="Path to document directory"
     )
     check_cmd.add_argument(
-        "--index-path-within-db", default=".index", help="Index subdirectory name"
+        "--index-path-within-db", default=".index", help="Index subdirectory name (must start with a dot to be hidden)"
     )
     check_cmd.set_defaults(
         func=lambda args: print(

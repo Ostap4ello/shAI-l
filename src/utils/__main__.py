@@ -5,6 +5,10 @@ import signal
 import sys
 
 from .adapter import *
+from .fetch_man import fetch_manpages_to_db, MAN_ROOT, DEFAULT_SECTIONS, MERGE_POLICIES
+
+FETCH_DEFAULT_DB_PATH = "./db"
+FETCH_DEFAULT_MERGE_STRATEGY = "abort"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -30,6 +34,18 @@ def _cmd_is_ollama_running(args: argparse.Namespace) -> None:
 
 def _cmd_convert(args: argparse.Namespace) -> None:
     convert_man_pages_to_text(src_dir=args.src_dir, out_dir=args.out_dir)
+
+
+def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
+    try:
+        fetch_manpages_to_db(
+            db_path=args.db_path,
+            sections=args.sections.split(","),
+            merge_strategy=args.merge_strategy,
+        )
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def _cli_parser() -> argparse.ArgumentParser:
@@ -75,7 +91,9 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_status.set_defaults(func=_cmd_is_ollama_running)
 
     parser_convert = subparsers.add_parser(
-        "convert_man_pages", help="Convert groff files to ASCII text"
+        "convert_man_pages",
+        help="Convert gz'd groff files to ASCII text"
+        + " (recursively from src-dir to out-dir for all gz files found in src-dir)",
     )
     parser_convert.add_argument(
         "--src-dir", type=str, required=True, help="Source directory for groff files"
@@ -84,6 +102,32 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--out-dir", type=str, required=True, help="Output directory for text files"
     )
     parser_convert.set_defaults(func=_cmd_convert)
+
+    fetch_man_cmd = subparsers.add_parser(
+        "fetch_man_db",
+        help="Fetch system man pages to text file database",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    fetch_man_cmd.add_argument(
+        "--db-path", default="./man-db", help="Destination folder for man text db."
+    )
+    fetch_man_cmd.add_argument(
+        "--sections",
+        default=",".join(sorted(DEFAULT_SECTIONS)),
+        help="Man section numbers (comma-separated)",
+    )
+    fetch_man_cmd.add_argument(
+        "--merge-strategy",
+        default="abort",
+        choices=sorted(MERGE_POLICIES),
+        help="Policy if db dir exists and not empty: abort, clean, merge-ours (keep old file on conflict), merge-theirs, skip-existing.",
+    )
+    fetch_man_cmd.add_argument(
+        "--man-root",
+        default=MAN_ROOT,
+        help=f"Root directory for man pages (contains subdirs like man1, man2, etc) (default: {MAN_ROOT})",
+    )
+    fetch_man_cmd.set_defaults(func=_cmd_fetch_man_db)
 
     return parser
 

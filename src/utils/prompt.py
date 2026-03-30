@@ -1,8 +1,8 @@
-from pathlib import Path
+import os
 
 
-def _project_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+def _project_root() -> str:
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
 
 def _strip_comments(text: str) -> str:
@@ -43,8 +43,9 @@ def get_prompt(base_name: str) -> str:
     if not base_name:
         raise ValueError("Prompt base name cannot be empty.")
 
-    prompt_path = _project_root() / "prompts" / f"{base_name}.txt"
-    if not prompt_path.is_file():
+    prompt_path = os.path.join(_project_root(), "prompts", f"{base_name}.txt")
+    if not os.path.isfile(prompt_path):
         raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
 
-    return _strip_comments(prompt_path.read_text(encoding="utf-8"))
+    with open(prompt_path, encoding="utf-8") as f:
+        return _strip_comments(f.read())

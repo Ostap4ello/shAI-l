@@ -21,7 +21,7 @@ help() {
     "
 }
 
-convert() {
+extract-and-convert() {
 
     local backup_dir=".bak"
 
@@ -30,16 +30,29 @@ convert() {
         return 1
     fi
 
-    shopt -s nullglob
-    local files=("$src_dir"/*)
-    shopt -u nullglob
+    declare -a folders
+    declare -a files
+    files=()
+    folders=("$src_dir")
+    while [[ ${#folders[@]} -gt 0 ]]; do
+        local current_folder="${folders[0]}"
+        folders=("${folders[@]:1}")
+
+        for entry in "$current_folder"/*; do
+            if [[ -d "$entry" ]]; then
+                folders+=("$entry")
+            elif [[ -f "$entry" ]] && [[ "$entry" == *.gz ]]; then
+                files+=("$entry")
+            fi
+        done
+    done
 
     if [[ ${#files[@]} -eq 0 ]]; then
         echo "No files found in '$src_dir'." >&2
         return 1
     fi
 
-    if [[ -d "$out_dir" ]]; then
+    if [[ -d "$out_dir" ]] && [[ -n "$(ls -A "$out_dir")" ]]; then
         local backup_number=1
         local backup_base="${backup_dir}/${out_dir}.bak"
         while [[ -d "${backup_base}.${backup_number}" ]]; do
@@ -55,14 +68,33 @@ convert() {
 
     mkdir -p "$out_dir"
 
+    tmp_dir=$(mktemp -d --suffix "man-")
+
     for file in "${files[@]}"; do
         if [[ -f "$file" ]]; then
-            local base_name
-            base_name="$(basename "$file")"
-            local out_file="${out_dir}/${base_name}.txt"
-            groff -Tascii -P -c -P -b -P -u -man "$file" > "$out_file"
+            local out_file="${tmp_dir}/${file#$src_dir/}"
+            if [[ -L "$file" ]]; then
+                # copy the target of the symlink
+                cp -L "$file" "$file.tmp"
+                mv "$file.tmp" "$file"
+            fi
+
+            mkdir -p "$(dirname "$out_file")"
+            gzip --decompress --keep "$file" --stdout > "$out_file"
         fi
     done
+
+    for file in "${files[@]}"; do
+        if [[ -f "$file" ]]; then
+            local src_file="${tmp_dir}/${file#$src_dir/}"
+            local out_file="${out_dir}/${file#$src_dir/}"
+
+            mkdir -p "$(dirname "$out_file")"
+            groff -Tascii -P -c -P -b -P -u -man "$src_file" > "${out_file%.gz}.txt"
+        fi
+    done
+
+    rm -rf "$tmp_dir"
 }
 
 main() {
@@ -91,7 +123,7 @@ main() {
         return 1
     fi
 
-    convert
+    extract-and-convert
 }
 
 main "$@"

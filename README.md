@@ -71,7 +71,7 @@ python -m shAI_ostap4ello.src.llm generate "Hello world"
 python -m shAI_ostap4ello.src.llm embed "Some text"
 
 # Database module
-python -m shAI_ostap4ello.src.db build --db-path ./man-db
+python -m shAI_ostap4ello.src.db build --db-path ~/.local/share/shai_db
 python -m shAI_ostap4ello.src.db search "search query"
 python -m shAI_ostap4ello.src.db check
 

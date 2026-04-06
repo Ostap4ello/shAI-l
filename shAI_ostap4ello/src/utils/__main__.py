@@ -38,8 +38,12 @@ def _cmd_convert(args: argparse.Namespace) -> None:
 
 def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
     try:
+        # Resolve ~ in db_path
+        from pathlib import Path
+
+        db_path = str(Path(args.db_path).expanduser())
         fetch_manpages_to_db(
-            db_path=args.db_path,
+            db_path=db_path,
             sections=args.sections.split(","),
             merge_strategy=args.merge_strategy,
         )
@@ -109,7 +113,9 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     fetch_man_cmd.add_argument(
-        "--db-path", default="./man-db", help="Destination folder for man text db."
+        "--db-path",
+        default="~/.local/share/shai_db",
+        help="Destination folder for man text db",
     )
     fetch_man_cmd.add_argument(
         "--sections",
@@ -125,7 +131,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     fetch_man_cmd.add_argument(
         "--man-root",
         default=MAN_ROOT,
-        help=f"Root directory for man pages (contains subdirs like man1, man2, etc) (default: {MAN_ROOT})",
+        help=f"Root directory for man pages (contains subdirs like man1, man2, etc)",
     )
     fetch_man_cmd.set_defaults(func=_cmd_fetch_man_db)
 

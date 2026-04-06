@@ -31,24 +31,26 @@ def _get_client() -> OpenAI:
 def _cmd_build(args: argparse.Namespace) -> None:
     client = _get_client()
     model = args.model
+    db_path = os.path.expanduser(args.db_path)
     build(
-        db_path=args.db_path,
+        db_path=db_path,
         index_path_within_db=args.index_path_within_db,
         client=client,
         model=model,
         batch_size=args.batch_size,
-        show_progress=True,
+        show_progress=True, # TODO: not implemented yet
     )
     print("Index build complete.")
 
 
 def _cmd_search(args: argparse.Namespace) -> None:
-    if not check(args.db_path, args.index_path_within_db):
+    db_path = os.path.expanduser(args.db_path)
+    if not check(db_path, args.index_path_within_db):
         print("Index not found. Run 'build' command first.", file=sys.stderr)
         sys.exit(1)
     client = _get_client()
     results = search(
-        db_path=args.db_path,
+        db_path=db_path,
         index_path_within_db=args.index_path_within_db,
         client=client,
         query=args.query,
@@ -59,10 +61,9 @@ def _cmd_search(args: argparse.Namespace) -> None:
         print(f"[{i}]")
         print(f"  Distance: {result['distance']:.4f}")
         print(f"  Metadata:")
-        for key, value in result['metadata'].items():
+        for key, value in result["metadata"].items():
             print(f"    {key}: {value}")
         print()
-
 
 
 def _cli_parser() -> argparse.ArgumentParser:
@@ -78,10 +79,14 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     build_cmd.add_argument(
-        "--db-path", default="./man-db", help="Path to document directory"
+        "--db-path",
+        default="~/.local/share/shai_db",
+        help="Path to document directory",
     )
     build_cmd.add_argument(
-        "--index-path-within-db", default=".index", help="Index subdirectory name (must start with a dot to be hidden)"
+        "--index-path-within-db",
+        default=".index",
+        help="Index subdirectory name (must start with a dot to be hidden)",
     )
     build_cmd.add_argument(
         "--batch-size", type=int, default=32, help="Embedding batch size"
@@ -91,17 +96,20 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     build_cmd.set_defaults(func=_cmd_build)
 
-
     search_cmd = sub.add_parser(
         "search",
         help="Search the index",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     search_cmd.add_argument(
-        "--db-path", default="./man-db", help="Path to document directory"
+        "--db-path",
+        default="~/.local/share/shai_db",
+        help="Path to document directory",
     )
     search_cmd.add_argument(
-        "--index-path-within-db", default=".index", help="Index subdirectory name (must start with a dot to be hidden)"
+        "--index-path-within-db",
+        default=".index",
+        help="Index subdirectory name (must start with a dot to be hidden)",
     )
     search_cmd.add_argument(
         "--top-k", type=int, default=5, help="Number of results to return"
@@ -115,15 +123,22 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     check_cmd.add_argument(
-        "--db-path", default="./man-db", help="Path to document directory"
+        "--db-path",
+        default="~/.local/share/shai_db",
+        help="Path to document directory",
     )
     check_cmd.add_argument(
-        "--index-path-within-db", default=".index", help="Index subdirectory name (must start with a dot to be hidden)"
+        "--index-path-within-db",
+        default=".index",
+        help="Index subdirectory name (must start with a dot to be hidden)",
     )
     check_cmd.set_defaults(
         func=lambda args: print(
             "Index exists."
-            if check(args.db_path, args.index_path_within_db)
+            if check(
+                db_path=os.path.expanduser(args.db_path),
+                index_path_within_db=args.index_path_within_db,
+            )
             else "Index not found."
         )
     )

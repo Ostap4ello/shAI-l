@@ -7,7 +7,7 @@ import os
 from openai import OpenAI
 from typing import List, Optional
 
-from .retrieval import build, search, check
+from .db import build, search, check
 
 import logging
 

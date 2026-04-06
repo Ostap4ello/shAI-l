@@ -28,7 +28,6 @@ def build(
     client: OpenAI,
     model: str,
     batch_size: int = 32,
-    show_progress: bool = False,
     index_path_within_db: str = get_default_index_path_within_db(),
 ) -> None:
     # Ensure index_path_within_db is a hidden folder

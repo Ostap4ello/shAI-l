@@ -9,6 +9,7 @@ import sys
 import signal
 
 from .rag import rag_pipeline
+from ..config import load_config
 
 logger = logging.getLogger(__name__)
 
@@ -44,21 +45,26 @@ def _cli_parser():
 
 
 def _get_client() -> OpenAI:
+    config = load_config()
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        api_key = DEFAULT_API_KEY
+        api_key = config.get("llm", "api_key", fallback=DEFAULT_API_KEY)
     base_url = os.environ.get("OPENAI_BASE_URL")
     if not base_url:
-        base_url = DEFAULT_API_BASE_URL
+        base_url = config.get("llm", "api_base_url", fallback=DEFAULT_API_BASE_URL)
     client = OpenAI(api_key=api_key, base_url=base_url)
     logger.info(f"Initialized OpenAI client with base URL: {base_url}")
     return client
 
 
 def _cmd_find(args: argparse.Namespace) -> None:
+    config = load_config()
+    default_model = config.get("rag", "model", fallback=DEFAULT_MODEL)
+    default_top_k = config.getint("rag", "top_k", fallback=5)
+
     client = _get_client()
     results = rag_pipeline(
-        client=client, model=DEFAULT_MODEL, query=args.query, top_k=5
+        client=client, model=default_model, query=args.query, top_k=default_top_k
     )
     assert isinstance(results, str), "Expected RAG pipeline output to be a string"
     print(results)

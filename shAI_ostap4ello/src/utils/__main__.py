@@ -6,6 +6,7 @@ import sys
 
 from .adapter import *
 from .fetch_man import fetch_manpages_to_db, MAN_ROOT, DEFAULT_SECTIONS, MERGE_POLICIES
+from ..config import load_config
 
 FETCH_DEFAULT_DB_PATH = "./db"
 FETCH_DEFAULT_MERGE_STRATEGY = "abort"
@@ -38,10 +39,7 @@ def _cmd_convert(args: argparse.Namespace) -> None:
 
 def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
     try:
-        # Resolve ~ in db_path
-        from pathlib import Path
-
-        db_path = str(Path(args.db_path).expanduser())
+        db_path = os.path.expanduser(args.db_path)
         fetch_manpages_to_db(
             db_path=db_path,
             sections=args.sections.split(","),
@@ -53,6 +51,17 @@ def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
 
 
 def _cli_parser() -> argparse.ArgumentParser:
+    config = load_config()
+    default_context_length = config.getint(
+        "utils", "ollama_context_length", fallback=32000
+    )
+    default_gpus = config.get("utils", "ollama_gpus", fallback="all")
+    default_container_name = config.get(
+        "utils", "ollama_container_name", fallback="ollama-node-1"
+    )
+    default_db_path = config.get("db", "db_path", fallback="~/.local/share/shai_db")
+    default_man_root = config.get("utils", "man_root", fallback=MAN_ROOT)
+
     parser = argparse.ArgumentParser(description="CLI interface for ext-utils")
     subparsers = parser.add_subparsers(
         dest="command", required=True, help="Available commands"
@@ -70,11 +79,16 @@ def _cli_parser() -> argparse.ArgumentParser:
         "start_ollama", help="Run the Ollama Docker container"
     )
     parser_start.add_argument(
-        "--context-length", type=int, default=32000, help="Set the context length"
+        "--context-length",
+        type=int,
+        default=default_context_length,
+        help="Set the context length",
     )
-    parser_start.add_argument("--gpus", type=str, default="all", help="Specify GPUs")
     parser_start.add_argument(
-        "--name", type=str, default="ollama-node-1", help="Container name"
+        "--gpus", type=str, default=default_gpus, help="Specify GPUs"
+    )
+    parser_start.add_argument(
+        "--name", type=str, default=default_container_name, help="Container name"
     )
     parser_start.set_defaults(func=_cmd_start_ollama)
 
@@ -82,7 +96,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "stop_ollama", help="Stop the Ollama Docker container"
     )
     parser_stop.add_argument(
-        "--name", type=str, default="ollama-node-1", help="Container name"
+        "--name", type=str, default=default_container_name, help="Container name"
     )
     parser_stop.set_defaults(func=_cmd_stop_ollama)
 
@@ -90,7 +104,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "is_ollama_running", help="Check if the Ollama Docker container is running"
     )
     parser_status.add_argument(
-        "--name", type=str, default="ollama-node-1", help="Container name"
+        "--name", type=str, default=default_container_name, help="Container name"
     )
     parser_status.set_defaults(func=_cmd_is_ollama_running)
 
@@ -114,7 +128,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     fetch_man_cmd.add_argument(
         "--db-path",
-        default="~/.local/share/shai_db",
+        default=default_db_path,
         help="Destination folder for man text db",
     )
     fetch_man_cmd.add_argument(
@@ -130,7 +144,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     fetch_man_cmd.add_argument(
         "--man-root",
-        default=MAN_ROOT,
+        default=default_man_root,
         help=f"Root directory for man pages (contains subdirs like man1, man2, etc)",
     )
     fetch_man_cmd.set_defaults(func=_cmd_fetch_man_db)

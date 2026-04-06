@@ -12,6 +12,7 @@ from .llm.__main__ import _cli_parser as _llm_cli_parser
 from .utils.__main__ import _cli_parser as _utils_cli_parser
 
 from .utils import is_ollama_running, start_ollama, stop_ollama
+from .config import load_config
 
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
@@ -23,11 +24,17 @@ logger = logging.getLogger(__name__)
 def _cli_parser():
     parser = argparse.ArgumentParser(description="ShAI-CLI")
 
+    # Load config for defaults
+    config = load_config()
+    keep_ollama_default = config.getboolean(
+        "general", "keep_ollama_running", fallback=False
+    )
+
     parser.add_argument(
         "--keep-ollama-running",
         "-K",
         type=bool,
-        default=False,
+        default=keep_ollama_default,
         help="If true, if this script starts Ollama, it will not stop it on exit",
     )
 
@@ -82,7 +89,9 @@ def _ollama_check_or_run() -> bool:
         return False
     else:
         print("Ollama is not running. Start Ollama?")
-        print("[y]es / Yes and [k]eep Ollama running after this session / [n]o (default):")
+        print(
+            "[y]es / Yes and [k]eep Ollama running after this session / [n]o (default):"
+        )
 
         choice = input().strip().lower()
         if choice == "y" or choice == "k":
@@ -98,12 +107,13 @@ def _ollama_check_or_run() -> bool:
 
 
 def _get_client() -> OpenAI:
+    config = load_config()
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        api_key = DEFAULT_API_KEY
+        api_key = config.get("llm", "api_key", fallback=DEFAULT_API_KEY)
     base_url = os.environ.get("OPENAI_BASE_URL")
     if not base_url:
-        base_url = DEFAULT_API_BASE_URL
+        base_url = config.get("llm", "api_base_url", fallback=DEFAULT_API_BASE_URL)
     client = OpenAI(api_key=api_key, base_url=base_url)
     logger.info(f"Initialized OpenAI client with base URL: {base_url}")
     return client
@@ -117,7 +127,8 @@ def cleanup(stop_ollama_on_finish: bool = False) -> None:
 
 
 def _get_model():
-    return DEFAULT_MODEL
+    config = load_config()
+    return config.get("llm", "model", fallback=DEFAULT_MODEL)
 
 
 def handle_sigint(signum: int, frame: object) -> None:

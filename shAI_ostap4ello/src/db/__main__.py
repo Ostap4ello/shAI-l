@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import json
 import signal
 import sys
 import os
@@ -9,9 +8,6 @@ from openai import OpenAI
 from typing import List, Optional
 
 from .retrieval import build, search, check
-from src.utils.fetch_man import fetch_manpages_to_db, DEFAULT_SECTIONS, MERGE_POLICIES
-
-from pathlib import Path
 
 import logging
 

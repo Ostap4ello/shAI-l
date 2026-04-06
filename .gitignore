@@ -3,10 +3,14 @@
 # Created/used by compile-groff.sh
 *.bak
 man-db
-.res
+*.res
 man-db-src
 
 __pycache__
 
 AGENTS.md
 .github
+
+dist/
+*.egg-info/
+build/

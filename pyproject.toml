@@ -1,0 +1,40 @@
+[project]
+name = "shAI-ostap4ello"
+version = "0.1"
+authors = [
+  { name="Ostap4ello", email="okpeleh@gmail.com" },
+]
+description = "Shell-integrated Local LLM-based project"
+keywords = ["lobster"]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "faiss-cpu==1.13.2",
+    "logger==1.4",
+    "numpy==2.4.2",
+    "openai==2.21.0"
+]
+
+[project.scripts]
+shai = "shAI_ostap4ello.src.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Ostap4ello/shAI-l"
+Repository = "https://github.com/Ostap4ello/shAI-l"
+Issues = "https://github.com/Ostap4ello/shAI-code/issues"
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.package-data]
+shAI_ostap4ello = ["prompts/*", "src/utils/*.sh"]

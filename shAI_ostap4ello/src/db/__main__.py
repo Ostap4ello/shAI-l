@@ -40,7 +40,6 @@ def _cmd_build(args: argparse.Namespace) -> None:
         client=client,
         model=model,
         batch_size=args.batch_size,
-        show_progress=True, # TODO: not implemented yet
     )
     print("Index build complete.")
 

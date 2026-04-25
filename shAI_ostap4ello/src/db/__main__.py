@@ -39,13 +39,19 @@ def _cmd_build(args: argparse.Namespace) -> None:
     client = _get_client()
     model = args.model
     db_path = os.path.expanduser(args.db_path)
-    build(
-        db_path=db_path,
-        index_path_within_db=args.index_path_within_db,
-        client=client,
-        model=model,
-        batch_size=args.batch_size,
-    )
+    # TODO: better error handling
+    try:
+        build(
+            db_path=db_path,
+            index_path_within_db=args.index_path_within_db,
+            client=client,
+            model=model,
+            batch_size=args.batch_size,
+        )
+    except Exception as e:
+        logger.warning(f"Error during index build: {e}")
+        return
+
     print("Index build complete.")
 
 

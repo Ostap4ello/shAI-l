@@ -95,14 +95,14 @@ def get_config_value(
 ) -> Any:
     """Get a single config value with fallback."""
 
-    if not isinstance(fallback, val_type):
-        raise ValueError(
-            f"Fallback value type {type(fallback)} does not match expected type {val_type}"
-        )
-
     global config
     if config is None:
         raise ValueError("Config not loaded.")
+
+    if fallback is not None and not isinstance(fallback, val_type):
+        raise ValueError(
+            f"Fallback value type {type(fallback)} does not match expected type {val_type}"
+        )
 
     ret = None
     if val_type is int:
@@ -124,7 +124,8 @@ def get_config_value(
             raise ValueError(f"Requested non-existing [{section}] {key}.")
 
         logger.debug(
-            f"Config value [{section}] {key} not found. Using fallback: {fallback}. Please use this only for development"
+            f"Config value [{section}] {key} not found. Using fallback: {fallback}. " +
+            "Please use add this to default config file."
         )
         ret = fallback
 

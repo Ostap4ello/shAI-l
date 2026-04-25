@@ -23,43 +23,6 @@ Install the following system dependencies:
 - `groff, jq` (for converting man pages)
 
 
-## Configuration
-
-ShAI uses a configuration file located at `~/.config/shai/config.conf`. The config file is created automatically with default values on first run.
-
-### Configuration File Structure
-
-```ini
-[general]
-keep_ollama_running = false
-
-[llm]
-model = qwen3:1.7b
-embed_model = ibm/granite-embedding:125m
-api_base_url = http://127.0.0.1:11434/v1
-api_key = ollama
-
-[db]
-db_path = ~/.local/share/shai_db
-index_path_within_db = .index
-batch_size = 32
-top_k = 5
-
-[rag]
-top_k = 5
-model = qwen3:1.7b
-
-[utils]
-ollama_context_length = 32000
-ollama_gpus = all
-ollama_container_name = ollama-node-1
-```
-
-All settings can be overridden by:
-1. Environment variables (for API settings: `OPENAI_API_KEY`, `OPENAI_BASE_URL`)
-2. CLI arguments (e.g., `--model`, `--db-path`, `--top-k`)
-
-
 ## Usage
 
 ### CLI Commands

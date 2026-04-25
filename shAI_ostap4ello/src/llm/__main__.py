@@ -9,7 +9,6 @@ from openai import OpenAI
 from typing import List, Optional
 
 from ..llm import generate, embed_string
-from ..config import load_config
 
 import logging
 
@@ -22,13 +21,12 @@ DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
 
 
 def _get_client() -> OpenAI:
-    config = load_config()
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        api_key = config.get("llm", "api_key", fallback=DEFAULT_API_KEY)
+        api_key = DEFAULT_API_KEY
     base_url = os.environ.get("OPENAI_BASE_URL")
     if not base_url:
-        base_url = config.get("llm", "api_base_url", fallback=DEFAULT_API_BASE_URL)
+        base_url = DEFAULT_API_BASE_URL
     return OpenAI(api_key=api_key, base_url=base_url)
 
 
@@ -46,11 +44,6 @@ def _cmd_embed_string(args: argparse.Namespace) -> None:
 
 
 def _cli_parser() -> argparse.ArgumentParser:
-    # Load config for defaults
-    config = load_config()
-    default_model = config.get("llm", "model", fallback=DEFAULT_MODEL)
-    default_embed_model = config.get("llm", "embed_model", fallback=DEFAULT_EMBED_MODEL)
-
     parser = argparse.ArgumentParser(
         description="Simple LLM response generator with streaming support.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -70,7 +63,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     generate_cmd.add_argument(
-        "--model", default=default_model, help="Model to use for generation"
+        "--model", default=DEFAULT_MODEL, help="Model to use for generation"
     )
     generate_cmd.add_argument(
         "--stream", action="store_true", default=True, help="Enable streaming output"
@@ -91,7 +84,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     embed_cmd.add_argument(
         "--model",
-        default=default_embed_model,
+        default=DEFAULT_EMBED_MODEL,
         help="Model to use for embedding generation",
     )
     embed_cmd.add_argument("input_string", help="The string to generate embeddings for")

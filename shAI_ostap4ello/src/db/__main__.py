@@ -8,7 +8,6 @@ from openai import OpenAI
 from typing import List, Optional
 
 from .db import build, search, check
-from ..config import load_config
 
 import logging
 
@@ -20,13 +19,12 @@ DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
 
 
 def _get_client() -> OpenAI:
-    config = load_config()
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        api_key = config.get("llm", "api_key", fallback=DEFAULT_API_KEY)
+        api_key = DEFAULT_API_KEY
     base_url = os.environ.get("OPENAI_BASE_URL")
     if not base_url:
-        base_url = config.get("llm", "api_base_url", fallback=DEFAULT_API_BASE_URL)
+        base_url = DEFAULT_API_BASE_URL
     return OpenAI(api_key=api_key, base_url=base_url)
 
 
@@ -68,13 +66,6 @@ def _cmd_search(args: argparse.Namespace) -> None:
 
 
 def _cli_parser() -> argparse.ArgumentParser:
-    config = load_config()
-    default_db_path = config.get("db", "db_path", fallback="~/.local/share/shai_db")
-    default_index_path_within_db = config.get("db", "index_path_within_db", fallback=".index")
-    default_batch_size = config.getint("db", "batch_size", fallback=32)
-    default_top_k = config.getint("db", "top_k", fallback=5)
-    default_embed_model = config.get("llm", "embed_model", fallback=DEFAULT_EMBED_MODEL)
-    
     parser = argparse.ArgumentParser(
         description="Local retrieval indexer",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -88,19 +79,19 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     build_cmd.add_argument(
         "--db-path",
-        default=default_db_path,
+        default="~/.local/share/shai_db",
         help="Path to document directory",
     )
     build_cmd.add_argument(
         "--index-path-within-db",
-        default=default_index_path_within_db,
+        default=".index",
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     build_cmd.add_argument(
-        "--batch-size", type=int, default=default_batch_size, help="Embedding batch size"
+        "--batch-size", type=int, default=32, help="Embedding batch size"
     )
     build_cmd.add_argument(
-        "--model", default=default_embed_model, help=f"Embedding model to use"
+        "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"
     )
     build_cmd.set_defaults(func=_cmd_build)
 
@@ -110,13 +101,17 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     search_cmd.add_argument(
-        "--db-path", default=default_db_path, help="Path to document directory"
+        "--db-path",
+        default="~/.local/share/shai_db",
+        help="Path to document directory",
     )
     search_cmd.add_argument(
-        "--index-path-within-db", default=default_index_path_within_db, help="Index subdirectory name (must start with a dot to be hidden)"
+        "--index-path-within-db",
+        default=".index",
+        help="Index subdirectory name (must start with a dot to be hidden)",
     )
     search_cmd.add_argument(
-        "--top-k", type=int, default=default_top_k, help="Number of results to return"
+        "--top-k", type=int, default=5, help="Number of results to return"
     )
     search_cmd.add_argument("query", help="Search query string")
     search_cmd.set_defaults(func=_cmd_search)
@@ -127,10 +122,14 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     check_cmd.add_argument(
-        "--db-path", default=default_db_path, help="Path to document directory"
+        "--db-path",
+        default="~/.local/share/shai_db",
+        help="Path to document directory",
     )
     check_cmd.add_argument(
-        "--index-path-within-db", default=default_index_path_within_db, help="Index subdirectory name (must start with a dot to be hidden)"
+        "--index-path-within-db",
+        default=".index",
+        help="Index subdirectory name (must start with a dot to be hidden)",
     )
     check_cmd.set_defaults(
         func=lambda args: print(

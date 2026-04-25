@@ -24,7 +24,7 @@ DEFAULT_MODEL = "qwen3:1.7b"
 DEFAULT_LOG_LEVEL = "INFO"
 
 def cli_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="ShAI-CLI", add_help=False)
+    parser = argparse.ArgumentParser(description="ShAI-CLI")
     parser.add_argument(
         "--config",
         "-c",

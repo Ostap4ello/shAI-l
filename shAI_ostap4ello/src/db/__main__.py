@@ -17,6 +17,12 @@ logger = logging.getLogger(__name__)
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
+DEFAULT_EXTENDED_SEARCH = False
+DEFAULT_TOP_K = 5
+DEFAULT_TOP_K_EXTENDED = 10
+DEFAULT_DB_PATH = "~/.local/share/shai_db"
+DEFAULT_INDEX_PATH_WITHIN_DB = ".index"
+DEFAULT_BATCH_SIZE = 32
 
 
 def _get_client() -> OpenAI:
@@ -117,16 +123,16 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     build_cmd.add_argument(
         "--db-path",
-        default="~/.local/share/shai_db",
+        default=DEFAULT_DB_PATH,
         help="Path to document directory",
     )
     build_cmd.add_argument(
         "--index-path-within-db",
-        default=".index",
+        default=DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     build_cmd.add_argument(
-        "--batch-size", type=int, default=32, help="Embedding batch size"
+        "--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Embedding batch size"
     )
     build_cmd.add_argument(
         "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"
@@ -140,28 +146,28 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     search_cmd.add_argument(
         "--db-path",
-        default="~/.local/share/shai_db",
+        default=DEFAULT_DB_PATH,
         help="Path to document directory",
     )
     search_cmd.add_argument(
         "--index-path-within-db",
-        default=".index",
+        default=DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     search_cmd.add_argument(
-        "--top-k", type=int, default=5, help="Number of results to return"
+        "--top-k", type=int, default=DEFAULT_TOP_K, help="Number of results to return"
     )
     search_cmd.add_argument(
         "--extended-search",
         "-e",
         action="store_true",
-        default=False,
+        default=DEFAULT_EXTENDED_SEARCH,
         help="If true, section-scoped search will be applied on retieved docs, then metadata with this will be returned",
     )
     search_cmd.add_argument(
         "--top-k-extended",
         type=int,
-        default=default_top_k,
+        default=DEFAULT_TOP_K_EXTENDED,
         help="Number of results to return",
     )
     search_cmd.add_argument("query", help="Search query string")
@@ -174,12 +180,12 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     check_cmd.add_argument(
         "--db-path",
-        default="~/.local/share/shai_db",
+        default=DEFAULT_DB_PATH,
         help="Path to document directory",
     )
     check_cmd.add_argument(
         "--index-path-within-db",
-        default=".index",
+        default=DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     check_cmd.set_defaults(

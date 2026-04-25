@@ -33,6 +33,8 @@ def get_default_config() -> configparser.ConfigParser:
         "index_path_within_db": ".index",
         "batch_size": "32",
         "top_k": "5",
+        "top_k_extended": "10",
+        "extended_search": "false",
     }
 
     config["rag"] = {
@@ -156,13 +158,28 @@ def propagate_config() -> None:
 
     # Propagate DB defaults (from default config)
     from ..db import __main__ as db_main
-
     db_main.DEFAULT_API_BASE_URL = config.get(
         "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
     )
     db_main.DEFAULT_API_KEY = config.get("llm", "api_key", fallback="ollama")
     db_main.DEFAULT_EMBED_MODEL = config.get(
         "llm", "embed_model", fallback="ibm/granite-embedding:125m"
+    )
+    db_main.DEFAULT_DB_PATH = config.get(
+        "db", "db_path", fallback="~/.local/share/shai_db"
+    )
+    db_main.DEFAULT_INDEX_PATH_WITHIN_DB = config.get(
+        "db", "index_path_within_db", fallback=".index"
+    )
+    db_main.DEFAULT_BATCH_SIZE = config.getint(
+        "db", "batch_size", fallback=32
+    )
+    db_main.DEFAULT_TOP_K = config.getint("db", "top_k", fallback=5)
+    db_main.DEFAULT_TOP_K_EXTENDED = config.getint(
+        "db", "top_k_extended", fallback=10
+    )
+    db_main.DEFAULT_EXTENDED_SEARCH = config.getboolean(
+        "db", "extended_search", fallback=False
     )
 
     # Propagate RAG defaults (from default config)

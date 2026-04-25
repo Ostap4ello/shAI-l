@@ -73,6 +73,39 @@ def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
 
     return texts, metadata
 
+def load_documents_in_sections(doc_paths: List[Path], section_rows: int) -> Tuple[List[str], List[dict]]:
+    logger.info(f"Loading documents in sections: {doc_paths}")
+
+    sections = []
+    metadata = []
+
+    for doc_path in doc_paths:
+        one_sections, one_metadata = load_document_in_sections(doc_path, section_rows)
+        sections = sections + one_sections
+        metadata = metadata + one_metadata
+
+    return sections, metadata
+
+
+def load_document_in_sections(doc_path: Path, section_rows: int) -> Tuple[List[str], List[dict]]:
+    logger.info(f"Loading document in sections: {doc_path}")
+
+    if not doc_path.exists() or not doc_path.is_file():
+        logger.error(f"Document not found: {doc_path}")
+        raise RuntimeError(f"Document not found: {doc_path}")
+
+    # TODO: handling last section - if it lacks rows. Separator?
+    # Custom 
+
+    sections = []
+    metadata = []
+
+    lines = open(doc_path, "r").readlines()
+    for i in range(0, len(lines), section_rows):
+        sections.append("".join(lines[i : i + 20]))
+        metadata.append({"path": str(doc_path), "from": i, "to": i + 20})
+
+    return sections, metadata
 
 def build_faiss_index(vectors: np.ndarray) -> faiss.Index:
     dim = vectors.shape[1]

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import signal
 import sys
 import os
 from openai import OpenAI
 from typing import List, Optional
 
-from .db import build, search, check
+from .db import build, search, check, search_in_files_dynamic
 
 import logging
 
@@ -55,14 +56,50 @@ def _cmd_search(args: argparse.Namespace) -> None:
         query=args.query,
         top_k=args.top_k,
     )
-    print("Results:")
-    for i, result in enumerate(results, 1):
-        print(f"[{i}]")
-        print(f"  Distance: {result['distance']:.4f}")
-        print(f"  Metadata:")
-        for key, value in result["metadata"].items():
-            print(f"    {key}: {value}")
+
+    if args.extended_search:
+        paths = []
+        for r in results:
+            paths.append(r["metadata"]["path"])
+
+        results = search_in_files_dynamic(
+            file_paths=paths,
+            client=client,
+            model=DEFAULT_EMBED_MODEL,
+            query=args.query,
+            top_k=args.top_k_extended,
+        )
+        if args.json:
+            print(json.dumps(results, indent=2))
+            return
+
+        print("Results of extended search:")
+        for i, result in enumerate(results, 1):
+            m = result["metadata"]
+            p = m["path"]
+            f = int(m["from"])
+            t = int(m["to"])
+            print(f"[{i}]")
+            print(f"  Distance: {result['distance']:.4f}")
+            print(f"  File: {p}:{f}-{t}:")
+            lines = open(p, "r").readlines()[f:t]
+            print("  ---")
+            for line in lines:
+                print("  " + line, end="")
+            print("  ---")
         print()
+    else:
+        if args.json:
+            print(json.dumps(results, indent=2))
+            return
+        print("Results:")
+        for i, result in enumerate(results, 1):
+            print(f"[{i}]")
+            print(f"  Distance: {result['distance']:.4f}")
+            print(f"  Metadata:")
+            for key, value in result["metadata"].items():
+                print(f"    {key}: {value}")
+            print()
 
 
 def _cli_parser() -> argparse.ArgumentParser:
@@ -114,6 +151,19 @@ def _cli_parser() -> argparse.ArgumentParser:
     search_cmd.add_argument(
         "--top-k", type=int, default=5, help="Number of results to return"
     )
+    search_cmd.add_argument(
+        "--extended-search",
+        "-e",
+        action="store_true",
+        default=False,
+        help="If true, section-scoped search will be applied on retieved docs, then metadata with this will be returned",
+    )
+    search_cmd.add_argument(
+        "--top-k-extended",
+        type=int,
+        default=default_top_k,
+        help="Number of results to return",
+    )
     search_cmd.add_argument("query", help="Search query string")
     search_cmd.set_defaults(func=_cmd_search)
 
@@ -163,6 +213,8 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     parser = _cli_parser()
     args = parser.parse_args(argv)
+    if args.json:
+        args.log_level = "ERROR"
 
     logging.basicConfig(
         level=getattr(logging, args.log_level),

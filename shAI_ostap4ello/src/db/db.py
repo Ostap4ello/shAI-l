@@ -8,6 +8,7 @@ from openai import OpenAI
 from .utils.faiss_utils import (
     build_faiss_index,
     load_documents,
+    load_documents_in_sections,
     load_index,
     save_index,
     save_index_config,
@@ -31,8 +32,10 @@ def build(
     index_path_within_db: str = get_default_index_path_within_db(),
 ) -> None:
     # Ensure index_path_within_db is a hidden folder
-    if not str(index_path_within_db).startswith('.'):
-        raise ValueError(f"index_path_within_db must start with a dot ('.'): got '{index_path_within_db}'")
+    if not str(index_path_within_db).startswith("."):
+        raise ValueError(
+            f"index_path_within_db must start with a dot ('.'): got '{index_path_within_db}'"
+        )
 
     doc_dir = Path(db_path)
     index_path, meta_path, config_path = resolve_index_paths(
@@ -89,9 +92,53 @@ def search(
         idx = indices[0][i]
         if idx < 0 or idx >= len(metadata):
             continue
-        results.append({
-            "metadata": metadata[idx],
-            "distance": distances[0][i],
-        })
+        results.append(
+            {
+                "metadata": metadata[idx],
+                "distance": float(distances[0][i]),
+            }
+        )
+
+    return results
+
+
+def search_in_files_dynamic(
+    file_paths: List[str],
+    client: OpenAI,
+    model: str,
+    query: str,
+    batch_size: int = 32,
+    top_k: int = 5,
+    section_rows: int = 20,
+) -> List[dict]:
+    # TODO: dynamic function - create lazy indexing and caching instead
+
+    texts, metadata = load_documents_in_sections(
+        [Path(p) for p in file_paths], section_rows
+    )
+
+    texts.append(query)
+
+    vectors = embed_strings(client, model, texts, batch_size)
+    _ = texts.pop()
+
+    query_vec = vectors[-1].reshape(1, -1)
+    vectors = vectors[:-1]
+
+    index = build_faiss_index(vectors)
+
+    distances, indices = index.search(query_vec, top_k)
+
+    results: List[dict] = []
+    for i in range(len(indices[0])):
+        idx = indices[0][i]
+        if idx < 0 or idx >= len(metadata):
+            continue
+        results.append(
+            {
+                "metadata": metadata[idx],
+                "distance": float(distances[0][i]),
+            }
+        )
 
     return results

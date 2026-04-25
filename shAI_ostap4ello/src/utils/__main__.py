@@ -7,8 +7,8 @@ import sys
 from .adapter import *
 from .fetch_man import fetch_manpages_to_db, MAN_ROOT, DEFAULT_SECTIONS, MERGE_POLICIES
 
-FETCH_DEFAULT_DB_PATH = "./db"
-FETCH_DEFAULT_MERGE_STRATEGY = "abort"
+DEFAULT_FETCH_DB_PATH = "./db"
+DEFAULT_FETCH_MERGE_STRATEGY = "abort"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -53,7 +53,10 @@ def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
 
 
 def _cli_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="CLI interface for ext-utils")
+    parser = argparse.ArgumentParser(
+        description="CLI interface for ext-utils",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     subparsers = parser.add_subparsers(
         dest="command", required=True, help="Available commands"
     )

@@ -19,7 +19,11 @@ DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
 
 
 def _cli_parser():
-    parser = argparse.ArgumentParser(description="CLI interface for RAG pipeline.")
+    parser = argparse.ArgumentParser(
+        description="CLI interface for RAG pipeline."
+        # Note: is not actualized with config
+        # formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     subparsers = parser.add_subparsers(
         dest="command", required=True, help="Available commands"
     )

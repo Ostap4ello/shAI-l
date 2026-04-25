@@ -68,7 +68,8 @@ def _cmd_search(args: argparse.Namespace) -> None:
 def _cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Local retrieval indexer",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        # Note: is not actualized with config
+        # formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     sub = parser.add_subparsers(dest="command", required=True)
 

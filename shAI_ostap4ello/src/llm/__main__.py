@@ -46,7 +46,8 @@ def _cmd_embed_string(args: argparse.Namespace) -> None:
 def _cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Simple LLM response generator with streaming support.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        # Note: is not actualized with config
+        # formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--log-level",

@@ -10,29 +10,45 @@ from .db.__main__ import _cli_parser as _db_cli_parser
 from .rag.__main__ import _cli_parser as _rag_cli_parser
 from .llm.__main__ import _cli_parser as _llm_cli_parser
 from .utils.__main__ import _cli_parser as _utils_cli_parser
+from .config import DEFAULT_CONFIG_PATH, load_config
 
 from .utils import is_ollama_running, start_ollama, stop_ollama
 
+logger = logging.getLogger(__name__)
+
+DEFAULT_KEEP_OLLAMA = False
+DEFAULT_CREATE_CONFIG = False
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_MODEL = "qwen3:1.7b"
+DEFAULT_LOG_LEVEL = "INFO"
 
-logger = logging.getLogger(__name__)
+def cli_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="ShAI-CLI", add_help=False)
+    parser.add_argument(
+        "--config",
+        "-c",
+        type=str,
+        default=DEFAULT_CONFIG_PATH,
+    )
 
-
-def _cli_parser():
-    parser = argparse.ArgumentParser(description="ShAI-CLI")
+    parser.add_argument(
+        "--create-config",
+        action="store_true",
+        default=DEFAULT_CREATE_CONFIG,
+        help="If true, creates a config file with default values if it doesn't exist, then exits",
+    )
 
     parser.add_argument(
         "--keep-ollama-running",
         "-K",
-        type=bool,
-        default=False,
+        action="store_true",
+        default=DEFAULT_KEEP_OLLAMA,
         help="If true, if this script starts Ollama, it will not stop it on exit",
     )
 
     subparsers = parser.add_subparsers(
-        dest="command", required=True, help="Available commands"
+        dest="command", required=False, help="Available commands"
     )
     subparsers.add_parser(
         "db",
@@ -62,20 +78,6 @@ def _cli_parser():
     return parser
 
 
-def get_running_client() -> OpenAI:
-    client = _get_client()
-    model = _get_model()
-    _ollama_check_or_run()
-    logger.info(f"Bringing up {model} model early")
-    try:
-        client.completions.create(model=model, max_tokens=1, prompt="Hello")
-    except Exception as e:
-        logger.error(f"Error connecting to Ollama: {e}")
-        raise RuntimeError(f"Error connecting to Ollama: {e}") from e
-    logger.info(f"{model} model is up and running.")
-    return client
-
-
 def _ollama_check_or_run() -> bool:
     if is_ollama_running():
         logger.info("Ollama is running.")
@@ -97,28 +99,11 @@ def _ollama_check_or_run() -> bool:
             raise SystemExit(0)
 
 
-def _get_client() -> OpenAI:
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        api_key = DEFAULT_API_KEY
-    base_url = os.environ.get("OPENAI_BASE_URL")
-    if not base_url:
-        base_url = DEFAULT_API_BASE_URL
-    client = OpenAI(api_key=api_key, base_url=base_url)
-    logger.info(f"Initialized OpenAI client with base URL: {base_url}")
-    return client
-
-
 def cleanup(stop_ollama_on_finish: bool = False) -> None:
     logger.info("Cleaning up resources...")
     if stop_ollama_on_finish:
         stop_ollama()
     logger.info("Goodbye!")
-
-
-def _get_model():
-    return DEFAULT_MODEL
-
 
 def handle_sigint(signum: int, frame: object) -> None:
     print()
@@ -126,37 +111,62 @@ def handle_sigint(signum: int, frame: object) -> None:
     cleanup()
     raise SystemExit(0)
 
+# def loop() -> None:
+#     signal.signal(signal.SIGINT, handle_sigint)
+#
+#     client = get_running_client()
+#
+#     while True:
+#         user_query = ""
+#         try:
+#             user_query = input("Enter your query: ")
+#         except EOFError:
+#             logger.warning("\nNo input provided. Exiting.")
+#             break
+#
+#         try:
+#             # main logic
+#             pass
+#         except Exception as e:
+#             logger.error(f"Error processing query: {e}")
+#             break
 
-def loop() -> None:
-    signal.signal(signal.SIGINT, handle_sigint)
 
-    client = get_running_client()
-
-    while True:
-        user_query = ""
-        try:
-            user_query = input("Enter your query: ")
-        except EOFError:
-            logger.warning("\nNo input provided. Exiting.")
-            break
-
-        try:
-            # main logic
-            pass
-        except Exception as e:
-            logger.error(f"Error processing query: {e}")
-            break
-
-
-def main(argv: Optional[List[str]] = None) -> None:
+def main() -> None:
     def handle_sigint(signum: int, frame: object) -> None:
         print("\nInterrupted. Exiting cleanly.", file=sys.stderr)
         raise SystemExit(0)
 
     signal.signal(signal.SIGINT, handle_sigint)
 
-    parser = _cli_parser()
+    argv = sys.argv[1:]
+
+    # Pre-parse
+    pre_parser = cli_parser()
+    pre_args = None
+    try:
+        pre_args = pre_parser.parse_args(argv)
+    except Exception:
+        # Ignore the error from missing required subcommand for now
+        # help will be shown later when we parse the full args
+        pass
+
+    # TODO: default values in help are not updated when loading config
+    if pre_args is not None:
+        load_config(config_path_str=pre_args.config, create=pre_args.create_config)
+        if pre_args.create_config:
+            print(f"Config file created at {pre_args.config}. Exiting as requested.")
+            raise SystemExit(0)
+
+    parser = cli_parser()
     args = parser.parse_args(argv)
+
+    if not hasattr(args, "func"):
+        parser.print_help()
+        raise SystemExit(0)
+
+    if not hasattr(args, "log_level"):
+        args.log_level = DEFAULT_LOG_LEVEL
 
     logging.basicConfig(
         level=getattr(logging, args.log_level),

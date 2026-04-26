@@ -74,7 +74,7 @@ def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
     return texts, metadata
 
 def load_documents_in_sections(doc_paths: List[Path], section_rows: int) -> Tuple[List[str], List[dict]]:
-    logger.info(f"Loading documents in sections: {doc_paths}")
+    logger.debug(f"Loading documents in sections: {doc_paths}")
 
     sections = []
     metadata = []
@@ -88,7 +88,7 @@ def load_documents_in_sections(doc_paths: List[Path], section_rows: int) -> Tupl
 
 
 def load_document_in_sections(doc_path: Path, section_rows: int) -> Tuple[List[str], List[dict]]:
-    logger.info(f"Loading document in sections: {doc_path}")
+    logger.debug(f"Loading document in sections: {doc_path}")
 
     if not doc_path.exists() or not doc_path.is_file():
         logger.error(f"Document not found: {doc_path}")

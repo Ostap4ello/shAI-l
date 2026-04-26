@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "query": "How can I enable or disable the internal Bluetooth device?",
+    "filename": "bluetooth.1.txt",
+    "line": 4
+  },
+  {
+    "id": 2,
+    "query": "How can I turn Bluetooth on?",
+    "filename": "bluetooth.1.txt",
+    "line": 10
+  },
+  {
+    "id": 3,
+    "query": "How can I turn Bluetooth off?",
+    "filename": "bluetooth.1.txt",
+    "line": 12
+  }
+]

@@ -1,0 +1,1520 @@
+[
+  {
+    "id": 1,
+    "query": "How can I enable or disable the internal Bluetooth device?",
+    "filename": "bluetooth.1.txt",
+    "line": 4
+  },
+  {
+    "id": 2,
+    "query": "How can I turn Bluetooth on?",
+    "filename": "bluetooth.1.txt",
+    "line": 10
+  },
+  {
+    "id": 3,
+    "query": "How can I turn Bluetooth off?",
+    "filename": "bluetooth.1.txt",
+    "line": 12
+  },
+  {
+    "id": 4,
+    "query": "How can I toggle Bluetooth power state?",
+    "filename": "bluetooth.1.txt",
+    "line": 14
+  },
+  {
+    "id": 5,
+    "query": "How can I cycle Bluetooth power state twice?",
+    "filename": "bluetooth.1.txt",
+    "line": 17
+  },
+  {
+    "id": 6,
+    "query": "How can I check current Bluetooth power state?",
+    "filename": "bluetooth.1.txt",
+    "line": 19
+  },
+  {
+    "id": 7,
+    "query": "How can I print the current TLP version?",
+    "filename": "bluetooth.1.txt",
+    "line": 22
+  },
+  {
+    "id": 8,
+    "query": "How can I control Bluetooth adapters and devices from the terminal?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 4
+  },
+  {
+    "id": 9,
+    "query": "What does the -a capability, --agent capability option do?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 21
+  },
+  {
+    "id": 10,
+    "query": "What does the -e, --endpoints option do?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 24
+  },
+  {
+    "id": 11,
+    "query": "What does the -m, --monitor option do?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 27
+  },
+  {
+    "id": 12,
+    "query": "What does the -t seconds, --timeout seconds option do?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 30
+  },
+  {
+    "id": 13,
+    "query": "What does the -v, --version option do?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 33
+  },
+  {
+    "id": 14,
+    "query": "What does the -h, --help option do?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 36
+  },
+  {
+    "id": 15,
+    "query": "How do I use list command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 40
+  },
+  {
+    "id": 16,
+    "query": "How do I use show command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 49
+  },
+  {
+    "id": 17,
+    "query": "How do I use select command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 67
+  },
+  {
+    "id": 18,
+    "query": "How do I use devices command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 79
+  },
+  {
+    "id": 19,
+    "query": "How do I use system-alias command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 107
+  },
+  {
+    "id": 20,
+    "query": "How do I use reset-alias command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 129
+  },
+  {
+    "id": 21,
+    "query": "How do I use power command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 140
+  },
+  {
+    "id": 22,
+    "query": "How do I use advertise command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 162
+  },
+  {
+    "id": 23,
+    "query": "How do I use set-alias command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 197
+  },
+  {
+    "id": 24,
+    "query": "How do I use scan command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 219
+  },
+  {
+    "id": 25,
+    "query": "How do I use pair command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 252
+  },
+  {
+    "id": 26,
+    "query": "How do I use pairable command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 288
+  },
+  {
+    "id": 27,
+    "query": "How do I use discoverable command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 310
+  },
+  {
+    "id": 28,
+    "query": "How do I use discoverable-timeout command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 340
+  },
+  {
+    "id": 29,
+    "query": "How do I use agent command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 373
+  },
+  {
+    "id": 30,
+    "query": "How do I use default-agent command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 420
+  },
+  {
+    "id": 31,
+    "query": "How do I use trust command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 433
+  },
+  {
+    "id": 32,
+    "query": "How do I use untrust command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 455
+  },
+  {
+    "id": 33,
+    "query": "How do I use block command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 477
+  },
+  {
+    "id": 34,
+    "query": "How do I use unblock command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 499
+  },
+  {
+    "id": 35,
+    "query": "How do I use remove command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 521
+  },
+  {
+    "id": 36,
+    "query": "How do I use connect command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 542
+  },
+  {
+    "id": 37,
+    "query": "How do I use disconnect command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 615
+  },
+  {
+    "id": 38,
+    "query": "How do I use info command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 660
+  },
+  {
+    "id": 39,
+    "query": "How do I use bearer command in the main menu?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 683
+  },
+  {
+    "id": 40,
+    "query": "What can I configure in the admin submenu?",
+    "filename": "bluetoothctl-admin.1.txt",
+    "line": 4
+  },
+  {
+    "id": 41,
+    "query": "How do I use allow command in the admin submenu?",
+    "filename": "bluetoothctl-admin.1.txt",
+    "line": 13
+  },
+  {
+    "id": 42,
+    "query": "What can I configure in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 4
+  },
+  {
+    "id": 43,
+    "query": "How do I use uuids command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 14
+  },
+  {
+    "id": 44,
+    "query": "How do I use solicit command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 64
+  },
+  {
+    "id": 45,
+    "query": "How do I use service command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 98
+  },
+  {
+    "id": 46,
+    "query": "How do I use manufacturer command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 139
+  },
+  {
+    "id": 47,
+    "query": "How do I use data command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 186
+  },
+  {
+    "id": 48,
+    "query": "How do I use sr-uuids command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 250
+  },
+  {
+    "id": 49,
+    "query": "How do I use sr-solicit command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 274
+  },
+  {
+    "id": 50,
+    "query": "How do I use sr-service command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 294
+  },
+  {
+    "id": 51,
+    "query": "How do I use sr-manufacturer command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 321
+  },
+  {
+    "id": 52,
+    "query": "How do I use sr-data command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 347
+  },
+  {
+    "id": 53,
+    "query": "How do I use discoverable command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 374
+  },
+  {
+    "id": 54,
+    "query": "How do I use discoverable-timeout command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 405
+  },
+  {
+    "id": 55,
+    "query": "How do I use tx-power command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 444
+  },
+  {
+    "id": 56,
+    "query": "How do I use name command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 478
+  },
+  {
+    "id": 57,
+    "query": "How do I use appearance command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 535
+  },
+  {
+    "id": 58,
+    "query": "How do I use duration command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 617
+  },
+  {
+    "id": 59,
+    "query": "How do I use timeout command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 684
+  },
+  {
+    "id": 60,
+    "query": "How do I use secondary command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 714
+  },
+  {
+    "id": 61,
+    "query": "How do I use rsi command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 740
+  },
+  {
+    "id": 62,
+    "query": "How do I use interval command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 764
+  },
+  {
+    "id": 63,
+    "query": "How do I use clear command in the advertise submenu?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 827
+  },
+  {
+    "id": 64,
+    "query": "What can I configure in the assistant submenu?",
+    "filename": "bluetoothctl-assistant.1.txt",
+    "line": 4
+  },
+  {
+    "id": 65,
+    "query": "How do I use list command in the assistant submenu?",
+    "filename": "bluetoothctl-assistant.1.txt",
+    "line": 13
+  },
+  {
+    "id": 66,
+    "query": "How do I use show command in the assistant submenu?",
+    "filename": "bluetoothctl-assistant.1.txt",
+    "line": 22
+  },
+  {
+    "id": 67,
+    "query": "How do I use push command in the assistant submenu?",
+    "filename": "bluetoothctl-assistant.1.txt",
+    "line": 40
+  },
+  {
+    "id": 68,
+    "query": "What can I configure in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 4
+  },
+  {
+    "id": 69,
+    "query": "How do I use list command in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 13
+  },
+  {
+    "id": 70,
+    "query": "How do I use show command in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 30
+  },
+  {
+    "id": 71,
+    "query": "How do I use register command in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 57
+  },
+  {
+    "id": 72,
+    "query": "How do I use unregister command in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 120
+  },
+  {
+    "id": 73,
+    "query": "How do I use config command in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 168
+  },
+  {
+    "id": 74,
+    "query": "How do I use presets command in the endpoint submenu?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 201
+  },
+  {
+    "id": 75,
+    "query": "What can I configure in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 4
+  },
+  {
+    "id": 76,
+    "query": "How do I use list-attributes command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 14
+  },
+  {
+    "id": 77,
+    "query": "How do I use select-attribute command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 58
+  },
+  {
+    "id": 78,
+    "query": "How do I use attribute-info command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 106
+  },
+  {
+    "id": 79,
+    "query": "How do I use read command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 138
+  },
+  {
+    "id": 80,
+    "query": "How do I use write command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 170
+  },
+  {
+    "id": 81,
+    "query": "How do I use acquire-write command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 218
+  },
+  {
+    "id": 82,
+    "query": "How do I use release-write command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 231
+  },
+  {
+    "id": 83,
+    "query": "How do I use acquire-notify command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 242
+  },
+  {
+    "id": 84,
+    "query": "How do I use release-notify command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 255
+  },
+  {
+    "id": 85,
+    "query": "How do I use notify command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 265
+  },
+  {
+    "id": 86,
+    "query": "How do I use clone command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 285
+  },
+  {
+    "id": 87,
+    "query": "How do I use register-application command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 323
+  },
+  {
+    "id": 88,
+    "query": "How do I use unregister-application command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 355
+  },
+  {
+    "id": 89,
+    "query": "How do I use register-service command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 366
+  },
+  {
+    "id": 90,
+    "query": "How do I use unregister-service command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 411
+  },
+  {
+    "id": 91,
+    "query": "How do I use register-includes command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 440
+  },
+  {
+    "id": 92,
+    "query": "How do I use unregister-includes command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 465
+  },
+  {
+    "id": 93,
+    "query": "How do I use register-characteristic command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 485
+  },
+  {
+    "id": 94,
+    "query": "How do I use unregister-characteristic command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 546
+  },
+  {
+    "id": 95,
+    "query": "How do I use register-descriptor command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 575
+  },
+  {
+    "id": 96,
+    "query": "How do I use unregister-descriptor command in the gatt submenu?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 631
+  },
+  {
+    "id": 97,
+    "query": "What can I configure in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 4
+  },
+  {
+    "id": 98,
+    "query": "How do I use open command in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 15
+  },
+  {
+    "id": 99,
+    "query": "How do I use cmd command in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 50
+  },
+  {
+    "id": 100,
+    "query": "How do I use send command in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 103
+  },
+  {
+    "id": 101,
+    "query": "How do I use register command in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 155
+  },
+  {
+    "id": 102,
+    "query": "How do I use unregister command in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 190
+  },
+  {
+    "id": 103,
+    "query": "How do I use close command in the hci submenu?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 217
+  },
+  {
+    "id": 104,
+    "query": "What can I configure in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 4
+  },
+  {
+    "id": 105,
+    "query": "How do I use select command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 15
+  },
+  {
+    "id": 106,
+    "query": "How do I use revision command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 35
+  },
+  {
+    "id": 107,
+    "query": "How do I use commands command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 44
+  },
+  {
+    "id": 108,
+    "query": "How do I use config command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 53
+  },
+  {
+    "id": 109,
+    "query": "How do I use info command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 62
+  },
+  {
+    "id": 110,
+    "query": "How do I use extinfo command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 71
+  },
+  {
+    "id": 111,
+    "query": "How do I use auto-power command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 80
+  },
+  {
+    "id": 112,
+    "query": "How do I use power command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 89
+  },
+  {
+    "id": 113,
+    "query": "How do I use discov command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 105
+  },
+  {
+    "id": 114,
+    "query": "How do I use connectable command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 145
+  },
+  {
+    "id": 115,
+    "query": "How do I use fast-conn command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 161
+  },
+  {
+    "id": 116,
+    "query": "How do I use bondable command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 178
+  },
+  {
+    "id": 117,
+    "query": "How do I use pairable command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 194
+  },
+  {
+    "id": 118,
+    "query": "How do I use linksec command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 210
+  },
+  {
+    "id": 119,
+    "query": "How do I use ssp command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 226
+  },
+  {
+    "id": 120,
+    "query": "How do I use sc command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 242
+  },
+  {
+    "id": 121,
+    "query": "How do I use hs command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 263
+  },
+  {
+    "id": 122,
+    "query": "How do I use le command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 280
+  },
+  {
+    "id": 123,
+    "query": "How do I use advertising command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 297
+  },
+  {
+    "id": 124,
+    "query": "How do I use bredr command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 313
+  },
+  {
+    "id": 125,
+    "query": "How do I use privacy command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 329
+  },
+  {
+    "id": 126,
+    "query": "How do I use class command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 355
+  },
+  {
+    "id": 127,
+    "query": "How do I use disconnect command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 410
+  },
+  {
+    "id": 128,
+    "query": "How do I use con command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 445
+  },
+  {
+    "id": 129,
+    "query": "How do I use find command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 454
+  },
+  {
+    "id": 130,
+    "query": "How do I use find-service command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 489
+  },
+  {
+    "id": 131,
+    "query": "How do I use stop-find command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 539
+  },
+  {
+    "id": 132,
+    "query": "How do I use name command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 560
+  },
+  {
+    "id": 133,
+    "query": "How do I use pair command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 595
+  },
+  {
+    "id": 134,
+    "query": "How do I use cancelpair command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 662
+  },
+  {
+    "id": 135,
+    "query": "How do I use unpair command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 689
+  },
+  {
+    "id": 136,
+    "query": "How do I use keys command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 720
+  },
+  {
+    "id": 137,
+    "query": "How do I use ltks command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 729
+  },
+  {
+    "id": 138,
+    "query": "How do I use irks command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 738
+  },
+  {
+    "id": 139,
+    "query": "How do I use block command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 773
+  },
+  {
+    "id": 140,
+    "query": "How do I use unblock command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 808
+  },
+  {
+    "id": 141,
+    "query": "How do I use add-uuid command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 843
+  },
+  {
+    "id": 142,
+    "query": "How do I use rm-uuid command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 882
+  },
+  {
+    "id": 143,
+    "query": "How do I use clr-uuids command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 902
+  },
+  {
+    "id": 144,
+    "query": "How do I use local-oob command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 911
+  },
+  {
+    "id": 145,
+    "query": "How do I use remote-oob command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 920
+  },
+  {
+    "id": 146,
+    "query": "How do I use did command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 968
+  },
+  {
+    "id": 147,
+    "query": "How do I use static-addr command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1000
+  },
+  {
+    "id": 148,
+    "query": "How do I use public-addr command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1020
+  },
+  {
+    "id": 149,
+    "query": "How do I use ext-config command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1040
+  },
+  {
+    "id": 150,
+    "query": "How do I use debug-keys command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1057
+  },
+  {
+    "id": 151,
+    "query": "How do I use conn-info command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1073
+  },
+  {
+    "id": 152,
+    "query": "How do I use io-cap command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1104
+  },
+  {
+    "id": 153,
+    "query": "How do I use scan-params command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1132
+  },
+  {
+    "id": 154,
+    "query": "How do I use get-clock command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1167
+  },
+  {
+    "id": 155,
+    "query": "How do I use add-device command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1187
+  },
+  {
+    "id": 156,
+    "query": "How do I use del-device command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1250
+  },
+  {
+    "id": 157,
+    "query": "How do I use clr-devices command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1285
+  },
+  {
+    "id": 158,
+    "query": "How do I use bredr-oob command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1294
+  },
+  {
+    "id": 159,
+    "query": "How do I use le-oob command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1303
+  },
+  {
+    "id": 160,
+    "query": "How do I use advinfo command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1312
+  },
+  {
+    "id": 161,
+    "query": "How do I use advsize command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1321
+  },
+  {
+    "id": 162,
+    "query": "How do I use add-adv command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1344
+  },
+  {
+    "id": 163,
+    "query": "How do I use rm-adv command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1404
+  },
+  {
+    "id": 164,
+    "query": "How do I use clr-adv command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1424
+  },
+  {
+    "id": 165,
+    "query": "How do I use add-ext-adv-params command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1433
+  },
+  {
+    "id": 166,
+    "query": "How do I use add-ext-adv-data command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1494
+  },
+  {
+    "id": 167,
+    "query": "How do I use appearance command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1529
+  },
+  {
+    "id": 168,
+    "query": "How do I use phy command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1609
+  },
+  {
+    "id": 169,
+    "query": "How do I use wbs command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1696
+  },
+  {
+    "id": 170,
+    "query": "How do I use secinfo command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1713
+  },
+  {
+    "id": 171,
+    "query": "How do I use expinfo command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1722
+  },
+  {
+    "id": 172,
+    "query": "How do I use exp-debug command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1731
+  },
+  {
+    "id": 173,
+    "query": "How do I use exp-privacy command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1747
+  },
+  {
+    "id": 174,
+    "query": "How do I use exp-quality command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1764
+  },
+  {
+    "id": 175,
+    "query": "How do I use exp-offload command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1781
+  },
+  {
+    "id": 176,
+    "query": "How do I use read-sysconfig command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1798
+  },
+  {
+    "id": 177,
+    "query": "How do I use set-sysconfig command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1807
+  },
+  {
+    "id": 178,
+    "query": "How do I use get-flags command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1863
+  },
+  {
+    "id": 179,
+    "query": "How do I use set-flags command in the mgmt submenu?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 1898
+  },
+  {
+    "id": 180,
+    "query": "What can I configure in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 4
+  },
+  {
+    "id": 181,
+    "query": "How do I use set-rssi-threshold command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 13
+  },
+  {
+    "id": 182,
+    "query": "How do I use set-rssi-timeout command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 40
+  },
+  {
+    "id": 183,
+    "query": "How do I use set-rssi-sampling-period command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 67
+  },
+  {
+    "id": 184,
+    "query": "How do I use add-or-pattern command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 96
+  },
+  {
+    "id": 185,
+    "query": "How do I use get-pattern command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 135
+  },
+  {
+    "id": 186,
+    "query": "How do I use remove-pattern command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 160
+  },
+  {
+    "id": 187,
+    "query": "How do I use get-supported-info command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 186
+  },
+  {
+    "id": 188,
+    "query": "How do I use print-usage command in the monitor submenu?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 197
+  },
+  {
+    "id": 189,
+    "query": "What can I configure in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 4
+  },
+  {
+    "id": 190,
+    "query": "How do I use list command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 13
+  },
+  {
+    "id": 191,
+    "query": "How do I use show command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 22
+  },
+  {
+    "id": 192,
+    "query": "How do I use select command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 41
+  },
+  {
+    "id": 193,
+    "query": "How do I use play command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 53
+  },
+  {
+    "id": 194,
+    "query": "How do I use pause command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 80
+  },
+  {
+    "id": 195,
+    "query": "How do I use stop command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 91
+  },
+  {
+    "id": 196,
+    "query": "How do I use next command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 102
+  },
+  {
+    "id": 197,
+    "query": "How do I use previous command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 113
+  },
+  {
+    "id": 198,
+    "query": "How do I use fast-forward command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 124
+  },
+  {
+    "id": 199,
+    "query": "How do I use rewind command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 135
+  },
+  {
+    "id": 200,
+    "query": "How do I use equalizer command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 146
+  },
+  {
+    "id": 201,
+    "query": "How do I use repeat command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 164
+  },
+  {
+    "id": 202,
+    "query": "How do I use shuffle command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 191
+  },
+  {
+    "id": 203,
+    "query": "How do I use scan command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 214
+  },
+  {
+    "id": 204,
+    "query": "How do I use change-folder command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 237
+  },
+  {
+    "id": 205,
+    "query": "How do I use list-items command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 261
+  },
+  {
+    "id": 206,
+    "query": "How do I use search command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 292
+  },
+  {
+    "id": 207,
+    "query": "How do I use queue command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 316
+  },
+  {
+    "id": 208,
+    "query": "How do I use show-item command in the player submenu?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 336
+  },
+  {
+    "id": 209,
+    "query": "What can I configure in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 4
+  },
+  {
+    "id": 210,
+    "query": "How do I use uuids command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 13
+  },
+  {
+    "id": 211,
+    "query": "How do I use rssi command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 56
+  },
+  {
+    "id": 212,
+    "query": "How do I use pathloss command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 98
+  },
+  {
+    "id": 213,
+    "query": "How do I use transport command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 140
+  },
+  {
+    "id": 214,
+    "query": "How do I use duplicate-data command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 182
+  },
+  {
+    "id": 215,
+    "query": "How do I use discoverable command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 208
+  },
+  {
+    "id": 216,
+    "query": "How do I use pattern command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 234
+  },
+  {
+    "id": 217,
+    "query": "How do I use auto-connect command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 281
+  },
+  {
+    "id": 218,
+    "query": "How do I use clear command in the scan submenu?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 305
+  },
+  {
+    "id": 219,
+    "query": "What can I configure in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 4
+  },
+  {
+    "id": 220,
+    "query": "How do I use list command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 13
+  },
+  {
+    "id": 221,
+    "query": "How do I use show command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 22
+  },
+  {
+    "id": 222,
+    "query": "How do I use select command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 44
+  },
+  {
+    "id": 223,
+    "query": "How do I use dial command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 60
+  },
+  {
+    "id": 224,
+    "query": "How do I use hangup-all command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 101
+  },
+  {
+    "id": 225,
+    "query": "How do I use list-calls command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 119
+  },
+  {
+    "id": 226,
+    "query": "How do I use show-call command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 128
+  },
+  {
+    "id": 227,
+    "query": "How do I use answer command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 150
+  },
+  {
+    "id": 228,
+    "query": "How do I use hangup command in the telephony submenu?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 172
+  },
+  {
+    "id": 229,
+    "query": "What can I configure in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 4
+  },
+  {
+    "id": 230,
+    "query": "How do I use list command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 13
+  },
+  {
+    "id": 231,
+    "query": "How do I use show command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 22
+  },
+  {
+    "id": 232,
+    "query": "How do I use acquire command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 44
+  },
+  {
+    "id": 233,
+    "query": "How do I use select command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 71
+  },
+  {
+    "id": 234,
+    "query": "How do I use unselect command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 108
+  },
+  {
+    "id": 235,
+    "query": "How do I use release command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 134
+  },
+  {
+    "id": 236,
+    "query": "How do I use send command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 160
+  },
+  {
+    "id": 237,
+    "query": "How do I use receive command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 182
+  },
+  {
+    "id": 238,
+    "query": "How do I use volume command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 206
+  },
+  {
+    "id": 239,
+    "query": "How do I use metadata command in the transport submenu?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 227
+  },
+  {
+    "id": 240,
+    "query": "What is the syntax for the basic Bluetooth power command?",
+    "filename": "bluetooth.1.txt",
+    "line": 7
+  },
+  {
+    "id": 241,
+    "query": "What is the syntax for the main interactive control command?",
+    "filename": "bluetoothctl.1.txt",
+    "line": 7
+  },
+  {
+    "id": 242,
+    "query": "What is the syntax for admin submenu commands?",
+    "filename": "bluetoothctl-admin.1.txt",
+    "line": 7
+  },
+  {
+    "id": 243,
+    "query": "What is the syntax for advertise submenu commands?",
+    "filename": "bluetoothctl-advertise.1.txt",
+    "line": 7
+  },
+  {
+    "id": 244,
+    "query": "What is the syntax for assistant submenu commands?",
+    "filename": "bluetoothctl-assistant.1.txt",
+    "line": 7
+  },
+  {
+    "id": 245,
+    "query": "What is the syntax for endpoint submenu commands?",
+    "filename": "bluetoothctl-endpoint.1.txt",
+    "line": 7
+  },
+  {
+    "id": 246,
+    "query": "What is the syntax for GATT submenu commands?",
+    "filename": "bluetoothctl-gatt.1.txt",
+    "line": 7
+  },
+  {
+    "id": 247,
+    "query": "What is the syntax for HCI submenu commands?",
+    "filename": "bluetoothctl-hci.1.txt",
+    "line": 7
+  },
+  {
+    "id": 248,
+    "query": "What is the syntax for management submenu commands?",
+    "filename": "bluetoothctl-mgmt.1.txt",
+    "line": 7
+  },
+  {
+    "id": 249,
+    "query": "What is the syntax for monitor submenu commands?",
+    "filename": "bluetoothctl-monitor.1.txt",
+    "line": 7
+  },
+  {
+    "id": 250,
+    "query": "What is the syntax for media player submenu commands?",
+    "filename": "bluetoothctl-player.1.txt",
+    "line": 7
+  },
+  {
+    "id": 251,
+    "query": "What is the syntax for scan submenu commands?",
+    "filename": "bluetoothctl-scan.1.txt",
+    "line": 7
+  },
+  {
+    "id": 252,
+    "query": "What is the syntax for telephony submenu commands?",
+    "filename": "bluetoothctl-telephony.1.txt",
+    "line": 7
+  },
+  {
+    "id": 253,
+    "query": "What is the syntax for transport submenu commands?",
+    "filename": "bluetoothctl-transport.1.txt",
+    "line": 7
+  }
+]

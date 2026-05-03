@@ -28,6 +28,7 @@ extract-and-convert() {
         return 1
     fi
 
+    echo "Listing $src_dir"
     declare -a folders
     declare -a files
     files=()
@@ -53,10 +54,15 @@ extract-and-convert() {
     if [[ -d "$out_dir" ]] && [[ ! -n "$(ls -A "$out_dir")" ]]; then
         local backup_number=1
         local backup_base="${out_dir}.bak"
+
+        echo "Creating backup for $out_dir in $backup_base.1"
         while [[ -d "${backup_base}.${backup_number}" ]]; do
             ((backup_number++))
         done
         ((backup_number--))
+        if [[ $backup_number -gt 0 ]]; then
+            echo "Found $backup_number of other backups. Incrementing each"
+        fi
         while [[ $backup_number -gt 0 ]]; do
             mv "${backup_base}.$backup_number" "${backup_base}.$((backup_number + 1))"
             ((backup_number--))
@@ -68,6 +74,7 @@ extract-and-convert() {
 
     tmp_dir=$(mktemp -d --suffix "man-")
 
+    echo "Decompressing pages"
     for file in "${files[@]}"; do
         if [[ -f "$file" ]]; then
             local out_file="${tmp_dir}/${file#$src_dir/}"
@@ -77,21 +84,26 @@ extract-and-convert() {
                 mv "$file.tmp" "$file"
             fi
 
+            echo "  - decompressing $file to $out_file"
             mkdir -p "$(dirname "$out_file")"
             gzip --decompress --keep "$file" --stdout > "$out_file"
         fi
     done
 
+    echo "Compiling pages"
     for file in "${files[@]}"; do
         if [[ -f "$file" ]]; then
             local src_file="${tmp_dir}/${file#$src_dir/}"
             local out_file="${out_dir}/${file#$src_dir/}"
+            out_file=${out_file%.gz}.txt
 
+            echo "  - compiling $src_file to $out_file"
             mkdir -p "$(dirname "$out_file")"
-            groff -Tascii -P -c -P -b -P -u -man "$src_file" > "${out_file%.gz}.txt"
+            groff -Tascii -P -c -P -b -P -u -man "$src_file" > "${out_file}"
         fi
     done
 
+    echo "Done. Cleaning"
     rm -rf "$tmp_dir"
 }
 

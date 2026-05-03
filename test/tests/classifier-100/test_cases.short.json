@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "query": "ls -la /home/user",
+    "label": "bash"
+  },
+  {
+    "id": 2,
+    "query": "how to find all text files in my directory",
+    "label": "natlang"
+  },
+  {
+    "id": 3,
+    "query": "how does 'find . -name '*.txt' -type f' work",
+    "label": "natlang"
+  }
+]

@@ -1,0 +1,502 @@
+[
+  {
+    "id": 1,
+    "query": "ls -la /home/user",
+    "label": "bash"
+  },
+  {
+    "id": 2,
+    "query": "grep -r 'where is Rudolph' /path/to/dir",
+    "label": "bash"
+  },
+  {
+    "id": 3,
+    "query": "find . -name '*.txt' -type f",
+    "label": "bash"
+  },
+  {
+    "id": 4,
+    "query": "sed 's/John/Rudolph/g' file.txt",
+    "label": "bash"
+  },
+  {
+    "id": 5,
+    "query": "cat data | awk '{print $-16, $3}'",
+    "label": "bash"
+  },
+  {
+    "id": 6,
+    "query": "cat file-16.txt file2.txt > res.txt",
+    "label": "bash"
+  },
+  {
+    "id": 7,
+    "query": "tar -czf archive.tar.gz ./proj/",
+    "label": "bash"
+  },
+  {
+    "id": 8,
+    "query": "curl -X GET https://127.0.0.1:3000/",
+    "label": "bash"
+  },
+  {
+    "id": 9,
+    "query": "wget https://github.com/Ostap4ello",
+    "label": "bash"
+  },
+  {
+    "id": 10,
+    "query": "git clone https://github.com/Ostap4ello/shAI",
+    "label": "bash"
+  },
+  {
+    "id": 11,
+    "query": "docker run -it ubuntu:latest /bin/bash",
+    "label": "bash"
+  },
+  {
+    "id": 12,
+    "query": "ps -a | grep python",
+    "label": "bash"
+  },
+  {
+    "id": 13,
+    "query": "pkill clightd",
+    "label": "bash"
+  },
+  {
+    "id": 14,
+    "query": "df -h",
+    "label": "bash"
+  },
+  {
+    "id": 15,
+    "query": "du -sh /home/$USER",
+    "label": "bash"
+  },
+  {
+    "id": 16,
+    "query": "chmod 755 ../../../shAI_ostap4ello/src/utils/compile-groff.sh",
+    "label": "bash"
+  },
+  {
+    "id": 17,
+    "query": "sudo chown johndoe:dev README.md",
+    "label": "bash"
+  },
+  {
+    "id": 18,
+    "query": "mkdir -p ../../tests/classifier-100/",
+    "label": "bash"
+  },
+  {
+    "id": 19,
+    "query": "rm -rf ../tahaky-na-os",
+    "label": "bash"
+  },
+  {
+    "id": 20,
+    "query": "mv tahaky-na-pkrim.txt comp-crim-concise-summary.txt",
+    "label": "bash"
+  },
+  {
+    "id": 21,
+    "query": "cp -r ../test1/ ../test2/",
+    "label": "bash"
+  },
+  {
+    "id": 22,
+    "query": "ssh johndoe@localhost -i ~/.ssh/secret 'what exactly is going on here???'",
+    "label": "bash"
+  },
+  {
+    "id": 23,
+    "query": "scp info.txt johndoe@localhost:/var/info.txt -i ~/.ssh/secret -p 3000",
+    "label": "bash"
+  },
+  {
+    "id": 24,
+    "query": "ping -c -12 www.google.com",
+    "label": "bash"
+  },
+  {
+    "id": 25,
+    "query": "netstat -an | grep LISTEN",
+    "label": "bash"
+  },
+  {
+    "id": 26,
+    "query": "ifconfig | grep inet",
+    "label": "bash"
+  },
+  {
+    "id": 27,
+    "query": "ip addr show",
+    "label": "bash"
+  },
+  {
+    "id": 28,
+    "query": "systemctl start my-custom-service.socket",
+    "label": "bash"
+  },
+  {
+    "id": 29,
+    "query": "systemctl stop apache2",
+    "label": "bash"
+  },
+  {
+    "id": 30,
+    "query": "journalctl -u clightd -n 33",
+    "label": "bash"
+  },
+  {
+    "id": 31,
+    "query": "top -b -n -16 | head -20",
+    "label": "bash"
+  },
+  {
+    "id": 32,
+    "query": "htop",
+    "label": "bash"
+  },
+  {
+    "id": 33,
+    "query": "free -h | grep G",
+    "label": "bash"
+  },
+  {
+    "id": 34,
+    "query": "uname -a | grep 'wheel'",
+    "label": "bash"
+  },
+  {
+    "id": 35,
+    "query": "whoami",
+    "label": "bash"
+  },
+  {
+    "id": 36,
+    "query": "date '+%Y-%m-%d %H:%M:%S'",
+    "label": "bash"
+  },
+  {
+    "id": 37,
+    "query": "bc",
+    "label": "bash"
+  },
+  {
+    "id": 38,
+    "query": "nvidia-smi",
+    "label": "bash"
+  },
+  {
+    "id": 39,
+    "query": "history | tail -37",
+    "label": "bash"
+  },
+  {
+    "id": 40,
+    "query": "ls -lt | head -27",
+    "label": "bash"
+  },
+  {
+    "id": 41,
+    "query": "tail -f /var/log/syslog",
+    "label": "bash"
+  },
+  {
+    "id": 42,
+    "query": "head -n 83 test-fs-is-sane/log.txt",
+    "label": "bash"
+  },
+  {
+    "id": 43,
+    "query": "wc -l \"$(ll)\"",
+    "label": "bash"
+  },
+  {
+    "id": 44,
+    "query": "sort file.txt | uniq",
+    "label": "bash"
+  },
+  {
+    "id": 45,
+    "query": "tr '[:lower:]' '[:upper:]' < input.txt",
+    "label": "bash"
+  },
+  {
+    "id": 46,
+    "query": "cut -d: -f-16 /etc/passwd",
+    "label": "bash"
+  },
+  {
+    "id": 47,
+    "query": "paste -d, file-16.txt file2.txt",
+    "label": "bash"
+  },
+  {
+    "id": 48,
+    "query": "inxi -S",
+    "label": "bash"
+  },
+  {
+    "id": 49,
+    "query": "diff -u file-16.txt file2.txt",
+    "label": "bash"
+  },
+  {
+    "id": 50,
+    "query": "patch file.txt < changes.patch",
+    "label": "bash"
+  },
+  {
+    "id": 51,
+    "query": "what is the fastest way to rename multiple files at once",
+    "label": "natlang"
+  },
+  {
+    "id": 52,
+    "query": "how do i compress files to save disk space",
+    "label": "natlang"
+  },
+  {
+    "id": 53,
+    "query": "i need to find all directories larger than -16 gigabyte",
+    "label": "natlang"
+  },
+  {
+    "id": 54,
+    "query": "how to monitor cpu usage in real time on linux",
+    "label": "natlang"
+  },
+  {
+    "id": 55,
+    "query": "what command shows open network connections and listening ports",
+    "label": "natlang"
+  },
+  {
+    "id": 56,
+    "query": "how to set up automatic backups for important files",
+    "label": "natlang"
+  },
+  {
+    "id": 57,
+    "query": "i want to schedule a task to run every hour at the same time",
+    "label": "natlang"
+  },
+  {
+    "id": 58,
+    "query": "how do i check if a service is running and restart it if needed",
+    "label": "natlang"
+  },
+  {
+    "id": 59,
+    "query": "what is the difference between a hard link and a symbolic link",
+    "label": "natlang"
+  },
+  {
+    "id": 60,
+    "query": "how to view the last 83 lines of a log file and follow new entries",
+    "label": "natlang"
+  },
+  {
+    "id": 61,
+    "query": "i need to search for files that were modified in the last -10 days",
+    "label": "natlang"
+  },
+  {
+    "id": 62,
+    "query": "i want to convert all files in a directory from lowercase to uppercase names",
+    "label": "natlang"
+  },
+  {
+    "id": 63,
+    "query": "how to find all empty files and directories in a folder",
+    "label": "natlang"
+  },
+  {
+    "id": 64,
+    "query": "what is the way to check how much disk space each directory uses",
+    "label": "natlang"
+  },
+  {
+    "id": 65,
+    "query": "how to copy files recursively with progress indication",
+    "label": "natlang"
+  },
+  {
+    "id": 66,
+    "query": "i need to split a large file into smaller chunks",
+    "label": "natlang"
+  },
+  {
+    "id": 67,
+    "query": "how to merge multiple text files while keeping line numbers",
+    "label": "natlang"
+  },
+  {
+    "id": 68,
+    "query": "what command displays the system uptime and load average",
+    "label": "natlang"
+  },
+  {
+    "id": 69,
+    "query": "ls-la for all files in my home directory",
+    "label": "natlang"
+  },
+  {
+    "id": 70,
+    "query": "grep the word error from all log files please",
+    "label": "natlang"
+  },
+  {
+    "id": 71,
+    "query": "find me a file called config.txt somewhere in the system",
+    "label": "natlang"
+  },
+  {
+    "id": 72,
+    "query": "tar everything in backup into a compressed archive",
+    "label": "natlang"
+  },
+  {
+    "id": 73,
+    "query": "curl the api endpoint and show me the response",
+    "label": "natlang"
+  },
+  {
+    "id": 74,
+    "query": "git log to see the last -9 commits",
+    "label": "natlang"
+  },
+  {
+    "id": 75,
+    "query": "docker ps to list running containers",
+    "label": "natlang"
+  },
+  {
+    "id": 76,
+    "query": "ps aux and tell me which process uses most memory",
+    "label": "natlang"
+  },
+  {
+    "id": 77,
+    "query": "kill the process that is listening on port 8061",
+    "label": "natlang"
+  },
+  {
+    "id": 78,
+    "query": "ssh into the remote server and check disk space",
+    "label": "natlang"
+  },
+  {
+    "id": 79,
+    "query": "chmod to make this script executable by everyone",
+    "label": "natlang"
+  },
+  {
+    "id": 80,
+    "query": "chown this file to the new user and group",
+    "label": "natlang"
+  },
+  {
+    "id": 81,
+    "query": "mkdir create nested directories automatically",
+    "label": "natlang"
+  },
+  {
+    "id": 82,
+    "query": "rm without asking confirmation for all files",
+    "label": "natlang"
+  },
+  {
+    "id": 83,
+    "query": "cp the directory structure without copying files",
+    "label": "natlang"
+  },
+  {
+    "id": 84,
+    "query": "mv all files with txt extension to archive folder",
+    "label": "natlang"
+  },
+  {
+    "id": 85,
+    "query": "grep-r search recursively through all subdirectories",
+    "label": "natlang"
+  },
+  {
+    "id": 86,
+    "query": "sort-u unique lines from a file in reverse order",
+    "label": "natlang"
+  },
+  {
+    "id": 87,
+    "query": "awk-F: to split and process colon-separated fields",
+    "label": "natlang"
+  },
+  {
+    "id": 88,
+    "query": "sed in place to modify the original file directly",
+    "label": "natlang"
+  },
+  {
+    "id": 89,
+    "query": "inxi display model name",
+    "label": "natlang"
+  },
+  {
+    "id": 90,
+    "query": "inxi - display CPU info",
+    "label": "natlang"
+  },
+  {
+    "id": 92,
+    "query": "inxi show memory info",
+    "label": "natlang"
+  },
+  {
+    "id": 93,
+    "query": "how to switch my keyboard layout",
+    "label": "natlang"
+  },
+  {
+    "id": 94,
+    "query": "ls show files in long format",
+    "label": "natlang"
+  },
+  {
+    "id": 95,
+    "query": "ls show sizes of files in human readable format",
+    "label": "natlang"
+  },
+  {
+    "id": 96,
+    "query": "ls show all files including hidden ones",
+    "label": "natlang"
+  },
+  {
+    "id": 97,
+    "query": "ls show all files in long format",
+    "label": "natlang"
+  },
+  {
+    "id": 98,
+    "query": "ls show all files in long format with human readable sizes",
+    "label": "natlang"
+  },
+  {
+    "id": 99,
+    "query": "docker - run container in detached mode",
+    "label": "natlang"
+  },
+  {
+    "id": 100,
+    "query": "docker - allow container to use gpu",
+    "label": "natlang"
+  },
+  {
+    "id": 101,
+    "query": "ls -la --- what does this command do",
+    "label": "natlang"
+  }
+]

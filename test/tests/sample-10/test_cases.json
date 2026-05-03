@@ -1498,23 +1498,5 @@
     "query": "What is the syntax for media player submenu commands?",
     "filename": "bluetoothctl-player.1.txt",
     "line": 7
-  },
-  {
-    "id": 251,
-    "query": "What is the syntax for scan submenu commands?",
-    "filename": "bluetoothctl-scan.1.txt",
-    "line": 7
-  },
-  {
-    "id": 252,
-    "query": "What is the syntax for telephony submenu commands?",
-    "filename": "bluetoothctl-telephony.1.txt",
-    "line": 7
-  },
-  {
-    "id": 253,
-    "query": "What is the syntax for transport submenu commands?",
-    "filename": "bluetoothctl-transport.1.txt",
-    "line": 7
   }
 ]

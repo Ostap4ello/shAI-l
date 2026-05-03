@@ -23,8 +23,6 @@ help() {
 
 extract-and-convert() {
 
-    local backup_dir=".bak"
-
     if [[ ! -d "$src_dir" ]]; then
         echo "Directory '$src_dir' not found." >&2
         return 1
@@ -52,9 +50,9 @@ extract-and-convert() {
         return 1
     fi
 
-    if [[ -d "$out_dir" ]] && [[ -n "$(ls -A "$out_dir")" ]]; then
+    if [[ -d "$out_dir" ]] && [[ ! -n "$(ls -A "$out_dir")" ]]; then
         local backup_number=1
-        local backup_base="${backup_dir}/${out_dir}.bak"
+        local backup_base="${out_dir}.bak"
         while [[ -d "${backup_base}.${backup_number}" ]]; do
             ((backup_number++))
         done

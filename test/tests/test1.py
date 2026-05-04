@@ -87,6 +87,7 @@ def run_test(config: Dict[str, Any]) -> str:
     results_list = []
 
     for i, tc in enumerate(test_cases, 1):
+        found_rank = 0
         tc_start = time.time()
         try:
             results = search(
@@ -97,7 +98,6 @@ def run_test(config: Dict[str, Any]) -> str:
                 index_path_within_db=index_dir_name,
             )
 
-            found_rank = 0
             for rank, result in enumerate(results, 1):
                 if _check_document_match(result["metadata"]["path"], tc["filename"]):
                     found_rank = rank

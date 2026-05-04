@@ -7,8 +7,12 @@ import sys
 from .adapter import *
 from .fetch_man import fetch_manpages_to_db, MAN_ROOT, DEFAULT_SECTIONS, MERGE_POLICIES
 
+DEFAULT_DOCKER_CONTAINER_NAME = "ollama-node-1"
+DEFAULT_DOCKER_CONTEXT_LENGTH = 32000
+DEFAULT_DOCKER_GPUS = "all"
 DEFAULT_FETCH_DB_PATH = "./db"
 DEFAULT_FETCH_MERGE_STRATEGY = "abort"
+DEFAULT_LOG_LEVEL = "INFO"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -65,7 +69,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default="INFO",
+        default=DEFAULT_LOG_LEVEL,
         help="Set the logging level (default: INFO)",
     )
 
@@ -73,7 +77,10 @@ def _cli_parser() -> argparse.ArgumentParser:
         "start_ollama", help="Run the Ollama Docker container"
     )
     parser_start.add_argument(
-        "--context-length", type=int, default=32000, help="Set the context length"
+        "--context-length",
+        type=int,
+        default=DEFAULT_DOCKER_CONTEXT_LENGTH,
+        help="Set the context length",
     )
     parser_start.add_argument("--gpus", type=str, default="all", help="Specify GPUs")
     parser_start.add_argument(
@@ -93,7 +100,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "is_ollama_running", help="Check if the Ollama Docker container is running"
     )
     parser_status.add_argument(
-        "--name", type=str, default="ollama-node-1", help="Container name"
+        "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
     )
     parser_status.set_defaults(func=_cmd_is_ollama_running)
 
@@ -117,7 +124,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     fetch_man_cmd.add_argument(
         "--db-path",
-        default="~/.local/share/shai_db",
+        default=DEFAULT_FETCH_DB_PATH,
         help="Destination folder for man text db",
     )
     fetch_man_cmd.add_argument(
@@ -127,7 +134,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     fetch_man_cmd.add_argument(
         "--merge-strategy",
-        default="abort",
+        default=DEFAULT_FETCH_MERGE_STRATEGY,
         choices=sorted(MERGE_POLICIES),
         help="Policy if db dir exists and not empty: abort, clean, merge-ours (keep old file on conflict), merge-theirs, skip-existing.",
     )

@@ -19,6 +19,8 @@ def get_default_config() -> configparser.ConfigParser:
 
     config["general"] = {
         "keep_ollama_running": "false",
+        # TODO:
+        # "log_level": "INFO",
     }
 
     config["llm"] = {
@@ -46,6 +48,7 @@ def get_default_config() -> configparser.ConfigParser:
         "ollama_context_length": "32000",
         "ollama_gpus": "all",
         "ollama_container_name": "ollama-node-1",
+        "merge_strategy": "abort",
     }
 
     return config
@@ -193,6 +196,22 @@ def propagate_config() -> None:
     rag_main.DEFAULT_MODEL = config.get("rag", "model", fallback="qwen3:1.7b")
     rag_main.DEFAULT_EMBED_MODEL = config.get(
         "llm", "embed_model", fallback="ibm/granite-embedding:125m"
+    )
+
+    from ..utils import __main__ as utils_main
+    utils_main.DEFAULT_DOCKER_CONTAINER_NAME = config.get(
+        "utils", "ollama_container_name", fallback="ollama-node-1"
+    )
+    utils_main.DEFAULT_DOCKER_CONTEXT_LENGTH = config.getint(
+        "utils", "ollama_context_length", fallback=32000
+    )
+    utils_main.DEFAULT_DOCKER_GPUS = config.get(
+        "utils", "ollama_gpus", fallback="all"    )
+    utils_main.DEFAULT_FETCH_DB_PATH = config.get(
+        "db", "db_path", fallback="~/.local/share/shai_db"
+    )
+    utils_main.DEFAULT_FETCH_MERGE_STRATEGY = config.get(
+        "utils", "merge_strategy", fallback="abort"
     )
 
     logger.debug("Config propagated to module defaults.")

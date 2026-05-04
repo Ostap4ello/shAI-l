@@ -81,9 +81,6 @@ def _cmd_search(args: argparse.Namespace) -> None:
             query=args.query,
             top_k=args.top_k_extended,
         )
-        if args.json:
-            print(json.dumps(results, indent=2))
-            return
 
         print("Results of extended search:")
         for i, result in enumerate(results, 1):
@@ -101,9 +98,6 @@ def _cmd_search(args: argparse.Namespace) -> None:
             print("  ---")
         print()
     else:
-        if args.json:
-            print(json.dumps(results, indent=2))
-            return
         print("Results:")
         for i, result in enumerate(results, 1):
             print(f"[{i}]")
@@ -225,8 +219,6 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     parser = _cli_parser()
     args = parser.parse_args(argv)
-    if args.json:
-        args.log_level = "ERROR"
 
     logging.basicConfig(
         level=getattr(logging, args.log_level),

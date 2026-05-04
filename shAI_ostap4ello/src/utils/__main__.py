@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Optional
 import argparse
 import logging
@@ -21,6 +22,7 @@ logging.basicConfig(
 
 
 def _cmd_start_ollama(args: argparse.Namespace) -> None:
+    print(f"Starting Ollama with context length {args.context_length}, gpus {args.gpus}, name {args.name}...")
     start_ollama(context_length=args.context_length, gpus=args.gpus, name=args.name)
 
 
@@ -42,9 +44,6 @@ def _cmd_convert(args: argparse.Namespace) -> None:
 
 def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
     try:
-        # Resolve ~ in db_path
-        from pathlib import Path
-
         db_path = str(Path(args.db_path).expanduser())
         fetch_manpages_to_db(
             db_path=db_path,
@@ -82,9 +81,9 @@ def _cli_parser() -> argparse.ArgumentParser:
         default=DEFAULT_DOCKER_CONTEXT_LENGTH,
         help="Set the context length",
     )
-    parser_start.add_argument("--gpus", type=str, default="all", help="Specify GPUs")
+    parser_start.add_argument("--gpus", type=str, default=DEFAULT_DOCKER_GPUS, help="Specify GPUs")
     parser_start.add_argument(
-        "--name", type=str, default="ollama-node-1", help="Container name"
+        "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
     )
     parser_start.set_defaults(func=_cmd_start_ollama)
 
@@ -92,7 +91,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         "stop_ollama", help="Stop the Ollama Docker container"
     )
     parser_stop.add_argument(
-        "--name", type=str, default="ollama-node-1", help="Container name"
+        "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
     )
     parser_stop.set_defaults(func=_cmd_stop_ollama)
 

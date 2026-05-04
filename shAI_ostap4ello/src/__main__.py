@@ -153,6 +153,7 @@ def main() -> None:
 
     # TODO: default values in help are not updated when loading config
     if pre_args is not None:
+        logger.info(f"Loading config from {pre_args.config} (create={pre_args.create_config})")
         load_config(config_path_str=pre_args.config, create=pre_args.create_config)
         if pre_args.create_config:
             print(f"Config file created at {pre_args.config}. Exiting as requested.")

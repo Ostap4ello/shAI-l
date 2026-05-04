@@ -3,7 +3,9 @@ import sys
 import signal
 
 from ..utils import is_ollama_running, start_ollama, stop_ollama
-from ..config import load_config
+from ..llm import get_client
+from ..rag import classify_is_bash
+from ..config import load_config, get_config_value
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +45,13 @@ def cleanup(stop_ollama_on_finish: bool = False) -> None:
         stop_ollama()
     print("Goodbye!")
 
+
 def loop() -> None:
     print("Entering main loop. Press Ctrl+C to exit.")
+    model = get_config_value("llm", "model")
+    base_url = get_config_value("llm", "api_base_url")
+    api_key = get_config_value("llm", "api_key")
+    client = get_client(base_url, api_key)
     while True:
         query = input(">> ")
         if query.strip().lower() in {"exit", "quit"}:
@@ -52,6 +59,13 @@ def loop() -> None:
             break
         else:
             print(f"You entered: {query}")
+            try:
+                if classify_is_bash(client, model, query):
+                    print("Your query was classified as bash")
+                else:
+                    print("Your query was classified as natural language")
+            except Exception as e:
+                print(f"Error happened while processing the query: {e}")
 
 
 def main(config_path: str, log_level: str = "WARNING") -> None:

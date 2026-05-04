@@ -17,7 +17,7 @@ from .utils.faiss_utils import (
     get_default_index_path_within_db,
 )
 
-from ..llm.embedding import embed_strings
+from ..llm import embed_strings
 
 import logging
 

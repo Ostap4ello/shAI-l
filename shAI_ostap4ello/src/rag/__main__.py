@@ -9,6 +9,7 @@ import sys
 import signal
 
 from .rag import rag_pipeline
+from ..llm import get_client
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +49,7 @@ def _cli_parser():
 
 
 def _get_client() -> OpenAI:
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        api_key = DEFAULT_API_KEY
-    base_url = os.environ.get("OPENAI_BASE_URL")
-    if not base_url:
-        base_url = DEFAULT_API_BASE_URL
-    client = OpenAI(api_key=api_key, base_url=base_url)
-    logger.info(f"Initialized OpenAI client with base URL: {base_url}")
-    return client
+    return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
 
 
 def _cmd_find(args: argparse.Namespace) -> None:

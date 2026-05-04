@@ -4,11 +4,10 @@ import argparse
 import json
 import signal
 import sys
-import os
 from openai import OpenAI
 from typing import List, Optional
 
-from ..llm import generate, embed_string
+from ..llm import generate, embed_string, get_client
 
 import logging
 
@@ -21,13 +20,7 @@ DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
 
 
 def _get_client() -> OpenAI:
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        api_key = DEFAULT_API_KEY
-    base_url = os.environ.get("OPENAI_BASE_URL")
-    if not base_url:
-        base_url = DEFAULT_API_BASE_URL
-    return OpenAI(api_key=api_key, base_url=base_url)
+    return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
 
 
 def _cmd_generate(args: argparse.Namespace) -> None:

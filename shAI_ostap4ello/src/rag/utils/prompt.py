@@ -9,6 +9,15 @@ from ...utils.prompt import get_prompt
 logger = logging.getLogger(__name__)
 
 
+def get_classify_prompt(query: str) -> str:
+    prompt_name = "classify"
+    text = get_prompt(prompt_name)
+
+    text = sub("<<QUERY>>", f"{query}", text)
+
+    return text
+
+
 def get_doc_choice_prompt(
     doc_paths: list[str], query: str, preview_lines: int = 10
 ) -> str:

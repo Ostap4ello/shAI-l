@@ -1,8 +1,9 @@
-from typing import Iterable
+import numpy as np
+import os
 
+from typing import Iterable, List
 from openai import OpenAI
 from openai.types.responses import (
-    ResponseOutputItem,
     ResponseOutputMessage,
     ResponseOutputText,
     ResponseReasoningItem,
@@ -13,6 +14,16 @@ from openai.types.responses import (
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def get_client(base_url: str, api_key: str) -> OpenAI:
+    env_api_key = os.environ.get("OPENAI_API_KEY")
+    if env_api_key:
+        api_key = env_api_key
+    env_base_url = os.environ.get("OPENAI_BASE_URL")
+    if env_base_url:
+        base_url = env_base_url
+    return OpenAI(api_key=api_key, base_url=base_url)
 
 
 def generate(
@@ -80,3 +91,43 @@ def _stream_response_chunks(
         elif isinstance(event, ResponseTextDeltaEvent):
             if event.delta is not None:
                 yield event.delta
+
+
+def embed_string(
+    client: OpenAI,
+    model: str,
+    string: str,
+) -> np.ndarray:
+
+    batch = [string]
+    logger.debug(f"Embedding string")
+    resp = client.embeddings.create(model=model, input=batch)
+    logger.debug(f"Received embedding.")
+    vector = np.array(resp.data[0].embedding, dtype=np.float32)
+
+    return vector
+
+
+def embed_strings(
+    client: OpenAI,
+    model: str,
+    strings: List[str],
+    batch_size: int = 0,
+) -> np.ndarray:
+    if batch_size < 0:
+        raise ValueError("batch_size must be non-negative.")
+    elif batch_size == 0:
+        batch_size = len(strings)
+
+    vectors: List[np.ndarray] = []
+    total = len(strings)
+
+    for i in range(0, total, batch_size):
+        batch = strings[i : i + batch_size]
+        logger.debug(f"Embedding batch - {i}-{min(i+batch_size,total)}/{total})")
+        resp = client.embeddings.create(model=model, input=batch)
+        logger.debug(f"Received  embedding batch.")
+        batch_vecs = [np.array(item.embedding, dtype=np.float32) for item in resp.data]
+        vectors.extend(batch_vecs)
+
+    return np.vstack(vectors)

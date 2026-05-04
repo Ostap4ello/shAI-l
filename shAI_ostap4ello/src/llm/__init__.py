@@ -1,4 +1,3 @@
-from .llm import generate
-from .embedding import embed_string, embed_strings
+from .llm import generate, embed_string, embed_strings, get_client
 
-__all__ = ["generate", "embed_string", "embed_strings"]
+__all__ = ["generate", "embed_string", "embed_strings", "get_client"]

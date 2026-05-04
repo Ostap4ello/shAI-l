@@ -23,6 +23,7 @@ dependencies = [
 
 [project.scripts]
 shai = "shAI_ostap4ello.src.__main__:main"
+shai-interpreter = "shAI_ostap4ello.src.interpreter.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/Ostap4ello/shAI-l"

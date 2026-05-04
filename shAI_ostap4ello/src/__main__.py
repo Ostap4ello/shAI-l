@@ -1,27 +1,27 @@
-from openai import OpenAI
-from typing import List, Optional
 import argparse
 import logging
-import os
 import sys
 import signal
 
-from .db.__main__ import _cli_parser as _db_cli_parser
-from .rag.__main__ import _cli_parser as _rag_cli_parser
-from .llm.__main__ import _cli_parser as _llm_cli_parser
-from .utils.__main__ import _cli_parser as _utils_cli_parser
 from .config import DEFAULT_CONFIG_PATH, load_config
+from .db.__main__ import _cli_parser as _db_cli_parser
+from .interpreter.interpreter import main as interpreter_main
+from .llm.__main__ import _cli_parser as _llm_cli_parser
+from .rag.__main__ import _cli_parser as _rag_cli_parser
+from .utils.__main__ import _cli_parser as _utils_cli_parser
 
-from .utils import is_ollama_running, start_ollama, stop_ollama
+from .utils import is_ollama_running
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_KEEP_OLLAMA = False
 DEFAULT_CREATE_CONFIG = False
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_MODEL = "qwen3:1.7b"
 DEFAULT_LOG_LEVEL = "INFO"
+
+def _interpreter_cmd(args: argparse.Namespace) -> None:
+    interpreter_main(args.config, args.log_level)
 
 def cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="ShAI-CLI")
@@ -37,14 +37,6 @@ def cli_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=DEFAULT_CREATE_CONFIG,
         help="If true, creates a config file with default values if it doesn't exist, then exits",
-    )
-
-    parser.add_argument(
-        "--keep-ollama-running",
-        "-K",
-        action="store_true",
-        default=DEFAULT_KEEP_OLLAMA,
-        help="If true, if this script starts Ollama, it will not stop it on exit",
     )
 
     subparsers = parser.add_subparsers(
@@ -74,62 +66,25 @@ def cli_parser() -> argparse.ArgumentParser:
         add_help=False,
         help="Miscellaneous utilities",
     )
+    _interpreter_parser = subparsers.add_parser(
+        "interpreter", help="ShAI shell"
+    )
+    _interpreter_parser.add_argument(
+        "--log-level",
+        type=str,
+        required=False,
+        default="WARNING",
+        help="Set the logging level (default: WARNING)",
+    )
+    _interpreter_parser.set_defaults(func=_interpreter_cmd)
 
     return parser
 
 
-def _ollama_check_or_run() -> bool:
-    if is_ollama_running():
-        logger.info("Ollama is running.")
-        return False
-    else:
-        print("Ollama is not running. Start Ollama?")
-        print("[y]es / Yes and [k]eep Ollama running after this session / [n]o (default):")
-
-        choice = input().strip().lower()
-        if choice == "y" or choice == "k":
-            logger.info("Trying to start Ollama...")
-            start_ollama()
-            if choice == "k":
-                return False
-            else:
-                return True
-        else:
-            logger.error("Ollama is required to run this application. Exiting.")
-            raise SystemExit(0)
-
-
-def cleanup(stop_ollama_on_finish: bool = False) -> None:
-    logger.info("Cleaning up resources...")
-    if stop_ollama_on_finish:
-        stop_ollama()
-    logger.info("Goodbye!")
-
 def handle_sigint(signum: int, frame: object) -> None:
     print()
     logging.warning("\nInterrupted. Exiting cleanly.")
-    cleanup()
     raise SystemExit(0)
-
-# def loop() -> None:
-#     signal.signal(signal.SIGINT, handle_sigint)
-#
-#     client = get_running_client()
-#
-#     while True:
-#         user_query = ""
-#         try:
-#             user_query = input("Enter your query: ")
-#         except EOFError:
-#             logger.warning("\nNo input provided. Exiting.")
-#             break
-#
-#         try:
-#             # main logic
-#             pass
-#         except Exception as e:
-#             logger.error(f"Error processing query: {e}")
-#             break
 
 
 def main() -> None:
@@ -153,7 +108,9 @@ def main() -> None:
 
     # TODO: default values in help are not updated when loading config
     if pre_args is not None:
-        logger.info(f"Loading config from {pre_args.config} (create={pre_args.create_config})")
+        logger.info(
+            f"Loading config from {pre_args.config} (create={pre_args.create_config})"
+        )
         load_config(config_path_str=pre_args.config, create=pre_args.create_config)
         if pre_args.create_config:
             print(f"Config file created at {pre_args.config}. Exiting as requested.")
@@ -161,11 +118,9 @@ def main() -> None:
 
     parser = cli_parser()
     args = parser.parse_args(argv)
-
     if not hasattr(args, "func"):
         parser.print_help()
         raise SystemExit(0)
-
     if not hasattr(args, "log_level"):
         args.log_level = DEFAULT_LOG_LEVEL
 
@@ -174,10 +129,14 @@ def main() -> None:
         format="%(asctime)s [%(levelname)s] %(message)s",
         force=True,
     )
-    stop_ollama_on_finish = _ollama_check_or_run()
-    args.func(args)
 
-    cleanup(stop_ollama_on_finish & (args.keep_ollama_running == False))
+    if not is_ollama_running():
+        logger.warning(
+            "Ollama does not appear to be running. All LLM interactions will "
+            "fail. Try using `shai utils start_ollama` to start it."
+        )
+
+    args.func(args)
 
 
 if __name__ == "__main__":

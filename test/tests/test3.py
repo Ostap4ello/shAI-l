@@ -129,13 +129,10 @@ def run_test(config: Dict[str, Any]) -> str:
     # Save results
     output = {
         "test": TEST_NAME,
-        "total": n,
-        "correct": correct,
+        "correct/total": f"{correct}/{n}",
         "accuracy": f"{accuracy:.1f}%",
         "model": model,
         "avg_latency": round(sum(latencies) / len(latencies), 4) if latencies else 0,
-        "min_latency": round(min(latencies), 4) if latencies else 0,
-        "max_latency": round(max(latencies), 4) if latencies else 0,
         "testcases": results_list,
     }
 
@@ -147,7 +144,7 @@ def run_test(config: Dict[str, Any]) -> str:
         logger.info(f"Results saved to {results_path}")
 
     summary = (
-        f"Test 3 (LLM Classification): "
+        f"{TEST_NAME}: {TEST_DESCRIPTION}"
         f"accuracy={output['accuracy']} ({output['correct']}/{output['total']}) | "
         f"avg_latency={output['avg_latency']}s"
     )

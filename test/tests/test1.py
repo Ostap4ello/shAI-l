@@ -14,8 +14,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-TEST_NAME = "1"
-TEST_DESCRIPTION = "RAG precision@k test on document scope"
+TEST_NAME = "test1"
+TEST_DESCRIPTION = "DB is-in-top-k and MRR test on document scope"
 TEST_CONFIG_SCHEMA = {
     "collection_dir": "",
     "test_cases_file": "",
@@ -82,6 +82,7 @@ def run_test(config: Dict[str, Any]) -> str:
     # Run tests
     top_1_matches = 0
     top_k_matches = 0
+    mrr = 0.0
     latencies = []
     results_list = []
 
@@ -102,6 +103,7 @@ def run_test(config: Dict[str, Any]) -> str:
                     found_rank = rank
                     break
 
+            mrr += 1.0 / found_rank if found_rank > 0 else 0
             top_1 = 1 if found_rank == 1 else 0
             top_k_v = 1 if found_rank > 0 else 0
             top_1_matches += top_1
@@ -118,6 +120,7 @@ def run_test(config: Dict[str, Any]) -> str:
                 "id": tc.get("id", i),
                 "top_1": top_1,
                 "top_k": top_k_v,
+                "rank": found_rank,
                 "latency": round(tc_latency, 4),
             }
         )
@@ -126,10 +129,12 @@ def run_test(config: Dict[str, Any]) -> str:
     n = len(test_cases)
     output = {
         "test": "1",
+        "model": embed_model,
         "top_1_matches": f"{top_1_matches}/{n}",
         "top_k_matches": f"{top_k_matches}/{n}",
         "top_1_pct": f"{(top_1_matches/n*100):.1f}%" if n > 0 else "0%",
         "top_k_pct": f"{(top_k_matches/n*100):.1f}%" if n > 0 else "0%",
+        "mrr": round(mrr / n, 4) if n > 0 else 0.0,
         "index_latency": round(index_latency, 4),
         "avg_latency": round(sum(latencies) / len(latencies), 4) if latencies else 0,
         "testcases": results_list,
@@ -143,9 +148,11 @@ def run_test(config: Dict[str, Any]) -> str:
         logger.info(f"Results saved to {results_path}")
 
     summary = (
-        f"Test 1 (Document Precision): "
+        f"{TEST_NAME}: {TEST_DESCRIPTION} | "
         f"top-1={output['top_1_matches']} ({output['top_1_pct']}) | "
         f"top-k={output['top_k_matches']} ({output['top_k_pct']}) | "
-        f"avg_latency={output['avg_latency']}s"
+        f"MRR={output['mrr']} | "
+        f"avg_latency={output['avg_latency']}s |"
+        f"index_latency={output['index_latency']}s"
     )
     return summary

@@ -14,12 +14,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-TEST_NAME = "2"
-TEST_DESCRIPTION = "RAG precision@k test on passage scope"
+TEST_NAME = "test2"
+TEST_DESCRIPTION = "DB is-in-top-k and MRR test on passage scope using extended search"
 TEST_CONFIG_SCHEMA = {
     "collection_dir": "",
     "test_cases_file": "",
     "batch_size": "32",
+    "top_k": "10",
     "top_k_extended": "10",
     "index_dir_name": ".index",
     "results_file": "",
@@ -58,6 +59,7 @@ def run_test(config: Dict[str, Any]) -> str:
     collection_dir = Path(config["collection_dir"])
     test_cases_file = Path(config["test_cases_file"])
     batch_size = int(config["batch_size"])
+    top_k = int(config["top_k"])
     top_k_extended = int(config["top_k_extended"])
     index_dir_name = config["index_dir_name"]
     results_file = config.get("results_file")
@@ -92,17 +94,19 @@ def run_test(config: Dict[str, Any]) -> str:
     # Run tests with extended top_k for passage search
     top_1_matches = 0
     top_k_matches = 0
+    mrr = 0.0
     latencies = []
     results_list = []
 
     for i, test_case in enumerate(test_cases, 1):
         tc_start = time.time()
+        found_rank = 0
         try:
             results = search(
                 db_path=str(db_path),
                 client=client,
                 query=test_case["query"],
-                top_k=top_k_extended,
+                top_k=top_k,
                 index_path_within_db=index_dir_name,
             )
 
@@ -118,7 +122,6 @@ def run_test(config: Dict[str, Any]) -> str:
                 top_k=top_k_extended,
             )
 
-            found_rank = 0
             for rank, result in enumerate(results, 1):
                 if _check_section_match(
                     result.get("metadata", {}).get("path"),
@@ -130,6 +133,7 @@ def run_test(config: Dict[str, Any]) -> str:
                     found_rank = rank
                     break
 
+            mrr += 1.0 / found_rank if found_rank > 0 else 0.0
             top_1 = 1 if found_rank == 1 else 0
             top_k_v = 1 if found_rank > 0 else 0
             top_1_matches += top_1
@@ -146,6 +150,7 @@ def run_test(config: Dict[str, Any]) -> str:
                 "id": test_case.get("id", i),
                 "top_1": top_1,
                 "top_k": top_k_v,
+                "rank": found_rank,
                 "latency": round(tc_latency, 4),
             }
         )
@@ -153,12 +158,14 @@ def run_test(config: Dict[str, Any]) -> str:
     # Save results
     n = len(test_cases)
     output = {
-        "test": "2",
+        "test": TEST_NAME,
+        "model": embed_model,
         "top_1_matches": f"{top_1_matches}/{n}",
         "top_k_matches": f"{top_k_matches}/{n}",
-        "top_1_pct": f"{(top_1_matches/n*100):.1f}%" if n > 0 else "0%",
-        "top_k_pct": f"{(top_k_matches/n*100):.1f}%" if n > 0 else "0%",
+        "top_1_accuracy": f"{(top_1_matches/n*100):.1f}%" if n > 0 else "0%",
+        "top_k_accuracy": f"{(top_k_matches/n*100):.1f}%" if n > 0 else "0%",
         "index_latency": round(index_latency, 4),
+        "mrr": round(mrr / n, 4) if n > 0 else 0.0,
         "avg_latency": round(sum(latencies) / len(latencies), 4) if latencies else 0,
         "testcases": results_list,
     }
@@ -171,9 +178,11 @@ def run_test(config: Dict[str, Any]) -> str:
         logger.info(f"Results saved to {results_path}")
 
     summary = (
-        f"Test 2 (Passage Precision): "
+        f"{TEST_NAME}: {TEST_DESCRIPTION} | "
         f"top-1={output['top_1_matches']} ({output['top_1_pct']}) | "
         f"top-k={output['top_k_matches']} ({output['top_k_pct']}) | "
-        f"avg_latency={output['avg_latency']}s"
+        f"MRR={output['mrr']} | "
+        f"avg_latency={output['avg_latency']}s | "
+        f"index_latency={output['index_latency']}s"
     )
     return summary

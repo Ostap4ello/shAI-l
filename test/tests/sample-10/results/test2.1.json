@@ -1,1529 +1,1511 @@
 {
   "test": "2",
-  "top_1_matches": "139/253",
-  "top_k_matches": "236/253",
-  "top_1_pct": "54.9%",
-  "top_k_pct": "93.3%",
-  "index_latency": 9.7257,
-  "avg_latency": 5.7067,
+  "top_1_matches": "122/250",
+  "top_k_matches": "223/250",
+  "top_1_pct": "48.8%",
+  "top_k_pct": "89.2%",
+  "index_latency": 1.7118,
+  "avg_latency": 1.4355,
   "testcases": [
     {
       "id": 1,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7741
+      "latency": 1.1045
     },
     {
       "id": 2,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.205
+      "latency": 1.0997
     },
     {
       "id": 3,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.1901
+      "latency": 1.2122
     },
     {
       "id": 4,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4696
+      "latency": 1.213
     },
     {
       "id": 5,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4529
+      "latency": 1.3782
     },
     {
       "id": 6,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4928
+      "latency": 1.267
     },
     {
       "id": 7,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4614
+      "latency": 1.3629
     },
     {
       "id": 8,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.5074
+      "latency": 1.3708
     },
     {
       "id": 9,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.53
+      "latency": 1.3783
     },
     {
       "id": 10,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7294
+      "top_k": 1,
+      "latency": 1.3285
     },
     {
       "id": 11,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.8411
+      "latency": 1.4779
     },
     {
       "id": 12,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7745
+      "top_k": 1,
+      "latency": 1.3574
     },
     {
       "id": 13,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.8007
+      "top_k": 0,
+      "latency": 1.3727
     },
     {
       "id": 14,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.6448
+      "latency": 1.5092
     },
     {
       "id": 15,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7099
+      "top_k": 1,
+      "latency": 1.3717
     },
     {
       "id": 16,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7403
+      "top_k": 1,
+      "latency": 1.4669
     },
     {
       "id": 17,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8472
+      "latency": 1.3756
     },
     {
       "id": 18,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7104
+      "top_k": 0,
+      "latency": 1.485
     },
     {
       "id": 19,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7177
+      "latency": 1.6449
     },
     {
       "id": 20,
-      "top_1": 1,
-      "top_k": 1,
-      "latency": 5.6868
+      "top_1": 0,
+      "top_k": 0,
+      "latency": 1.2048
     },
     {
       "id": 21,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7222
+      "latency": 1.3963
     },
     {
       "id": 22,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7191
+      "top_k": 1,
+      "latency": 1.6022
     },
     {
       "id": 23,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7933
+      "top_k": 0,
+      "latency": 1.4021
     },
     {
       "id": 24,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.8204
+      "top_k": 0,
+      "latency": 1.4606
     },
     {
       "id": 25,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.6933
+      "latency": 1.313
     },
     {
       "id": 26,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7144
+      "latency": 1.4766
     },
     {
       "id": 27,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.8626
+      "latency": 1.65
     },
     {
       "id": 28,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7509
+      "latency": 1.3612
     },
     {
       "id": 29,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.713
+      "latency": 1.6295
     },
     {
       "id": 30,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6935
+      "latency": 1.6396
     },
     {
       "id": 31,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.4558
+      "latency": 1.3674
     },
     {
       "id": 32,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6957
+      "latency": 1.3384
     },
     {
       "id": 33,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7642
+      "latency": 1.4155
     },
     {
       "id": 34,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.9525
+      "latency": 1.4777
     },
     {
       "id": 35,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.9099
+      "latency": 1.5545
     },
     {
       "id": 36,
-      "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7636
+      "top_1": 1,
+      "top_k": 1,
+      "latency": 1.6417
     },
     {
       "id": 37,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.9232
+      "top_k": 0,
+      "latency": 1.2879
     },
     {
       "id": 38,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7966
+      "latency": 1.656
     },
     {
       "id": 39,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.8192
+      "latency": 1.6571
     },
     {
       "id": 40,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.5595
+      "latency": 1.4314
     },
     {
       "id": 41,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6938
+      "latency": 1.5109
     },
     {
       "id": 42,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.6028
+      "latency": 1.4284
     },
     {
       "id": 43,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.662
+      "latency": 1.0022
     },
     {
       "id": 44,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7528
+      "latency": 1.4408
     },
     {
       "id": 45,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.8759
+      "latency": 1.4858
     },
     {
       "id": 46,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.987
+      "latency": 1.3897
     },
     {
       "id": 47,
       "top_1": 1,
       "top_k": 1,
-      "latency": 6.0117
+      "latency": 1.4015
     },
     {
       "id": 48,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6951
+      "latency": 1.0293
     },
     {
       "id": 49,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.8403
+      "top_k": 0,
+      "latency": 1.462
     },
     {
       "id": 50,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.9414
+      "latency": 1.4119
     },
     {
       "id": 51,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8383
+      "latency": 1.409
     },
     {
       "id": 52,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8788
+      "latency": 1.4187
     },
     {
       "id": 53,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.9493
+      "latency": 1.6715
     },
     {
       "id": 54,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.9472
+      "latency": 1.1413
     },
     {
       "id": 55,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.9308
+      "latency": 1.3076
     },
     {
       "id": 56,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.9547
+      "top_k": 0,
+      "latency": 1.4376
     },
     {
       "id": 57,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7569
+      "latency": 1.4174
     },
     {
       "id": 58,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.74
+      "latency": 1.6253
     },
     {
       "id": 59,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8307
+      "latency": 1.0854
     },
     {
       "id": 60,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8661
+      "latency": 1.4228
     },
     {
       "id": 61,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.9551
+      "latency": 1.4362
     },
     {
       "id": 62,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7026
+      "latency": 1.4442
     },
     {
       "id": 63,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8067
+      "latency": 1.3068
     },
     {
       "id": 64,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6567
+      "latency": 1.4436
     },
     {
       "id": 65,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7532
+      "latency": 1.5751
     },
     {
       "id": 66,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7449
+      "latency": 1.4981
     },
     {
       "id": 67,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7319
+      "latency": 1.6134
     },
     {
       "id": 68,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7168
+      "latency": 1.4289
     },
     {
       "id": 69,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.683
+      "latency": 1.403
     },
     {
       "id": 70,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7072
+      "latency": 1.4337
     },
     {
       "id": 71,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7223
+      "latency": 1.4952
     },
     {
       "id": 72,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.6657
+      "latency": 1.3923
     },
     {
       "id": 73,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7364
+      "latency": 1.454
     },
     {
       "id": 74,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6448
+      "latency": 1.4077
     },
     {
       "id": 75,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6876
+      "latency": 1.44
     },
     {
       "id": 76,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6997
+      "latency": 1.4852
     },
     {
       "id": 77,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6927
+      "latency": 1.453
     },
     {
       "id": 78,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.536
+      "latency": 1.4725
     },
     {
       "id": 79,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.4849
+      "top_k": 0,
+      "latency": 1.4506
     },
     {
       "id": 80,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5346
+      "latency": 1.4666
     },
     {
       "id": 81,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7239
+      "top_k": 1,
+      "latency": 1.4681
     },
     {
       "id": 82,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5446
+      "latency": 1.4053
     },
     {
       "id": 83,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7421
+      "latency": 1.46
     },
     {
       "id": 84,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.5593
+      "latency": 1.4679
     },
     {
       "id": 85,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4914
+      "latency": 1.4693
     },
     {
       "id": 86,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6827
+      "latency": 1.3567
     },
     {
       "id": 87,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.5256
+      "latency": 1.415
     },
     {
       "id": 88,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7353
+      "latency": 1.4662
     },
     {
       "id": 89,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5214
+      "latency": 1.4292
     },
     {
       "id": 90,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.5796
+      "latency": 1.3415
     },
     {
       "id": 91,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.5422
+      "latency": 1.3494
     },
     {
       "id": 92,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7162
+      "latency": 1.4009
     },
     {
       "id": 93,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.8262
+      "top_k": 0,
+      "latency": 1.5196
     },
     {
       "id": 94,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7802
+      "latency": 1.3172
     },
     {
       "id": 95,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7489
+      "latency": 1.5747
     },
     {
       "id": 96,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7532
+      "latency": 1.327
     },
     {
       "id": 97,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.9068
+      "latency": 1.4338
     },
     {
       "id": 98,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7081
+      "latency": 1.4484
     },
     {
       "id": 99,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8095
+      "latency": 1.4026
     },
     {
       "id": 100,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7871
+      "latency": 1.461
     },
     {
       "id": 101,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7821
+      "top_k": 0,
+      "latency": 1.5783
     },
     {
       "id": 102,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.9308
+      "latency": 1.4967
     },
     {
       "id": 103,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7847
+      "latency": 1.4102
     },
     {
       "id": 104,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7759
+      "latency": 1.4902
     },
     {
       "id": 105,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.8989
+      "latency": 1.4523
     },
     {
       "id": 106,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7417
+      "latency": 1.4235
     },
     {
       "id": 107,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8315
+      "latency": 1.5818
     },
     {
       "id": 108,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.8205
+      "latency": 1.4361
     },
     {
       "id": 109,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.769
+      "latency": 1.6654
     },
     {
       "id": 110,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8491
+      "latency": 1.5038
     },
     {
       "id": 111,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8167
+      "latency": 1.488
     },
     {
       "id": 112,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7108
+      "latency": 1.5278
     },
     {
       "id": 113,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.8723
+      "latency": 1.4745
     },
     {
       "id": 114,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7527
+      "latency": 1.6468
     },
     {
       "id": 115,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6085
+      "latency": 1.4724
     },
     {
       "id": 116,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.5915
+      "latency": 1.4403
     },
     {
       "id": 117,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7338
+      "latency": 1.3268
     },
     {
       "id": 118,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4747
+      "latency": 1.4429
     },
     {
       "id": 119,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7833
+      "latency": 1.375
     },
     {
       "id": 120,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.9642
+      "latency": 1.4634
     },
     {
       "id": 121,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.747
+      "latency": 1.4868
     },
     {
       "id": 122,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7754
+      "latency": 1.5625
     },
     {
       "id": 123,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.5684
+      "latency": 1.4114
     },
     {
       "id": 124,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.6915
+      "top_k": 1,
+      "latency": 1.6762
     },
     {
       "id": 125,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.5833
+      "latency": 1.5062
     },
     {
       "id": 126,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.705
+      "top_k": 0,
+      "latency": 1.5856
     },
     {
       "id": 127,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7756
+      "latency": 1.3812
     },
     {
       "id": 128,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.8082
+      "latency": 1.6256
     },
     {
       "id": 129,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.926
+      "top_k": 0,
+      "latency": 1.4153
     },
     {
       "id": 130,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8161
+      "latency": 1.4241
     },
     {
       "id": 131,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.9887
+      "latency": 1.2332
     },
     {
       "id": 132,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7118
+      "latency": 1.5273
     },
     {
       "id": 133,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.739
+      "latency": 1.4281
     },
     {
       "id": 134,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.9679
+      "latency": 1.3524
     },
     {
       "id": 135,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.518
+      "latency": 1.4139
     },
     {
       "id": 136,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.8091
+      "latency": 1.4247
     },
     {
       "id": 137,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.831
+      "latency": 1.3634
     },
     {
       "id": 138,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.5773
+      "latency": 1.516
     },
     {
       "id": 139,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.4112
+      "top_k": 0,
+      "latency": 1.312
     },
     {
       "id": 140,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.4193
+      "latency": 1.5168
     },
     {
       "id": 141,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5545
+      "latency": 1.4908
     },
     {
       "id": 142,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5116
+      "latency": 1.5459
     },
     {
       "id": 143,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5564
+      "latency": 1.4601
     },
     {
       "id": 144,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6763
+      "latency": 1.4024
     },
     {
       "id": 145,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4871
+      "latency": 1.5216
     },
     {
       "id": 146,
       "top_1": 0,
       "top_k": 0,
-      "latency": 5.687
+      "latency": 1.5198
     },
     {
       "id": 147,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6992
+      "latency": 1.3976
     },
     {
       "id": 148,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6504
+      "latency": 1.4114
     },
     {
       "id": 149,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6437
+      "latency": 1.1786
     },
     {
       "id": 150,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6214
+      "latency": 1.5437
     },
     {
       "id": 151,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.6541
+      "latency": 1.4033
     },
     {
       "id": 152,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7056
+      "latency": 1.2549
     },
     {
       "id": 153,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7217
+      "top_k": 0,
+      "latency": 1.4582
     },
     {
       "id": 154,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7234
+      "latency": 1.6034
     },
     {
       "id": 155,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.4794
+      "latency": 1.4205
     },
     {
       "id": 156,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7031
+      "latency": 1.7122
     },
     {
       "id": 157,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6908
+      "latency": 1.484
     },
     {
       "id": 158,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7046
+      "latency": 1.4728
     },
     {
       "id": 159,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5446
+      "latency": 1.555
     },
     {
       "id": 160,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7122
+      "top_k": 0,
+      "latency": 1.4052
     },
     {
       "id": 161,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7073
+      "latency": 1.4088
     },
     {
       "id": 162,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.3708
+      "latency": 1.4698
     },
     {
       "id": 163,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7878
+      "latency": 1.5035
     },
     {
       "id": 164,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7062
+      "latency": 1.4722
     },
     {
       "id": 165,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6999
+      "latency": 1.4192
     },
     {
       "id": 166,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.4962
+      "latency": 1.4554
     },
     {
       "id": 167,
       "top_1": 0,
-      "top_k": 0,
-      "latency": 5.7286
+      "top_k": 1,
+      "latency": 1.6884
     },
     {
       "id": 168,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.704
+      "latency": 1.5929
     },
     {
       "id": 169,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6557
+      "latency": 1.4528
     },
     {
       "id": 170,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7691
+      "latency": 1.4071
     },
     {
       "id": 171,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8145
+      "latency": 1.6081
     },
     {
       "id": 172,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5369
+      "latency": 1.4456
     },
     {
       "id": 173,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5329
+      "latency": 1.4401
     },
     {
       "id": 174,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7546
+      "latency": 1.6659
     },
     {
       "id": 175,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6634
+      "latency": 1.4554
     },
     {
       "id": 176,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7552
+      "latency": 1.4358
     },
     {
       "id": 177,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7047
+      "latency": 1.5091
     },
     {
       "id": 178,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.6543
+      "latency": 1.4574
     },
     {
       "id": 179,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7116
+      "latency": 1.481
     },
     {
       "id": 180,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8699
+      "latency": 1.5818
     },
     {
       "id": 181,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7576
+      "latency": 1.6224
     },
     {
       "id": 182,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7113
+      "latency": 1.33
     },
     {
       "id": 183,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7059
+      "latency": 1.5053
     },
     {
       "id": 184,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7531
+      "latency": 1.5791
     },
     {
       "id": 185,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7958
+      "latency": 1.3427
     },
     {
       "id": 186,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7397
+      "latency": 1.4795
     },
     {
       "id": 187,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6572
+      "latency": 1.4488
     },
     {
       "id": 188,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7174
+      "latency": 1.4778
     },
     {
       "id": 189,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6611
+      "latency": 1.3659
     },
     {
       "id": 190,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6894
+      "latency": 1.3603
     },
     {
       "id": 191,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7725
+      "latency": 1.4485
     },
     {
       "id": 192,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6993
+      "latency": 1.414
     },
     {
       "id": 193,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.6924
+      "latency": 1.2707
     },
     {
       "id": 194,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6854
+      "latency": 1.278
     },
     {
       "id": 195,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7531
+      "latency": 1.2186
     },
     {
       "id": 196,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7026
+      "latency": 1.2444
     },
     {
       "id": 197,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7051
+      "latency": 1.231
     },
     {
       "id": 198,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.708
+      "latency": 1.4699
     },
     {
       "id": 199,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7425
+      "latency": 1.0975
     },
     {
       "id": 200,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6611
+      "latency": 1.2831
     },
     {
       "id": 201,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.6641
+      "latency": 1.4896
     },
     {
       "id": 202,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7193
+      "latency": 1.2935
     },
     {
       "id": 203,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7571
+      "latency": 1.5188
     },
     {
       "id": 204,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7131
+      "latency": 1.2844
     },
     {
       "id": 205,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.724
+      "latency": 1.5996
     },
     {
       "id": 206,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.88
+      "latency": 1.3924
     },
     {
       "id": 207,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7528
+      "latency": 1.3324
     },
     {
       "id": 208,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6547
+      "latency": 1.4815
     },
     {
       "id": 209,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7303
+      "latency": 1.4772
     },
     {
       "id": 210,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.6808
+      "latency": 1.5004
     },
     {
       "id": 211,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7559
+      "latency": 1.3074
     },
     {
       "id": 212,
-      "top_1": 1,
-      "top_k": 1,
-      "latency": 5.6594
+      "top_1": 0,
+      "top_k": 0,
+      "latency": 1.3689
     },
     {
       "id": 213,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.8078
+      "latency": 1.5281
     },
     {
       "id": 214,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8361
+      "latency": 1.5303
     },
     {
       "id": 215,
-      "top_1": 1,
-      "top_k": 1,
-      "latency": 5.822
+      "top_1": 0,
+      "top_k": 0,
+      "latency": 1.618
     },
     {
       "id": 216,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.8461
+      "top_k": 0,
+      "latency": 1.4254
     },
     {
       "id": 217,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.785
+      "latency": 1.4779
     },
     {
       "id": 218,
       "top_1": 0,
-      "top_k": 1,
-      "latency": 5.8594
+      "top_k": 0,
+      "latency": 1.4256
     },
     {
       "id": 219,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.3598
+      "latency": 1.3648
     },
     {
       "id": 220,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6377
+      "latency": 1.2598
     },
     {
       "id": 221,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.5918
+      "latency": 1.3519
     },
     {
       "id": 222,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.738
+      "latency": 1.4029
     },
     {
       "id": 223,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6801
+      "latency": 1.4403
     },
     {
       "id": 224,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.3743
+      "latency": 1.3877
     },
     {
       "id": 225,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6272
+      "latency": 1.3578
     },
     {
       "id": 226,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6408
+      "latency": 1.6436
     },
     {
       "id": 227,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6857
+      "latency": 1.5583
     },
     {
       "id": 228,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6399
+      "latency": 1.2865
     },
     {
       "id": 229,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7835
+      "latency": 1.5369
     },
     {
       "id": 230,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.659
+      "latency": 1.4438
     },
     {
       "id": 231,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6045
+      "latency": 1.641
     },
     {
       "id": 232,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.5944
+      "latency": 1.352
     },
     {
       "id": 233,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.7219
+      "latency": 1.4203
     },
     {
       "id": 234,
-      "top_1": 0,
+      "top_1": 1,
       "top_k": 1,
-      "latency": 5.7474
+      "latency": 1.3533
     },
     {
       "id": 235,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.6698
+      "latency": 1.4662
     },
     {
       "id": 236,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6777
+      "latency": 1.4384
     },
     {
       "id": 237,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6832
+      "latency": 1.4741
     },
     {
       "id": 238,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6688
+      "latency": 1.3009
     },
     {
       "id": 239,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.8157
+      "latency": 1.4678
     },
     {
       "id": 240,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.3474
+      "latency": 1.3012
     },
     {
       "id": 241,
-      "top_1": 0,
-      "top_k": 0,
-      "latency": 5.6898
+      "top_1": 1,
+      "top_k": 1,
+      "latency": 1.3274
     },
     {
       "id": 242,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.5044
+      "latency": 1.4879
     },
     {
       "id": 243,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.7396
+      "latency": 1.4523
     },
     {
       "id": 244,
-      "top_1": 1,
+      "top_1": 0,
       "top_k": 1,
-      "latency": 5.6553
+      "latency": 1.4751
     },
     {
       "id": 245,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6905
+      "latency": 1.3781
     },
     {
       "id": 246,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.545
+      "latency": 1.4483
     },
     {
       "id": 247,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6998
+      "latency": 1.4826
     },
     {
       "id": 248,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.6554
+      "latency": 1.43
     },
     {
       "id": 249,
       "top_1": 0,
       "top_k": 1,
-      "latency": 5.7573
+      "latency": 1.4009
     },
     {
       "id": 250,
-      "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7076
-    },
-    {
-      "id": 251,
-      "top_1": 0,
-      "top_k": 1,
-      "latency": 5.9135
-    },
-    {
-      "id": 252,
       "top_1": 1,
       "top_k": 1,
-      "latency": 5.679
-    },
-    {
-      "id": 253,
-      "top_1": 0,
-      "top_k": 1,
-      "latency": 5.7206
+      "latency": 1.3103
     }
   ]
 }

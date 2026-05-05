@@ -179,8 +179,8 @@ def run_test(config: Dict[str, Any]) -> str:
 
     summary = (
         f"{TEST_NAME}: {TEST_DESCRIPTION} | "
-        f"top-1={output['top_1_matches']} ({output['top_1_pct']}) | "
-        f"top-k={output['top_k_matches']} ({output['top_k_pct']}) | "
+        f"top-1={output['top_1_accuracy']} ({output['top_1_matches']}) | "
+        f"top-k={output['top_k_accuracy']} ({output['top_k_matches']}) | "
         f"MRR={output['mrr']} | "
         f"avg_latency={output['avg_latency']}s | "
         f"index_latency={output['index_latency']}s"

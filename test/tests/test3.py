@@ -126,7 +126,7 @@ def run_test(config: Dict[str, Any]) -> str:
 
     summary = (
         f"{TEST_NAME}: {TEST_DESCRIPTION}"
-        f"accuracy={output['accuracy']} ({output['correct']}/{output['total']}) | "
+        f"accuracy={output['accuracy']} ({output['correct/total']}) | "
         f"avg_latency={output['avg_latency']}s"
     )
     return summary

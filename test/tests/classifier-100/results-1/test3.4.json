@@ -1,712 +1,709 @@
 {
   "test": "test3",
-  "total": 100,
-  "correct": 80,
-  "accuracy": "80.0%",
+  "correct/total": "55/100",
+  "accuracy": "55.0%",
   "model": "qwen3:0.6b",
-  "avg_latency": 1.1277,
-  "min_latency": 0.6659,
-  "max_latency": 2.954,
+  "avg_latency": 1.0375,
   "testcases": [
     {
       "id": 1,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.9244
+      "latency": 3.4987
     },
     {
       "id": 2,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0723
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.079
     },
     {
       "id": 3,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0111
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.3313
     },
     {
       "id": 4,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.1317
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.6071
     },
     {
       "id": 5,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 1.1956
+      "latency": 0.9317
     },
     {
       "id": 6,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.1243
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.8082
     },
     {
       "id": 7,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9359
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.28
     },
     {
       "id": 8,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9436
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.4035
     },
     {
       "id": 9,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.9253
+      "latency": 0.9487
     },
     {
       "id": 10,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.7688
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.849
     },
     {
       "id": 11,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0337
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.0051
     },
     {
       "id": 12,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.4484
+      "latency": 0.9687
     },
     {
       "id": 13,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0279
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.8302
     },
     {
       "id": 14,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9394
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.148
     },
     {
       "id": 15,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.8353
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.0725
     },
     {
       "id": 16,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 1.043
+      "latency": 1.2757
     },
     {
       "id": 17,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 2.0614
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.188
     },
     {
       "id": 18,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.6659
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.3039
     },
     {
       "id": 19,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.4916
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.0652
     },
     {
       "id": 20,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 1.1584
+      "latency": 0.4773
     },
     {
       "id": 21,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9147
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.1239
     },
     {
       "id": 22,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.8148
+      "latency": 1.1729
     },
     {
       "id": 23,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.3053
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.301
     },
     {
       "id": 24,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.7981
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.1689
     },
     {
       "id": 25,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9112
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.1842
     },
     {
       "id": 26,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.0836
+      "latency": 1.2161
     },
     {
       "id": 27,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.3203
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.2893
     },
     {
       "id": 28,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9098
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.2533
     },
     {
       "id": 29,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.8401
+      "latency": 0.9018
     },
     {
       "id": 30,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0412
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.8308
     },
     {
       "id": 31,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.4254
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.2638
     },
     {
       "id": 32,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.4574
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.2411
     },
     {
       "id": 33,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 2.954
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.2129
     },
     {
       "id": 34,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.4933
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.9003
     },
     {
       "id": 35,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.9925
+      "latency": 0.6081
     },
     {
       "id": 36,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.8909
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.7893
     },
     {
       "id": 37,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.6495
+      "latency": 1.012
     },
     {
       "id": 38,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.5852
+      "latency": 1.1547
     },
     {
       "id": 39,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0703
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.1254
     },
     {
       "id": 40,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.8327
+      "latency": 1.3771
     },
     {
       "id": 41,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9725
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.3433
     },
     {
       "id": 42,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.9508
+      "latency": 1.8952
     },
     {
       "id": 43,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.848
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.6485
     },
     {
       "id": 44,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.2781
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.3328
     },
     {
       "id": 45,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9176
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.7174
     },
     {
       "id": 46,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 1.1497
+      "latency": 0.919
     },
     {
       "id": 47,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9924
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.413
     },
     {
       "id": 48,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.9332
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.9697
     },
     {
       "id": 49,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.3359
+      "latency": 1.0768
     },
     {
       "id": 50,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 1.0044
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 1.3296
     },
     {
       "id": 51,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.8013
+      "latency": 0.6429
     },
     {
       "id": 52,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.8133
+      "latency": 0.8136
     },
     {
       "id": 53,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.5329
+      "latency": 0.8465
     },
     {
       "id": 54,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.8649
+      "latency": 1.108
     },
     {
       "id": 55,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0268
+      "latency": 0.7244
     },
     {
       "id": 56,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1013
+      "latency": 0.8094
     },
     {
       "id": 57,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1199
+      "latency": 0.7314
     },
     {
       "id": 58,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.8035
+      "latency": 0.9824
     },
     {
       "id": 59,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0797
+      "latency": 0.7482
     },
     {
       "id": 60,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.2679
+      "latency": 1.0949
     },
     {
       "id": 61,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.7356
+      "latency": 0.8449
     },
     {
       "id": 62,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0207
+      "latency": 0.8595
     },
     {
       "id": 63,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.3822
+      "latency": 0.7406
     },
     {
       "id": 64,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0501
+      "latency": 0.8746
     },
     {
       "id": 65,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.2039
+      "latency": 0.6726
     },
     {
       "id": 66,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.6752
+      "latency": 0.6885
     },
     {
       "id": 67,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.8287
+      "latency": 0.7657
     },
     {
       "id": 68,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1408
+      "latency": 0.7732
     },
     {
       "id": 69,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0151
+      "latency": 0.8907
     },
     {
       "id": 70,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0541
+      "latency": 0.6068
     },
     {
       "id": 71,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.2026
+      "latency": 0.8624
     },
     {
       "id": 72,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.071
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.7278
     },
     {
       "id": 73,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0342
+      "latency": 0.7031
     },
     {
       "id": 74,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.4627
+      "latency": 0.9679
     },
     {
       "id": 75,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0008
+      "latency": 0.8878
     },
     {
       "id": 76,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0625
+      "latency": 0.8866
     },
     {
       "id": 77,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.9061
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.751
     },
     {
       "id": 78,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0293
+      "latency": 0.696
     },
     {
       "id": 79,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.9647
+      "latency": 0.764
     },
     {
       "id": 80,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.941
+      "latency": 1.3747
     },
     {
       "id": 81,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.3304
+      "latency": 0.7536
     },
     {
       "id": 82,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.0558
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.8961
     },
     {
       "id": 83,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.8948
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 1.084
     },
     {
       "id": 84,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.1281
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 1.0259
     },
     {
       "id": 85,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.2875
+      "latency": 1.0369
     },
     {
       "id": 86,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.0247
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.866
     },
     {
       "id": 87,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.0191
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.9412
     },
     {
       "id": 88,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1058
+      "latency": 0.9923
     },
     {
       "id": 89,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1711
+      "latency": 0.8216
     },
     {
       "id": 90,
       "expected": "natlang",
       "predicted": "bash",
       "correct": 0,
-      "latency": 1.3605
+      "latency": 1.1044
     },
     {
       "id": 92,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.2486
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.7943
     },
     {
       "id": 93,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.94
+      "latency": 0.6949
     },
     {
       "id": 94,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.0967
+      "latency": 1.375
     },
     {
       "id": 95,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 2.0386
+      "latency": 1.3729
     },
     {
       "id": 96,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 1.0257
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.78
     },
     {
       "id": 97,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.3374
+      "latency": 1.0922
     },
     {
       "id": 98,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1032
+      "latency": 0.7728
     },
     {
       "id": 99,
       "expected": "natlang",
       "predicted": "bash",
       "correct": 0,
-      "latency": 1.0416
+      "latency": 1.9879
     },
     {
       "id": 100,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.7762
+      "latency": 0.7377
     },
     {
       "id": 101,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 1.1793
+      "latency": 0.9389
     }
   ]
 }

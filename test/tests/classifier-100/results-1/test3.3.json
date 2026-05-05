@@ -1,712 +1,709 @@
 {
   "test": "test3",
-  "total": 100,
-  "correct": 46,
-  "accuracy": "46.0%",
-  "model": "ibm/granite3.1-moe:1b",
-  "avg_latency": 0.1639,
-  "min_latency": 0.0593,
-  "max_latency": 1.9721,
+  "correct/total": "68/100",
+  "accuracy": "68.0%",
+  "model": "ibm/granite3.1-dense:2b",
+  "avg_latency": 1.5422,
   "testcases": [
     {
       "id": 1,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 1.9721
+      "latency": 3.5391
     },
     {
       "id": 2,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.3296
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 1.3534
     },
     {
       "id": 3,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.0732
+      "latency": 0.09
     },
     {
       "id": 4,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0606
+      "latency": 2.7002
     },
     {
       "id": 5,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.3656
+      "latency": 0.0896
     },
     {
       "id": 6,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.0702
+      "latency": 5.4567
     },
     {
       "id": 7,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.2334
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.0964
     },
     {
       "id": 8,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.1551
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 4.7423
     },
     {
       "id": 9,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0603
+      "latency": 4.663
     },
     {
       "id": 10,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.3621
+      "latency": 2.0601
     },
     {
       "id": 11,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.152
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.0878
     },
     {
       "id": 12,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.1156
+      "latency": 0.085
     },
     {
       "id": 13,
       "expected": "bash",
-      "predicted": "the classification of the given text as a bash script. a bash script is a series of commands written in the bash shell scripting language, which is typically executed by running the file directly through a terminal command interpreter such as `bash`. in this case, the provided text does not contain any instructions to be executed, but rather a direct command, thus classifying it as a bash script.",
-      "correct": 0,
-      "latency": 0.3172
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.0861
     },
     {
       "id": 14,
       "expected": "bash",
-      "predicted": "the provided text is a command to list disk usage information in a human-readable format, which is typically associated with bash shell scripting. therefore, the classification of this text as \"natural\\_language\" would be \"bash\\_script\".",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.2185
+      "latency": 0.0837
     },
     {
       "id": 15,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.4424
+      "latency": 0.0848
     },
     {
       "id": 16,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.0638
+      "latency": 0.0868
     },
     {
       "id": 17,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.1904
+      "latency": 7.1445
     },
     {
       "id": 18,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.3708
+      "latency": 0.0889
     },
     {
       "id": 19,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.0656
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 1.4223
     },
     {
       "id": 20,
       "expected": "bash",
-      "predicted": "this is a command in shell scripting (bash script). the text provided is an example of how one might use the `mv` (move) command to rename a file named \"tahaky-na-pkrim.txt\" to \"comp-crim-concise-summary.txt\". however, this would typically be done in a shell environment, not as a line of text input into an editor or command prompt. the command is used for file management purposes within the unix/linux terminal.",
-      "correct": 0,
-      "latency": 0.3914
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.0953
     },
     {
       "id": 21,
       "expected": "bash",
-      "predicted": "bash\\_script",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0596
+      "latency": 2.0223
     },
     {
       "id": 22,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.2236
+      "latency": 0.0923
     },
     {
       "id": 23,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.0609
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.0888
     },
     {
       "id": 24,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.0626
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.0877
     },
     {
       "id": 25,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.0628
+      "latency": 3.8142
     },
     {
       "id": 26,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.1982
+      "latency": 0.0937
     },
     {
       "id": 27,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.0594
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.0841
     },
     {
       "id": 28,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.0593
+      "latency": 0.0924
     },
     {
       "id": 29,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.0676
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.093
     },
     {
       "id": 30,
       "expected": "bash",
-      "predicted": "bash\\_script",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0762
+      "latency": 6.1632
     },
     {
       "id": 31,
       "expected": "bash",
-      "predicted": "the given text is a bash script. it uses the `top` command to display a sorted list of running processes and filters the results to show only the top 20 most recent entries, followed by `-16`, which would be interpreted as a negative number in this context (indicating the least recently used). the `-n -16 | head -20` part is a sequence of commands that first runs `top` with various options and then pipes the output to `head` with specific arguments. therefore, the classification for this text is \"bash script\".",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.4368
+      "latency": 2.4999
     },
     {
       "id": 32,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0746
+      "latency": 0.086
     },
     {
       "id": 33,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.0726
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 2.1358
     },
     {
       "id": 34,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0625
+      "latency": 0.0877
     },
     {
       "id": 35,
       "expected": "bash",
-      "predicted": "natural language.",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0708
+      "latency": 4.3438
     },
     {
       "id": 36,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.122
+      "latency": 0.0946
     },
     {
       "id": 37,
       "expected": "bash",
-      "predicted": "the given text \"bc\" is classified as a \"bash script\" because it starts with an uppercase 'b' followed by lowercase alphanumeric characters, and then there's a shebang (#! line at the beginning) to indicate that the file should be executed using the 'bash' shell.",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.2649
+      "latency": 0.0846
     },
     {
       "id": 38,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.2788
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.0891
     },
     {
       "id": 39,
       "expected": "bash",
-      "predicted": "natlang",
-      "correct": 0,
-      "latency": 0.0716
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.0905
     },
     {
       "id": 40,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.1435
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.0878
     },
     {
       "id": 41,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0733
+      "latency": 0.0837
     },
     {
       "id": 42,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.2914
+      "latency": 1.4676
     },
     {
       "id": 43,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.0728
+      "latency": 0.092
     },
     {
       "id": 44,
       "expected": "bash",
-      "predicted": "the given text is a command written in bash scripting language, hence it can be classified as a 'bash script'.",
+      "predicted": "natlang",
       "correct": 0,
-      "latency": 0.1424
+      "latency": 0.0851
     },
     {
       "id": 45,
       "expected": "bash",
       "predicted": "bash",
       "correct": 1,
-      "latency": 0.1965
+      "latency": 0.0851
     },
     {
       "id": 46,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.0642
+      "latency": 0.3927
     },
     {
       "id": 47,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.0682
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 0.0973
     },
     {
       "id": 48,
       "expected": "bash",
       "predicted": "natlang",
       "correct": 0,
-      "latency": 0.074
+      "latency": 8.5391
     },
     {
       "id": 49,
       "expected": "bash",
-      "predicted": "bash",
-      "correct": 1,
-      "latency": 0.1862
+      "predicted": "natlang",
+      "correct": 0,
+      "latency": 30.8234
     },
     {
       "id": 50,
       "expected": "bash",
-      "predicted": "this is a bash script. it's a scripting language used to automate tasks in unix-like operating systems, which is what most commands on unix-like systems are written in. in this case, the command \"patch file.txt < changes.patch\" is a part of a script that applies changes from a patch file to a specified file.",
-      "correct": 0,
-      "latency": 0.2843
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.0868
     },
     {
       "id": 51,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.1564
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 4.0316
     },
     {
       "id": 52,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0667
+      "latency": 2.7735
     },
     {
       "id": 53,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0664
+      "latency": 1.9539
     },
     {
       "id": 54,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.066
+      "latency": 0.5154
     },
     {
       "id": 55,
       "expected": "natlang",
-      "predicted": "the given text is classified as a **bash script**. this is because it follows bash scripting syntax, using variables, loops, and commands like `echo`, which are common in shell scripting. however, the text does not contain any shebang (`#!/`) at the beginning of the script, which indicates that it is a bash script rather than a natural language text (text written in english) that could be executed as code.",
-      "correct": 0,
-      "latency": 0.3472
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0869
     },
     {
       "id": 56,
       "expected": "natlang",
-      "predicted": "bash",
+      "predicted": "error",
       "correct": 0,
-      "latency": 0.0661
+      "latency": 4.1331
     },
     {
       "id": 57,
       "expected": "natlang",
-      "predicted": "this text can be classified as a \"command\" in bash scripting, not as a \"natural language\" statement. a command in bash is a series of instructions that a computer understands and follows, making it a type of code or script. it doesn't fall under the category of natural language, which refers to spoken or written human speech.",
-      "correct": 0,
-      "latency": 0.299
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0841
     },
     {
       "id": 58,
       "expected": "natlang",
       "predicted": "bash",
       "correct": 0,
-      "latency": 0.0641
+      "latency": 0.0898
     },
     {
       "id": 59,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0662
+      "latency": 7.0146
     },
     {
       "id": 60,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.0695
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 1.2119
     },
     {
       "id": 61,
       "expected": "natlang",
       "predicted": "bash",
       "correct": 0,
-      "latency": 0.0653
+      "latency": 0.7298
     },
     {
       "id": 62,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.2579
+      "latency": 0.0929
     },
     {
       "id": 63,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0685
+      "latency": 2.9974
     },
     {
       "id": 64,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.2607
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.094
     },
     {
       "id": 65,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0652
+      "latency": 1.0541
     },
     {
       "id": 66,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.0671
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 2.0517
     },
     {
       "id": 67,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.1786
+      "latency": 0.0853
     },
     {
       "id": 68,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.3747
+      "latency": 0.6595
     },
     {
       "id": 69,
       "expected": "natlang",
-      "predicted": "bash\\_script",
-      "correct": 0,
-      "latency": 0.0682
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.6573
     },
     {
       "id": 70,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0643
+      "latency": 0.1006
     },
     {
       "id": 71,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0641
+      "latency": 0.8169
     },
     {
       "id": 72,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.0607
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0882
     },
     {
       "id": 73,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.074
+      "latency": 0.6123
     },
     {
       "id": 74,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.0661
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0938
     },
     {
       "id": 75,
       "expected": "natlang",
-      "predicted": "the given text can be classified as a **bash script** rather than **natural language**. a bash script is an interactive shell script created by typing commands in a terminal window. these are typically used for automating tasks or performing common operations on linux-based systems using the bash command line interpreter.",
-      "correct": 0,
-      "latency": 0.2499
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 2.4683
     },
     {
       "id": 76,
       "expected": "natlang",
-      "predicted": "natural language",
-      "correct": 0,
-      "latency": 0.0656
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0889
     },
     {
       "id": 77,
       "expected": "natlang",
       "predicted": "bash",
       "correct": 0,
-      "latency": 0.0667
+      "latency": 0.0869
     },
     {
       "id": 78,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0621
+      "latency": 2.0305
     },
     {
       "id": 79,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.2338
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.1014
     },
     {
       "id": 80,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0611
+      "latency": 0.4977
     },
     {
       "id": 81,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.3875
+      "latency": 0.0871
     },
     {
       "id": 82,
       "expected": "natlang",
       "predicted": "bash",
       "correct": 0,
-      "latency": 0.0648
+      "latency": 0.0931
     },
     {
       "id": 83,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.061
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0926
     },
     {
       "id": 84,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.3764
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0858
     },
     {
       "id": 85,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0622
+      "latency": 0.5691
     },
     {
       "id": 86,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.2836
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 3.8253
     },
     {
       "id": 87,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.2532
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0961
     },
     {
       "id": 88,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0682
+      "latency": 0.1053
     },
     {
       "id": 89,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0686
+      "latency": 0.0951
     },
     {
       "id": 90,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0619
+      "latency": 0.0907
     },
     {
       "id": 92,
       "expected": "natlang",
-      "predicted": "bash script",
-      "correct": 0,
-      "latency": 0.0634
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0898
     },
     {
       "id": 93,
       "expected": "natlang",
-      "predicted": "natural language. the provided text is a human-written, natural language instruction for switching a keyboard layout. there's no need for a specific \"bash script\" in this context as the task doesn't involve any programming commands or functions that can be executed using bash syntax.",
-      "correct": 0,
-      "latency": 0.2318
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 3.144
     },
     {
       "id": 94,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0612
+      "latency": 2.1914
     },
     {
       "id": 95,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.1675
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.0852
     },
     {
       "id": 96,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.06
+      "latency": 0.091
     },
     {
       "id": 97,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0598
+      "latency": 0.7417
     },
     {
       "id": 98,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0611
+      "latency": 2.391
     },
     {
       "id": 99,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.1359
+      "latency": 0.0976
     },
     {
       "id": 100,
       "expected": "natlang",
-      "predicted": "bash",
-      "correct": 0,
-      "latency": 0.0624
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.4085
     },
     {
       "id": 101,
       "expected": "natlang",
       "predicted": "natlang",
       "correct": 1,
-      "latency": 0.0629
+      "latency": 4.4986
     }
   ]
 }

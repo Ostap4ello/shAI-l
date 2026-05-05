@@ -1,0 +1,12 @@
+============================================================
+SUMMARY
+============================================================
+test3.1: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=47.0% (47/100) | avg_latency=0.2376s
+test3.2: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=55.0% (55/100) | avg_latency=0.1388s
+test3.3: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=76.0% (76/100) | avg_latency=0.1825s
+test3.4: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=74.0% (74/100) | avg_latency=1.1037s
+test3.5: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=88.0% (88/100) | avg_latency=2.611s
+test3.6: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=50.0% (50/100) | avg_latency=0.16s
+test3.7: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=78.0% (78/100) | avg_latency=0.1656s
+test3.8: test3: LLM classification test: natural language (natlang) vs bash script (bash)accuracy=66.0% (66/100) | avg_latency=0.3333s
+============================================================

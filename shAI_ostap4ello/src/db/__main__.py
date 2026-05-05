@@ -7,7 +7,9 @@ import os
 from openai import OpenAI
 from typing import List, Optional
 
-from .db import build, search, check, search_in_files_dynamic
+from shAI_ostap4ello.src.db.utils.faiss_utils import load_index_config
+
+from .db import build, get_index_info, search, check, search_in_files_dynamic
 from ..llm import get_client
 
 import logging
@@ -44,37 +46,59 @@ def _cmd_build(args: argparse.Namespace) -> None:
         )
     except Exception as e:
         logger.warning(f"Error during index build: {e}")
-        return
+        raise SystemExit(1)
 
     print("Index build complete.")
 
 
 def _cmd_search(args: argparse.Namespace) -> None:
     db_path = os.path.expanduser(args.db_path)
+    expected_model = DEFAULT_EMBED_MODEL
+    db_model = None
     if not check(db_path, args.index_path_within_db):
         print("Index not found. Run 'build' command first.", file=sys.stderr)
         sys.exit(1)
     client = _get_client()
-    results = search(
-        db_path=db_path,
-        index_path_within_db=args.index_path_within_db,
-        client=client,
-        query=args.query,
-        top_k=args.top_k,
-    )
+
+    try:
+        db_model = str(get_index_info(db_path, args.index_path_within_db)["model"])
+        if expected_model != db_model:
+            logger.warning(
+                f"This database uses {db_model} embeddings (instead"
+                "of {expected_model}, specified in your config/args)"
+            )
+        results = search(
+            db_path=db_path,
+            index_path_within_db=args.index_path_within_db,
+            client=client,
+            query=args.query,
+            top_k=args.top_k,
+        )
+    except Exception as e:
+        logger.warning(f"Error during db search: {e}")
+        raise SystemExit(1)
 
     if args.extended_search:
         paths = []
         for r in results:
             paths.append(r["metadata"]["path"])
 
-        results = search_in_files_dynamic(
-            file_paths=paths,
-            client=client,
-            model=DEFAULT_EMBED_MODEL,
-            query=args.query,
-            top_k=args.top_k_extended,
-        )
+        try:
+            if expected_model != db_model:
+                logger.warning(
+                    f"This database uses {db_model} embeddings (instead"
+                    "of {expected_model}, specified in your config/args)"
+                )
+            results = search_in_files_dynamic(
+                file_paths=paths,
+                client=client,
+                model=db_model,
+                query=args.query,
+                top_k=args.top_k_extended,
+            )
+        except Exception as e:
+            logger.warning(f"Error during db search: {e}")
+            raise SystemExit(1)
 
         print("Results of extended search:")
         for i, result in enumerate(results, 1):
@@ -126,7 +150,10 @@ def _cli_parser() -> argparse.ArgumentParser:
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     build_cmd.add_argument(
-        "--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Embedding batch size"
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
+        help="Embedding batch size",
     )
     build_cmd.add_argument(
         "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"

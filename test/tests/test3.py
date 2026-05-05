@@ -11,6 +11,8 @@ from shAI_ostap4ello.src.config import get_config_value, load_config
 
 import logging
 
+from shAI_ostap4ello.src.rag.classifier import classify_is_bash
+
 logger = logging.getLogger(__name__)
 
 TEST_NAME = "test3"
@@ -46,31 +48,10 @@ def _classify_text(client: OpenAI, model: str, text: str) -> str:
     """
     prompt = format(_prompt % text)
     try:
-        response = client.responses.create(
-            model=model,
-            input=prompt,
-            stream=False,
-        )
-
-        # Extract text from last output message
-        classification = ""
-        if response.output:
-            # Get the last item which should be ResponseOutputMessage
-            last_item = response.output[-1]
-            if hasattr(last_item, "content"):
-                for item in last_item.content:
-                    if hasattr(item, "text"):
-                        classification += item.text
-
-        classification = classification.strip().lower()
-        logger.debug(f"Query: {text[:30]}... | Classification: {classification}")
-        # Clean up response
-        if "natural_language" in classification:
-            return "natlang"
-        elif "bash_script" in classification:
+        if classify_is_bash(client, model, text):
             return "bash"
         else:
-            return classification
+            return "natlang"
     except Exception as e:
         logger.error(f"Classification error: {e}")
         return "error"

@@ -4,7 +4,7 @@ import argparse
 import json
 import signal
 import sys
-from openai import OpenAI
+from openai import APIConnectionError, OpenAI
 from typing import List, Optional
 
 from ..llm import generate, embed_string, get_client
@@ -25,14 +25,29 @@ def _get_client() -> OpenAI:
 
 def _cmd_generate(args: argparse.Namespace) -> None:
     client = _get_client()
-    generate(
-        client=client, model=args.model, user_input=args.prompt, do_stream=args.stream
-    )
+    try:
+        generate(
+            client=client, model=args.model, user_input=args.prompt, do_stream=args.stream
+        )
+    except APIConnectionError as e:
+        logger.error(f"Could not connect to Ollama service at {client.base_url}")
+        raise SystemExit(0)
+    except Exception as e:
+        logger.error(f"Generating answer failed with exception: {e}")
+        raise SystemExit(0)
+
 
 
 def _cmd_embed_string(args: argparse.Namespace) -> None:
     client = _get_client()
-    embedding = embed_string(client=client, model=args.model, string=args.input_string)
+    try:
+        embedding = embed_string(client=client, model=args.model, string=args.input_string)
+    except APIConnectionError as e:
+        logger.error(f"Could not connect to Ollama service at {client.base_url}")
+        raise SystemExit(0)
+    except Exception as e:
+        logger.error(f"Generating answer failed with exception: {e}")
+        raise SystemExit(0)
     print(json.dumps(embedding, indent=2))
 
 

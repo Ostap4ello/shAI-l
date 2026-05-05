@@ -70,18 +70,13 @@ def search(
     index_path_within_db: str = get_default_index_path_within_db(),
 ) -> List[dict]:
     if not check(db_path, index_path_within_db):
-        logger.error("Index not found. Run build() first.")
         raise RuntimeError("Index not found. Run build() first.")
 
     index_path, meta_path, config_path = resolve_index_paths(
         db_path, index_path_within_db
     )
 
-    config = load_index_config(config_path)
-    model = config.get("model")
-    if not model:
-        logger.error(f"Model not found in config: {config_path}")
-        raise RuntimeError(f"Model not found in config: {config_path}")
+    model = _get_index_info(config_path)["model"]
 
     index, metadata = load_index(index_path, meta_path)
     query_vec = embed_strings(client, model, [query], batch_size=1)
@@ -142,3 +137,25 @@ def search_in_files_dynamic(
         )
 
     return results
+
+
+def get_index_info(
+    db_path: str,
+    index_path_within_db: str = get_default_index_path_within_db(),
+) -> dict:
+    if not check(db_path, index_path_within_db):
+        raise RuntimeError("Index not found. Run build() first.")
+
+    _, _, config_path = resolve_index_paths(db_path, index_path_within_db)
+    return _get_index_info(config_path)
+
+def _get_index_info(
+    config_path: Path,
+) -> dict:
+    model = load_index_config(config_path).get("model", "")
+    if model.strip() == "":
+        raise RuntimeError(
+            f"Erroneous db config ({config_path}): wrong or no model is specified"
+        )
+
+    return {"model": model}

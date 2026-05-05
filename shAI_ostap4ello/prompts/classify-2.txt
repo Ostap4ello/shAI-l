@@ -1,0 +1,7 @@
+Classify the following text as either "natural_language" or "bash_script".
+Respond with ONLY the word: natural_language or bash_script
+
+Text:
+<<QUERY>>
+
+Classification:

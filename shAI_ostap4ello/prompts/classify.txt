@@ -1,7 +1,1 @@
-Classify the following text as either "natural_language" or "bash_script". Text is "bash_script" only if it fully consists from bash script language. Else - it is "natural_language".
-Respond with ONLY the word: natural_language or bash_script
-
-Text:
-<<QUERY>>
-
-Classification:
+./classify-2.txt

@@ -33,7 +33,7 @@ def _cmd_generate(args: argparse.Namespace) -> None:
                 model=args.model,
                 user_input=args.prompt,
             ):
-                print(chunk, end="")
+                print(chunk, end="", flush=True)
             print()
         else:
             print(

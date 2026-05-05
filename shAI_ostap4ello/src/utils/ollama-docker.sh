@@ -34,12 +34,14 @@ docker_action() {
 
     case "$cmd" in
         r|run)
+            if [[ ! $container_gpus == "none" ]]; then
+                pass_args+=("--gpus" "$container_gpus")
+            fi
             docker run -d \
                 --name "$container_name" \
                 -e OLLAMA_CONTEXT_LENGTH="$context_length" \
                 -v ollama:/root/.ollama \
                 -p 11434:11434 \
-                --gpus="$container_gpus" \
                 "${pass_args[@]}" \
                 ollama/ollama
             ;;

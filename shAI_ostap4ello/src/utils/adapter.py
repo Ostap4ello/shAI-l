@@ -23,7 +23,6 @@ def _call_bash_script(
     logger.debug(f"Calling bash script: {script_path} with args: {args}")
 
     if not os.path.exists(script_path):
-        logger.error(f"Script not found: {script_path}")
         raise RuntimeError(f"Script not found: {script_path}")
 
     try:
@@ -90,10 +89,6 @@ def _call_bash_script(
         stderr_str = "".join(stderr_buffer)
 
         if return_code != 0:
-            logger.error(f"Error executing script: {script_path}")
-            logger.debug(
-                f"retcode: {return_code}, stdout: {stdout_str}, stderr: {stderr_str}"
-            )
             raise RuntimeError(
                 f"Error executing script: {script_path}. Return code: {return_code}, stdout: {stdout_str}, stderr: {stderr_str}"
             )
@@ -136,6 +131,7 @@ def start_ollama(
     context_length=OLLAMA_DEFAULT_CONTEXT_LENGTH,
     gpus=OLLAMA_DEFAULT_GPUS,
     name=OLLAMA_CONTAINER_DEFAULT_NAME,
+    create=False,
 ):
     logger.info(f"Starting Ollama Docker container")
     logger.debug(f"name: {name}, context_length: {context_length}, gpus: {gpus}")
@@ -143,16 +139,22 @@ def start_ollama(
     try:
         result = _call_bash_script("ollama-docker.sh", ["--name", name, "begin"])
         logger.info(f"Ollama Docker container started successfully.")
-    except RuntimeError:
-        logger.warning(f"Failed to start Ollama container. Trying to run it instead.")
-        result = run_ollama(context_length=context_length, gpus=gpus, name=name)
+    except RuntimeError as e:
+        if create:
+            logger.warning(f"Failed to start Ollama container. Trying to run it instead.")
+            result = run_ollama(context_length=context_length, gpus=gpus, name=name)
+        else:
+            raise e
     return result
 
 
-def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME):
+def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME, remove=False):
     logger.info(f"Stopping Ollama Docker")
     logger.debug(f"name: {name}")
-    return _call_bash_script("ollama-docker.sh", ["--name", name, "stop"])
+    if remove:
+        return _call_bash_script("ollama-docker.sh", ["--name", name, "kill"])
+    else:
+        return _call_bash_script("ollama-docker.sh", ["--name", name, "stop"])
 
 
 def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:

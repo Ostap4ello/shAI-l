@@ -1,3 +1,4 @@
+from os import remove
 from pathlib import Path
 from typing import List, Optional
 import argparse
@@ -21,25 +22,53 @@ logging.basicConfig(
 )
 
 
+
 def _cmd_start_ollama(args: argparse.Namespace) -> None:
-    print(f"Starting Ollama with context length {args.context_length}, gpus {args.gpus}, name {args.name}...")
-    start_ollama(context_length=args.context_length, gpus=args.gpus, name=args.name)
+    print(
+        f"Starting Ollama with context length {args.context_length}, gpus {args.gpus}, name {args.name}..."
+    )
+    try:
+        start_ollama(
+            context_length=args.context_length,
+            gpus=args.gpus,
+            name=args.name,
+            create=args.create,
+        )
+    except Exception as e:
+        logger.error(f"Error in {args.func}: {e}")
+        raise SystemExit(1)
 
 
 def _cmd_stop_ollama(args: argparse.Namespace) -> None:
-    stop_ollama(name=args.name)
+    print(
+        "Removing" if args.remove else "Stopping"
+        f"Ollama Docker Container, name {args.name}..."
+    )
+    try:
+        stop_ollama(name=args.name, remove=args.remove)
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise SystemExit(1)
 
 
 def _cmd_is_ollama_running(args: argparse.Namespace) -> None:
-    running = is_ollama_running(name=args.name)
-    if running:
-        print("Ollama is running.")
-    else:
-        print("Ollama is not running.")
+    try:
+        running = is_ollama_running(name=args.name)
+        if running:
+            print("Ollama is running.")
+        else:
+            print("Ollama is not running.")
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise SystemExit(1)
 
 
 def _cmd_convert(args: argparse.Namespace) -> None:
-    convert_man_pages_to_text(src_dir=args.src_dir, out_dir=args.out_dir)
+    try:
+        convert_man_pages_to_text(src_dir=args.src_dir, out_dir=args.out_dir)
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise SystemExit(1)
 
 
 def _cmd_fetch_man_db(args: argparse.Namespace) -> None:
@@ -76,12 +105,23 @@ def _cli_parser() -> argparse.ArgumentParser:
         "start_ollama", help="Run the Ollama Docker container"
     )
     parser_start.add_argument(
+        "--create",
+        action="store_true",
+        default=False,
+        help="Create container container if it is not created",
+    )
+    parser_start.add_argument(
         "--context-length",
         type=int,
         default=DEFAULT_DOCKER_CONTEXT_LENGTH,
         help="Set the context length",
     )
-    parser_start.add_argument("--gpus", type=str, default=DEFAULT_DOCKER_GPUS, help="Specify GPUs")
+    parser_start.add_argument(
+        "--gpus",
+        type=str,
+        default=DEFAULT_DOCKER_GPUS,
+        help="Specify GPUs, use 'none' to run on CPU (requires image removal and creation)",
+    )
     parser_start.add_argument(
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
     )
@@ -92,6 +132,12 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     parser_stop.add_argument(
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
+    )
+    parser_stop.add_argument(
+        "--remove",
+        action="store_true",
+        default=False,
+        help="Remove container instead of stopping it",
     )
     parser_stop.set_defaults(func=_cmd_stop_ollama)
 

@@ -26,9 +26,7 @@ def get_client(base_url: str, api_key: str) -> OpenAI:
     return OpenAI(api_key=api_key, base_url=base_url)
 
 
-def generate(
-    client: OpenAI, model: str, user_input: str, do_stream: bool = False
-) -> str | Iterable[str]:
+def generate(client: OpenAI, model: str, user_input: str) -> str:
     if not model:
         logger.error("Model is not set. Please specify a model to generate a response.")
         raise ValueError("Model is not set.")
@@ -38,59 +36,51 @@ def generate(
 
     response = ""
 
-    logger.debug(f"do_stream={do_stream}")
-    logger.info(f"Generating response...")
-    if do_stream:
-        text_chunks: list[str] = []
-        try:
-            for chunk in _stream_response_chunks(model, user_input, client):
-                if chunk:
-                    text_chunks.append(chunk)
-                    print(chunk, end="", flush=True)
-            print()
+    logger.debug(f"Generating response...")
 
-        except Exception as e:
-            logger.error(f"Error during streaming response: {e}")
-            raise e
+    resp = client.responses.create(
+        model=model,
+        input=user_input,
+        stream=False,
+    )
 
-        response = "".join(text_chunks)
-    else:
-        try:
-            resp = client.responses.create(
-                model=model,
-                input=user_input,
-                stream=False,
-            )
-        except Exception as e:
-            logger.error(f"Error generating response: {e}")
-            raise e
-        for event in resp.output:
-            if isinstance(event, ResponseReasoningItem):
-                pass
-            elif isinstance(event, ResponseOutputMessage):
-                for item in event.content:
-                    if isinstance(item, ResponseOutputText):
-                        response += item.text
+    for item in resp.output:
+        if isinstance(item, ResponseReasoningItem):
+            pass
+        elif isinstance(item, ResponseOutputMessage):
+            for item in item.content:
+                if isinstance(item, ResponseOutputText):
+                    response += item.text
     logger.debug(f"Generated response:\n{response}")
-
     return response
 
 
-def _stream_response_chunks(
-    model: str, user_input: str, client: OpenAI
-) -> Iterable[str]:
+def generate_stream(client: OpenAI, model: str, user_input: str) -> Iterable[str]:
+    if not model:
+        logger.error("Model is not set. Please specify a model to generate a response.")
+        raise ValueError("Model is not set.")
+
+    if not user_input:
+        return ""
+
+    logger.debug(f"Generating response...")
+
     stream = client.responses.create(
         model=model,
         input=user_input,
         stream=True,
     )
 
+    response = ""
     for event in stream:
         if isinstance(event, ResponseTextDoneEvent):
             break
         elif isinstance(event, ResponseTextDeltaEvent):
             if event.delta is not None:
+                response += event.delta
                 yield event.delta
+
+    logger.debug(f"Generated stream response:\n{response}")
 
 
 def embed_string(

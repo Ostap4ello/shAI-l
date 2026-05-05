@@ -7,7 +7,7 @@ import sys
 from openai import APIConnectionError, OpenAI
 from typing import List, Optional
 
-from ..llm import generate, embed_string, get_client
+from ..llm import generate, generate_stream, embed_string, get_client
 
 import logging
 
@@ -25,10 +25,24 @@ def _get_client() -> OpenAI:
 
 def _cmd_generate(args: argparse.Namespace) -> None:
     client = _get_client()
+    do_stream = args.stream
     try:
-        generate(
-            client=client, model=args.model, user_input=args.prompt, do_stream=args.stream
-        )
+        if do_stream:
+            for chunk in generate_stream(
+                client=client,
+                model=args.model,
+                user_input=args.prompt,
+            ):
+                print(chunk, end="")
+            print()
+        else:
+            print(
+                generate(
+                    client=client,
+                    model=args.model,
+                    user_input=args.prompt,
+                )
+            )
     except APIConnectionError as e:
         logger.error(f"Could not connect to Ollama service at {client.base_url}")
         raise SystemExit(0)
@@ -37,11 +51,12 @@ def _cmd_generate(args: argparse.Namespace) -> None:
         raise SystemExit(0)
 
 
-
 def _cmd_embed_string(args: argparse.Namespace) -> None:
     client = _get_client()
     try:
-        embedding = embed_string(client=client, model=args.model, string=args.input_string)
+        embedding = embed_string(
+            client=client, model=args.model, string=args.input_string
+        )
     except APIConnectionError as e:
         logger.error(f"Could not connect to Ollama service at {client.base_url}")
         raise SystemExit(0)

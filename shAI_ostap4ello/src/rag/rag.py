@@ -33,7 +33,7 @@ def rag_pipeline(
         parsed_query = get_doc_choice_prompt(doc_paths, query)
         logger.debug(f"Parsed query for doc choice:\n{parsed_query[:1000]}...")
         logger.info(f"Choosing the most relevant document (attempt {i+1}/5)...")
-        response = llm.generate(client, model, parsed_query, do_stream=False)
+        response = llm.generate(client, model, parsed_query)
         assert isinstance(response, str), "Expected response to be a string"
         response = get_doc_choice_answer(response)
 

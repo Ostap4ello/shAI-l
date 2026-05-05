@@ -143,7 +143,7 @@ def start_ollama(
     try:
         result = _call_bash_script("ollama-docker.sh", ["--name", name, "begin"])
         logger.info(f"Ollama Docker container started successfully.")
-    except RuntimeError as e:
+    except RuntimeError:
         logger.warning(f"Failed to start Ollama container. Trying to run it instead.")
         result = run_ollama(context_length=context_length, gpus=gpus, name=name)
     return result
@@ -157,7 +157,7 @@ def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME):
 
 def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:
     logger.debug(f"Checking if Ollama Docker container with name: {name} is running")
-    return_code, stdout, stderr = _call_bash_script(
+    _, stdout, _ = _call_bash_script(
         "ollama-docker.sh", ["--name", name, "status"]
     )
     if stdout == "- Container is up.\n- Ollama is up.\n":

@@ -25,15 +25,6 @@ TEST_CONFIG_SCHEMA = {
     "config_file": "",
 }
 
-_prompt = f"""Classify the following text as either "natural_language" or "bash_script".
-Respond with ONLY the word: natural_language or bash_script
-
-Text:
-%s
-
-Classification:"""
-
-
 def _load_test_cases(path: Path) -> List[Dict[str, Any]]:
     """Load test cases from JSON file."""
     with open(path) as f:
@@ -41,12 +32,6 @@ def _load_test_cases(path: Path) -> List[Dict[str, Any]]:
 
 
 def _classify_text(client: OpenAI, model: str, text: str) -> str:
-    """
-    Classify text as natural_language or bash_script using LLM.
-
-    Returns classification as string: "natural_language" or "bash_script"
-    """
-    prompt = format(_prompt % text)
     try:
         if classify_is_bash(client, model, text):
             return "bash"

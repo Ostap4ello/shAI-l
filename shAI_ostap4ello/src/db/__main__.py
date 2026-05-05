@@ -7,8 +7,6 @@ import os
 from openai import OpenAI
 from typing import List, Optional
 
-from shAI_ostap4ello.src.db.utils.faiss_utils import load_index_config
-
 from .db import build, get_index_info, search, check, search_in_files_dynamic
 from ..llm import get_client
 

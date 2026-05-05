@@ -4,7 +4,7 @@ import os
 import shutil
 import tempfile
 
-from .adapter import convert_man_pages_to_text, _call_bash_script
+from .adapter import convert_man_pages_to_text
 
 logger = logging.getLogger(__name__)
 

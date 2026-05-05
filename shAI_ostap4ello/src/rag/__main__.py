@@ -4,7 +4,6 @@ from openai import OpenAI
 from typing import List, Optional
 import argparse
 import logging
-import os
 import sys
 import signal
 

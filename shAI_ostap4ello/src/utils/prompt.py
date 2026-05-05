@@ -8,7 +8,7 @@ def _project_root() -> str:
 def _strip_comments(text: str) -> str:
     """
     Remove comments using # as marker.
-    Use \# to render a literal #.
+    Use \\# to render a literal #.
     """
     stripped_lines: list[str] = []
     for line in text.splitlines(keepends=True):

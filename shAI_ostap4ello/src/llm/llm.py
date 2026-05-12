@@ -15,6 +15,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+logging.getLogger('httpx').setLevel(logging.WARNING) # used by OpenAI client
 
 def get_client(base_url: str, api_key: str) -> OpenAI:
     env_api_key = os.environ.get("OPENAI_API_KEY")

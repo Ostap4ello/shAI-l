@@ -7,6 +7,7 @@ from os import environ
 import importlib.util
 import configparser
 import sys
+import signal
 import logging
 
 from shAI_ostap4ello.src.config import load_config
@@ -135,6 +136,12 @@ def run_tests(config_path: str) -> None:
 
 
 if __name__ == "__main__":
+    def signal_handler(sig, frame):
+        logger.info("Interrupt received, exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     logging.basicConfig(
         level=environ.get("DEBUG_LEVEL", DEFAULT_DEBUG_LEVEL).upper(),
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -158,8 +165,8 @@ if __name__ == "__main__":
         register_tests(str(test_def_path))
 
         run_config_path = sys.argv[2] if len(sys.argv) > 2 else None
-        if not run_config_path:
-            logger.error("Error: config_path argument is required")
+        if not run_config_path or not Path(run_config_path).exists():
+            logger.error("Error: config_path argument is required and must be a valid file")
             sys.exit(1)
         run_tests(run_config_path)
     else:

@@ -1,0 +1,102 @@
+ALACRITTY-MSG(1)             General Commands Manual            ALACRITTY-MSG(1)
+
+NAME
+     alacritty-msg - Send messages to Alacritty.
+
+SYNOPSIS
+     This  command  communicates  with  running  Alacritty  instances  through a
+     socket, making it possible to control Alacritty without directly  accessing
+     it.
+
+OPTIONS
+     -s, --socket <SOCKET>
+
+         Path for IPC socket communication.
+
+MESSAGES
+     create-window
+
+         Create a new window in the same Alacritty process.
+
+         FLAGS
+             --hold
+
+                 Remain open after child process exits.
+
+         OPTIONS
+             --working-directory <WORKING_DIRECTORY>
+
+                 Start the shell in the specified working directory.
+
+             -T, --title <TITLE>
+
+                 Defines the window title.
+
+                 Default: Alacritty
+
+             --class <GENERAL> | <GENERAL>,<INSTANCE>
+
+                 Defines window class/app_id on X11/Wayland.
+
+                 Default: Alacritty,Alacritty
+
+             -o, --option <OPTION>...
+
+                 Override configuration file options.
+
+                 Example: alacritty msg create-window -o 'cursor.style="Beam"'
+
+             -e, --command <COMMAND>...
+
+                 Command and args to execute (must be last argument).
+
+     config
+
+         Update the Alacritty configuration.
+
+         ARGS
+             <CONFIG_OPTIONS>...
+
+                 Configuration file options.
+
+                 Example: alacritty msg config 'cursor.style="Beam"'
+
+         FLAGS
+             -r, --reset
+
+                 Clear all runtime configuration changes.
+
+         OPTIONS
+             -w, --window-id <WINDOW_ID>
+
+                 Window ID for the new config.
+
+                 Use -1 to apply this change to all windows.
+
+                 Default: $ALACRITTY_WINDOW_ID
+
+     get-config
+
+         Read runtime Alacritty configuration.
+
+         OPTIONS
+             -w, --window-id <WINDOW_ID>
+
+                 Window ID for the config request.
+
+                 Use -1 to get the global config.
+
+                 Default: $ALACRITTY_WINDOW_ID
+
+SEE ALSO
+     alacritty(1), alacritty(5), alacritty-bindings(5), alacritty-escapes(7)
+
+BUGS
+     Found a bug? Please report it at https://github.com/alacritty/alacritty/is-
+     sues.
+
+MAINTAINERS
+     *   Christian Duerr <contact@christianduerr.com>
+     *   Kirill Chibisov <contact@kchibisov.com>
+
+                                   2026-04-06                   ALACRITTY-MSG(1)

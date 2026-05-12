@@ -1,0 +1,113 @@
+BRIGHTNESSCTL(1)                  brightnessctl                 BRIGHTNESSCTL(1)
+
+NAME
+     brightnessctl - read and control device brightness
+
+
+
+SYNOPSIS
+     brightnessctl [options] [operation] [value...]
+
+
+
+OPTIONS
+     -h, --help
+         Print this help.
+
+
+     -l, --list
+         List devices with available brightness controls.
+
+
+     -q, --quiet
+         Suppress output.
+
+
+     -p, --pretend
+         Do not perform write operations.
+
+
+     -m, --machine-readable
+         Produce machine-readable output.
+
+
+     -n, --min-value=VALUE
+         Set minimum brightness when using delta values, defaults to 1.
+
+
+     -e, --exponent=K
+         Changes  percentage  scaling  curve to exponential (linear by default).
+         Default exponent is 4.
+
+         Percentage equation: % = [VALUE]^[K] * [MAX] * 100^-[K].
+
+         The exponential curve may make the adjustments perceptually equal.
+
+
+     -s, --save
+         Save state in a temporary file.
+
+
+     -r, --restore
+         Restore previously-saved state.
+
+
+     -d, --device=DEVICE
+         Specify device name (can be a wildcard).
+
+
+     -c, --class=CLASS
+         Specify device class.
+
+
+     -v, --version
+         Print version and exit.
+
+
+
+OPERATIONS
+     i, info
+         Get device info.
+
+
+     g, get
+         Get the current brightness of the device.
+
+
+     m, max
+         Get the maximum brightness of the device.
+
+
+     s, set VALUE
+         Set the brightness of the device.
+
+
+   VALUES
+     You may specify VALUE for the set command in absolute or relative form, and
+     as a value or a delta from the current value. For example:
+
+     brightnessctl set 500
+         Sets brightness to 500.
+
+     brightnessctl set 50%
+         Sets brightness to 50% of the maximum.
+
+     brightnessctl set 50-
+         Subtracts 50 from the current brightness.
+
+     brightnessctl set +10
+         Adds 10 to the current brightness.
+
+     brightnessctl set 50%-
+         Subtracts 50% of the maximum from the current brightness.
+
+     brightnessctl set +10%
+         Adds 10% of the maximum to the current brightness.
+
+AUTHORS
+     Maintained by Mykyta Holubakha, who is assisted by other open  source  con-
+     tributors. For more information about brightnessctl development, visit:
+
+     https://github.com/Hummer12007/brightnessctl
+
+brightnessctl                     24th Jan 2018                 BRIGHTNESSCTL(1)

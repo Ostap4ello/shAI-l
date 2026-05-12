@@ -1,0 +1,1802 @@
+[
+  {
+    "id": 1,
+    "query": "how to list devices avaliable to brightnessctl",
+    "filename": "man1/brightnessctl.1.txt",
+    "line": 19
+  },
+  {
+    "id": 2,
+    "query": "what flag suppresses output in brightnessctl?",
+    "filename": "man1/brightnessctl.1.txt",
+    "line": 23
+  },
+  {
+    "id": 3,
+    "query": "how to execute brightnessctl without actually changing device settings",
+    "filename": "man1/brightnessctl.1.txt",
+    "line": 27
+  },
+  {
+    "id": 5,
+    "query": "how to set minimum brightness value?",
+    "filename": "man1/brightnessctl.1.txt",
+    "line": 35
+  },
+  {
+    "id": 6,
+    "query": "what is default exponent for brightness curve?",
+    "filename": "man1/brightnessctl.1.txt",
+    "line": 39
+  },
+  {
+    "id": 7,
+    "query": "auto display brighntess util on my computer",
+    "filename": "man1/clight.1.txt",
+    "line": 4
+  },
+  {
+    "id": 8,
+    "query": "what does clight do",
+    "filename": "man1/clight.1.txt",
+    "line": 23
+  },
+  {
+    "id": 9,
+    "query": "where are clight configs saved?",
+    "filename": "man1/clight.1.txt",
+    "line": 141
+  },
+  {
+    "id": 10,
+    "query": "disable gamma tool for clight",
+    "filename": "man1/clight.1.txt",
+    "line": 101
+  },
+  {
+    "id": 11,
+    "query": "how to set temperature for daytime?",
+    "filename": "man1/clight.1.txt",
+    "line": 68
+  },
+  {
+    "id": 13,
+    "query": "how to specify dockerfile path explicitly?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 45
+  },
+  {
+    "id": 14,
+    "query": "how to save all docker image layers into one",
+    "filename": "man1/docker-build.1.txt",
+    "line": 58
+  },
+  {
+    "id": 15,
+    "query": "how to pass a build-arg when building docker image",
+    "filename": "man1/docker-build.1.txt",
+    "line": 93
+  },
+  {
+    "id": 16,
+    "query": "how to set image metadata labels?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 119
+  },
+  {
+    "id": 17,
+    "query": "how to save docker image id to file?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 127
+  },
+  {
+    "id": 18,
+    "query": "enable pulling images on every docker build",
+    "filename": "man1/docker-build.1.txt",
+    "line": 135
+  },
+  {
+    "id": 18,
+    "query": "does docker update images on build?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 135
+  },
+  {
+    "id": 19,
+    "query": "what does hold flag do in alacritty?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 17
+  },
+  {
+    "id": 20,
+    "query": "what is daemon flag for?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 21
+  },
+  {
+    "id": 21,
+    "query": "alacritty - how to print events from alacritty?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 25
+  },
+  {
+    "id": 22,
+    "query": "alacritty - how to increasee verbosity level?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 39
+  },
+  {
+    "id": 23,
+    "query": "how start alacritty with custom command",
+    "filename": "man1/alacritty.1.txt",
+    "line": 60
+  },
+  {
+    "id": 24,
+    "query": "where are alacritty configs located?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 69
+  },
+  {
+    "id": 25,
+    "query": "what is alacritty msg for?",
+    "filename": "man1/alacritty-msg.1.txt",
+    "line": 4
+  },
+  {
+    "id": 25,
+    "query": "how to get alacritty current config on runtime",
+    "filename": "man1/alacritty-msg.1.txt",
+    "line": 80
+  },
+  {
+    "id": 26,
+    "query": "how to create new window with alacritty-msg?",
+    "filename": "man1/alacritty-msg.1.txt",
+    "line": 19
+  },
+  {
+    "id": 27,
+    "query": "how change window title in alacritty?",
+    "filename": "man1/alacritty-msg.1.txt",
+    "line": 31
+  },
+  {
+    "id": 28,
+    "query": "what protocol does ddcutil use for monitors?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 24
+  },
+  {
+    "id": 30,
+    "query": "how to find monitors with ddcutil?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 65
+  },
+  {
+    "id": 31,
+    "query": "how to describe vcp features?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 68
+  },
+  {
+    "id": 32,
+    "query": "how to query monitor capabilities?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 72
+  },
+  {
+    "id": 33,
+    "query": "how to set vcp feature with relative change?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 81
+  },
+  {
+    "id": 34,
+    "query": "what is dbus-send for?",
+    "filename": "man1/dbus-send.1.txt",
+    "line": 4
+  },
+  {
+    "id": 35,
+    "query": "what does dbus-monitor display?",
+    "filename": "man1/dbus-monitor.1.txt",
+    "line": 4
+  },
+  {
+    "id": 36,
+    "query": "how to start dbus session?",
+    "filename": "man1/dbus-launch.1.txt",
+    "line": 14
+  },
+  {
+    "id": 37,
+    "query": "how to run session dbus?",
+    "filename": "man1/dbus-run-session.1.txt",
+    "line": 4
+  },
+  {
+    "id": 38,
+    "query": "what is dbus-test-tool for?",
+    "filename": "man1/dbus-test-tool.1.txt",
+    "line": 4
+  },
+  {
+    "id": 39,
+    "query": "what does docker-container-attach do?",
+    "filename": "man1/docker-container-attach.1.txt",
+    "line": 4
+  },
+  {
+    "id": 40,
+    "query": "how to attach stdin to container?",
+    "filename": "man1/docker-container-attach.1.txt",
+    "line": 10
+  },
+  {
+    "id": 41,
+    "query": "what does sig-proxy flag control?",
+    "filename": "man1/docker-container-attach.1.txt",
+    "line": 89
+  },
+  {
+    "id": 42,
+    "query": "how to create image from container?",
+    "filename": "man1/docker-container-commit.1.txt",
+    "line": 4
+  },
+  {
+    "id": 43,
+    "query": "how to set docker image commit author?",
+    "filename": "man1/docker-container-commit.1.txt",
+    "line": 50
+  },
+  {
+    "id": 45,
+    "query": "where is alacritty config located?",
+    "filename": "man5/alacritty.5.txt",
+    "line": 11
+  },
+  {
+    "id": 46,
+    "query": "how to set alacritty font size?",
+    "filename": "man5/alacritty.5.txt",
+    "line": 262
+  },
+  {
+    "id": 47,
+    "query": "how to configure window padding in alacritty?",
+    "filename": "man5/alacritty.5.txt",
+    "line": 101
+  },
+  {
+    "id": 48,
+    "query": "where is docker config stored?",
+    "filename": "man5/docker-config-json.5.txt",
+    "line": 4
+  },
+  {
+    "id": 50,
+    "query": "what is dockerfile",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 9
+  },
+  {
+    "id": 51,
+    "query": "how to run commands in dockerfile?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 106
+  },
+  {
+    "id": 52,
+    "query": "how to expose port?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 246
+  },
+  {
+    "id": 53,
+    "query": "how to make container a standalone executable",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 335
+  },
+  {
+    "id": 54,
+    "query": "how to copy files in dockerfile?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 309
+  },
+  {
+    "id": 55,
+    "query": "where is gdbinit located?",
+    "filename": "man5/gdbinit.5.txt",
+    "line": 9
+  },
+  {
+    "id": 56,
+    "query": "what commands can run in gdbinit?",
+    "filename": "man5/gdbinit.5.txt",
+    "line": 14
+  },
+  {
+    "id": 57,
+    "query": "how to configure fail2ban?",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 4
+  },
+  {
+    "id": 57,
+    "query": "what files are used to configure fail2ban",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 17
+  },
+  {
+    "id": 57,
+    "query": "how to define jail in jail.conf?",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 31
+  },
+  {
+    "id": 58,
+    "query": "how to set jail logfile path?",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 204
+  },
+  {
+    "id": 59,
+    "query": "where is kitty config file?",
+    "filename": "man5/kitty.conf.5.txt",
+    "line": 18
+  },
+  {
+    "id": 60,
+    "query": "how to set kitty font size?",
+    "filename": "man5/kitty.conf.5.txt",
+    "line": 76
+  },
+  {
+    "id": 61,
+    "query": "how to copy files from container?",
+    "filename": "man1/docker-container-cp.1.txt",
+    "line": 4
+  },
+  {
+    "id": 62,
+    "query": "how to create container without running?",
+    "filename": "man1/docker-container-create.1.txt",
+    "line": 4
+  },
+  {
+    "id": 63,
+    "query": "how to see what changed in container?",
+    "filename": "man1/docker-container-diff.1.txt",
+    "line": 4
+  },
+  {
+    "id": 64,
+    "query": "how to execute command in running container?",
+    "filename": "man1/docker-container-exec.1.txt",
+    "line": 4
+  },
+  {
+    "id": 65,
+    "query": "how to export container filesystem?",
+    "filename": "man1/docker-container-export.1.txt",
+    "line": 4
+  },
+  {
+    "id": 66,
+    "query": "how to inspect container details?",
+    "filename": "man1/docker-container-inspect.1.txt",
+    "line": 4
+  },
+  {
+    "id": 67,
+    "query": "how to kill running container?",
+    "filename": "man1/docker-container-kill.1.txt",
+    "line": 4
+  },
+  {
+    "id": 68,
+    "query": "how to view container logs?",
+    "filename": "man1/docker-container-logs.1.txt",
+    "line": 4
+  },
+  {
+    "id": 69,
+    "query": "how to list containers?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 70,
+    "query": "what does dbus binding tool do?",
+    "filename": "man1/dbus-binding-tool.1.txt",
+    "line": 12
+  },
+  {
+    "id": 71,
+    "query": "what does dbus broker do?",
+    "filename": "man1/dbus-broker.1.txt",
+    "line": 12
+  },
+  {
+    "id": 72,
+    "query": "what does dbus broker launch do?",
+    "filename": "man1/dbus-broker-launch.1.txt",
+    "line": 4
+  },
+  {
+    "id": 73,
+    "query": "what does dbus cleanup sockets do?",
+    "filename": "man1/dbus-cleanup-sockets.1.txt",
+    "line": 4
+  },
+  {
+    "id": 74,
+    "query": "what does dbus daemon do?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 4
+  },
+  {
+    "id": 75,
+    "query": "what does docker container do?",
+    "filename": "man1/docker-container.1.txt",
+    "line": 9
+  },
+  {
+    "id": 76,
+    "query": "what does docker container pause do?",
+    "filename": "man1/docker-container-pause.1.txt",
+    "line": 9
+  },
+  {
+    "id": 77,
+    "query": "what does docker container port do?",
+    "filename": "man1/docker-container-port.1.txt",
+    "line": 10
+  },
+  {
+    "id": 78,
+    "query": "what does docker container prune do?",
+    "filename": "man1/docker-container-prune.1.txt",
+    "line": 9
+  },
+  {
+    "id": 79,
+    "query": "what does docker container rename do?",
+    "filename": "man1/docker-container-rename.1.txt",
+    "line": 9
+  },
+  {
+    "id": 80,
+    "query": "what does docker container restart do?",
+    "filename": "man1/docker-container-restart.1.txt",
+    "line": 9
+  },
+  {
+    "id": 81,
+    "query": "what does docker container rm do?",
+    "filename": "man1/docker-container-rm.1.txt",
+    "line": 14
+  },
+  {
+    "id": 82,
+    "query": "what does docker container run do?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 9
+  },
+  {
+    "id": 83,
+    "query": "what does docker container start do?",
+    "filename": "man1/docker-container-start.1.txt",
+    "line": 9
+  },
+  {
+    "id": 84,
+    "query": "what does docker container stats do?",
+    "filename": "man1/docker-container-stats.1.txt",
+    "line": 10
+  },
+  {
+    "id": 85,
+    "query": "what does docker container stop do?",
+    "filename": "man1/docker-container-stop.1.txt",
+    "line": 9
+  },
+  {
+    "id": 86,
+    "query": "what does docker container top do?",
+    "filename": "man1/docker-container-top.1.txt",
+    "line": 9
+  },
+  {
+    "id": 87,
+    "query": "what does docker container unpause do?",
+    "filename": "man1/docker-container-unpause.1.txt",
+    "line": 10
+  },
+  {
+    "id": 88,
+    "query": "what does docker container update do?",
+    "filename": "man1/docker-container-update.1.txt",
+    "line": 14
+  },
+  {
+    "id": 89,
+    "query": "what does docker container wait do?",
+    "filename": "man1/docker-container-wait.1.txt",
+    "line": 4
+  },
+  {
+    "id": 90,
+    "query": "what does docker image do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 91,
+    "query": "what does docker image build do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 92,
+    "query": "what does docker image history do?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 477
+  },
+  {
+    "id": 93,
+    "query": "what does docker image import do?",
+    "filename": "man1/docker-container-export.1.txt",
+    "line": 37
+  },
+  {
+    "id": 94,
+    "query": "what does docker image inspect do?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 227
+  },
+  {
+    "id": 95,
+    "query": "what does docker image load do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 96,
+    "query": "what does docker image ls do?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 136
+  },
+  {
+    "id": 97,
+    "query": "what does docker image prune do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 98,
+    "query": "what does docker image pull do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 99,
+    "query": "what does docker image push do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 100,
+    "query": "what does docker image rm do?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 61
+  },
+  {
+    "id": 101,
+    "query": "what does docker image save do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 102,
+    "query": "what does docker image tag do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 156
+  },
+  {
+    "id": 103,
+    "query": "what does docker network do?",
+    "filename": "man1/docker-network.1.txt",
+    "line": 4
+  },
+  {
+    "id": 104,
+    "query": "what does docker network connect do?",
+    "filename": "man1/docker-network-connect.1.txt",
+    "line": 9
+  },
+  {
+    "id": 105,
+    "query": "what does docker network create do?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 9
+  },
+  {
+    "id": 106,
+    "query": "what does docker network disconnect do?",
+    "filename": "man1/docker-network-disconnect.1.txt",
+    "line": 9
+  },
+  {
+    "id": 107,
+    "query": "what does docker network inspect do?",
+    "filename": "man1/docker-network-inspect.1.txt",
+    "line": 10
+  },
+  {
+    "id": 108,
+    "query": "what does docker network ls do?",
+    "filename": "man1/docker-network-ls.1.txt",
+    "line": 27
+  },
+  {
+    "id": 109,
+    "query": "what does docker network prune do?",
+    "filename": "man1/docker-network-prune.1.txt",
+    "line": 4
+  },
+  {
+    "id": 110,
+    "query": "what does docker network rm do?",
+    "filename": "man1/docker-network-rm.1.txt",
+    "line": 4
+  },
+  {
+    "id": 111,
+    "query": "what does docker ps do?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 112,
+    "query": "what does docker pull do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 113,
+    "query": "what does docker push do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 114,
+    "query": "what does docker rename do?",
+    "filename": "man1/docker-container-rename.1.txt",
+    "line": 4
+  },
+  {
+    "id": 115,
+    "query": "what does docker restart do?",
+    "filename": "man1/docker-container-restart.1.txt",
+    "line": 4
+  },
+  {
+    "id": 116,
+    "query": "what does docker rm do?",
+    "filename": "man1/docker-container-rm.1.txt",
+    "line": 4
+  },
+  {
+    "id": 117,
+    "query": "what does docker rmi do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 118,
+    "query": "what does docker run do?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 4
+  },
+  {
+    "id": 120,
+    "query": "what are default user directories?",
+    "filename": "man5/user-dirs.defaults.5.txt",
+    "line": 4
+  },
+  {
+    "id": 121,
+    "query": "how to configure default user dirs?",
+    "filename": "man5/user-dirs.dirs.5.txt",
+    "line": 4
+  },
+  {
+    "id": 123,
+    "query": "turn off beeping in neomutt",
+    "filename": "man5/neomuttrc.5.txt",
+    "line": 1448
+  },
+  {
+    "id": 125,
+    "query": "what is in pipewire config located?",
+    "filename": "man5/pipewire.conf.5.txt",
+    "line": 11
+  },
+  {
+    "id": 126,
+    "query": "how to create audio filter chain?",
+    "filename": "man5/pipewire-filter-chain.conf.5.txt",
+    "line": 11
+  },
+  {
+    "id": 127,
+    "query": "how to configure jack in pipewire?",
+    "filename": "man5/pipewire-jack.conf.5.txt",
+    "line": 11
+  },
+  {
+    "id": 128,
+    "query": "how to enable pulse in pipewire?",
+    "filename": "man5/pipewire-pulse.conf.5.txt",
+    "line": 14
+  },
+  {
+    "id": 129,
+    "query": "how to configure sensors?",
+    "filename": "man5/sensors.conf.5.txt",
+    "line": 8
+  },
+  {
+    "id": 130,
+    "query": "what does docker daemon do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 24
+  },
+  {
+    "id": 134,
+    "query": "how to get docker system info?",
+    "filename": "man1/docker-version.1.txt",
+    "line": 4
+  },
+  {
+    "id": 135,
+    "query": "how to build image from dockerfile?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 136,
+    "query": "how to see layer history of image?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 477
+  },
+  {
+    "id": 137,
+    "query": "how to import tarball as image?",
+    "filename": "man1/docker-container-export.1.txt",
+    "line": 37
+  },
+  {
+    "id": 138,
+    "query": "how to inspect image layers?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 227
+  },
+  {
+    "id": 139,
+    "query": "how to load image from tar?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 35
+  },
+  {
+    "id": 142,
+    "query": "how to create new docker bridge network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 23
+  },
+  {
+    "id": 143,
+    "query": "how to connect container to network?",
+    "filename": "man1/docker-network-connect.1.txt",
+    "line": 4
+  },
+  {
+    "id": 144,
+    "query": "how to disconnect container from docker network?",
+    "filename": "man1/docker-network-disconnect.1.txt",
+    "line": 4
+  },
+  {
+    "id": 145,
+    "query": "how to inspect docker network details?",
+    "filename": "man1/docker-network-inspect.1.txt",
+    "line": 4
+  },
+  {
+    "id": 146,
+    "query": "how to list docker networks?",
+    "filename": "man1/docker-network-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 147,
+    "query": "what is docker volume for?",
+    "filename": "man1/docker-volume.1.txt",
+    "line": 4
+  },
+  {
+    "id": 148,
+    "query": "how to create volume?",
+    "filename": "man1/docker-volume-create.1.txt",
+    "line": 4
+  },
+  {
+    "id": 149,
+    "query": "how to inspect volume?",
+    "filename": "man1/docker-volume-inspect.1.txt",
+    "line": 4
+  },
+  {
+    "id": 150,
+    "query": "how to specify dbus config file?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 53
+  },
+  {
+    "id": 151,
+    "query": "what does fork option do in dbus?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 57
+  },
+  {
+    "id": 152,
+    "query": "how to run dbus in nofork mode?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 63
+  },
+  {
+    "id": 153,
+    "query": "what does print-address option do?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 68
+  },
+  {
+    "id": 154,
+    "query": "how to use syslog in dbus?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 106
+  },
+  {
+    "id": 155,
+    "query": "how to enable dbus broker logging?",
+    "filename": "man1/dbus-broker.1.txt",
+    "line": 19
+  },
+  {
+    "id": 166,
+    "query": "how to ignore specific sensors",
+    "filename": "man5/sensors.conf.5.txt",
+    "line": 85
+  },
+  {
+    "id": 168,
+    "query": "how to bind commands in neomutt?",
+    "filename": "man5/neomuttrc.5.txt",
+    "line": 386
+  },
+  {
+    "id": 171,
+    "query": "where does kitty look for its config file?",
+    "filename": "man5/kitty.conf.5.txt",
+    "line": 18
+  },
+  {
+    "id": 172,
+    "query": "how do i open kitty's config file within kitty?",
+    "filename": "man5/kitty.conf.5.txt",
+    "line": 11
+  },
+  {
+    "id": 173,
+    "query": "what is xdg user directory standard?",
+    "filename": "man5/user-dirs.dirs.5.txt",
+    "line": 9
+  },
+  {
+    "id": 174,
+    "query": "how do i override the system-wide user-dirs config?",
+    "filename": "man5/user-dirs.conf.5.txt",
+    "line": 9
+  },
+  {
+    "id": 175,
+    "query": "what is jail.conf for fail2ban?",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 4
+  },
+  {
+    "id": 176,
+    "query": "what do jails define in jail.conf?",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 30
+  },
+  {
+    "id": 177,
+    "query": "in what order are jail.conf files parsed?",
+    "filename": "man5/jail.conf.5.txt",
+    "line": 58
+  },
+  {
+    "id": 178,
+    "query": "where is the current-directory gdbinit file?",
+    "filename": "man5/gdbinit.5.txt",
+    "line": 11
+  },
+  {
+    "id": 179,
+    "query": "when is the system-wide gdbinit disabled?",
+    "filename": "man5/gdbinit.5.txt",
+    "line": 22
+  },
+  {
+    "id": 180,
+    "query": "what does docker ps do?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 181,
+    "query": "how to pull image from registry?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 135
+  },
+  {
+    "id": 182,
+    "query": "what does docker build do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 183,
+    "query": "how to rename container?",
+    "filename": "man1/docker-container-rename.1.txt",
+    "line": 4
+  },
+  {
+    "id": 184,
+    "query": "how to restart stopped container?",
+    "filename": "man1/docker-container-restart.1.txt",
+    "line": 4
+  },
+  {
+    "id": 185,
+    "query": "how to remove container?",
+    "filename": "man1/docker-container-rm.1.txt",
+    "line": 4
+  },
+  {
+    "id": 186,
+    "query": "what does --force-rm do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 109
+  },
+  {
+    "id": 187,
+    "query": "how to start new container from image?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 4
+  },
+  {
+    "id": 188,
+    "query": "what does pause container do?",
+    "filename": "man1/docker-container-pause.1.txt",
+    "line": 4
+  },
+  {
+    "id": 189,
+    "query": "how to unpause paused container?",
+    "filename": "man1/docker-container-unpause.1.txt",
+    "line": 4
+  },
+  {
+    "id": 190,
+    "query": "how to see exposed ports?",
+    "filename": "man1/docker-container-port.1.txt",
+    "line": 4
+  },
+  {
+    "id": 191,
+    "query": "how to remove unused containers?",
+    "filename": "man1/docker-container-prune.1.txt",
+    "line": 4
+  },
+  {
+    "id": 192,
+    "query": "how to rename running container?",
+    "filename": "man1/docker-container-rename.1.txt",
+    "line": 4
+  },
+  {
+    "id": 193,
+    "query": "how to see running processes in container?",
+    "filename": "man1/docker-container-top.1.txt",
+    "line": 4
+  },
+  {
+    "id": 194,
+    "query": "what does update command do?",
+    "filename": "man1/docker-container-update.1.txt",
+    "line": 14
+  },
+  {
+    "id": 195,
+    "query": "how to wait for container to exit?",
+    "filename": "man1/docker-container-wait.1.txt",
+    "line": 4
+  },
+  {
+    "id": 197,
+    "query": "how to tag image with multiple names?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 156
+  },
+  {
+    "id": 198,
+    "query": "how to remove unused docker images?",
+    "filename": "man1/docker-network-prune.1.txt",
+    "line": 4
+  },
+  {
+    "id": 200,
+    "query": "how to hide ouptut when building docker image",
+    "filename": "man1/docker-build.1.txt",
+    "line": 143
+  },
+  {
+    "id": 201,
+    "query": "how to remove volume?",
+    "filename": "man1/docker-volume-rm.1.txt",
+    "line": 4
+  },
+  {
+    "id": 202,
+    "query": "how to list volumes?",
+    "filename": "man1/docker-volume-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 203,
+    "query": "how to remove unused volumes?",
+    "filename": "man1/docker-volume-prune.1.txt",
+    "line": 4
+  },
+  {
+    "id": 204,
+    "query": "what does docker version show?",
+    "filename": "man1/docker-version.1.txt",
+    "line": 4
+  },
+  {
+    "id": 207,
+    "query": "what does the exponent flag do?",
+    "filename": "man1/brightnessctl.1.txt",
+    "line": 38
+  },
+  {
+    "id": 208,
+    "query": "what does socket id flag do?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 92
+  },
+  {
+    "id": 209,
+    "query": "how do i set the window class hint in alacritty?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 46
+  },
+  {
+    "id": 210,
+    "query": "how do i start alacritty in a specific working directory?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 100
+  },
+  {
+    "id": 211,
+    "query": "how do i open a new window with alacritty msg?",
+    "filename": "man1/alacritty-msg.1.txt",
+    "line": 19
+  },
+  {
+    "id": 212,
+    "query": "what devices does clight support?",
+    "filename": "man1/clight.1.txt",
+    "line": 25
+  },
+  {
+    "id": 213,
+    "query": "how to disable gamma adjustment?",
+    "filename": "man1/clight.1.txt",
+    "line": 101
+  },
+  {
+    "id": 214,
+    "query": "how to disable dimmer?",
+    "filename": "man1/clight.1.txt",
+    "line": 105
+  },
+  {
+    "id": 215,
+    "query": "how to disable dpms?",
+    "filename": "man1/clight.1.txt",
+    "line": 109
+  },
+  {
+    "id": 216,
+    "query": "how to issue save current settings?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 100
+  },
+  {
+    "id": 217,
+    "query": "what displays vcp feature info?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 67
+  },
+  {
+    "id": 218,
+    "query": "how to detect all monitors?",
+    "filename": "man1/ddcutil.1.txt",
+    "line": 65
+  },
+  {
+    "id": 219,
+    "query": "what does cpu-shares control in docker build?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 194
+  },
+  {
+    "id": 220,
+    "query": "what build flag sets the parent cgroup?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 10
+  },
+  {
+    "id": 221,
+    "query": "what build flag sets the memory limit?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 160
+  },
+  {
+    "id": 222,
+    "query": "what build flag sets memory swap?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 164
+  },
+  {
+    "id": 223,
+    "query": "what build flag sets the networking mode?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 175
+  },
+  {
+    "id": 224,
+    "query": "what build flag sets /dev/shm size?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 186
+  },
+  {
+    "id": 225,
+    "query": "which build option sets cpu period?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 15
+  },
+  {
+    "id": 226,
+    "query": "which build option sets cpu quota?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 15
+  },
+  {
+    "id": 227,
+    "query": "how do i import secondary config files in alacritty?",
+    "filename": "man5/alacritty.5.txt",
+    "line": 31
+  },
+  {
+    "id": 228,
+    "query": "how do I change size of history in alacritty?",
+    "filename": "man5/alacritty.5.txt",
+    "line": 215
+  },
+  {
+    "id": 229,
+    "query": "what is label instruction in dockerfile?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 206
+  },
+  {
+    "id": 230,
+    "query": "what does the user instruction set in a dockerfile?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 381
+  },
+  {
+    "id": 231,
+    "query": "what is volume instruction?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 372
+  },
+  {
+    "id": 232,
+    "query": "what must a valid dockerfile start with?",
+    "filename": "man5/Dockerfile.5.txt",
+    "line": 77
+  },
+  {
+    "id": 233,
+    "query": "where does docker store its config files?",
+    "filename": "man5/docker-config-json.5.txt",
+    "line": 9
+  },
+  {
+    "id": 234,
+    "query": "what properties are stored in config.json?",
+    "filename": "man5/docker-config-json.5.txt",
+    "line": 24
+  },
+  {
+    "id": 235,
+    "query": "how do i load pipewire modules?",
+    "filename": "man5/pipewire.conf.5.txt",
+    "line": 122
+  },
+  {
+    "id": 236,
+    "query": "what properties configure the pipewire instance?",
+    "filename": "man5/pipewire.conf.5.txt",
+    "line": 116
+  },
+  {
+    "id": 237,
+    "query": "how do i create pipewire objects from config?",
+    "filename": "man5/pipewire.conf.5.txt",
+    "line": 127
+  },
+  {
+    "id": 238,
+    "query": "how to write image id to file in docker?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 127
+  },
+  {
+    "id": 239,
+    "query": "what does ultra verbose mode do?",
+    "filename": "man1/alacritty.1.txt",
+    "line": 39
+  },
+  {
+    "id": 240,
+    "query": "how do i disable automatic calibration in clight?",
+    "filename": "man1/clight.1.txt",
+    "line": 133
+  },
+  {
+    "id": 241,
+    "query": "what is shutter threshold in clight?",
+    "filename": "man1/clight.1.txt",
+    "line": 136
+  },
+  {
+    "id": 242,
+    "query": "what command lists containers?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 243,
+    "query": "how to pull specific image tag?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 135
+  },
+  {
+    "id": 244,
+    "query": "what is the push command in lf?",
+    "filename": "man1/lf.1.txt",
+    "line": 191
+  },
+  {
+    "id": 245,
+    "query": "what containers can be renamed?",
+    "filename": "man1/docker-container-rename.1.txt",
+    "line": 4
+  },
+  {
+    "id": 246,
+    "query": "how to restart with timeout?",
+    "filename": "man1/docker-container-restart.1.txt",
+    "line": 22
+  },
+  {
+    "id": 247,
+    "query": "what command removes one or more containers?",
+    "filename": "man1/docker-container-rm.1.txt",
+    "line": 4
+  },
+  {
+    "id": 248,
+    "query": "what does the --force-rm flag do?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 109
+  },
+  {
+    "id": 249,
+    "query": "what command creates and runs a container from an image?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 4
+  },
+  {
+    "id": 250,
+    "query": "how to mount volume?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 228
+  },
+  {
+    "id": 251,
+    "query": "how to set environment var?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 125
+  },
+  {
+    "id": 252,
+    "query": "how to expose port in run?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 261
+  },
+  {
+    "id": 253,
+    "query": "how to set resource limits?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 215
+  },
+  {
+    "id": 254,
+    "query": "what does detach mode do?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 85
+  },
+  {
+    "id": 255,
+    "query": "how to set container name?",
+    "filename": "man1/docker-container-run.1.txt",
+    "line": 231
+  },
+  {
+    "id": 256,
+    "query": "what command removes stopped containers?",
+    "filename": "man1/docker-container-prune.1.txt",
+    "line": 4
+  },
+  {
+    "id": 257,
+    "query": "how to start stopped container?",
+    "filename": "man1/docker-container-start.1.txt",
+    "line": 4
+  },
+  {
+    "id": 258,
+    "query": "how to view container stats?",
+    "filename": "man1/docker-container-stats.1.txt",
+    "line": 4
+  },
+  {
+    "id": 259,
+    "query": "what metrics does stats show?",
+    "filename": "man1/docker-container-stats.1.txt",
+    "line": 4
+  },
+  {
+    "id": 260,
+    "query": "how to check docker version?",
+    "filename": "man1/docker-version.1.txt",
+    "line": 9
+  },
+  {
+    "id": 261,
+    "query": "what does docker version information include?",
+    "filename": "man1/docker-version.1.txt",
+    "line": 4
+  },
+  {
+    "id": 262,
+    "query": "how to send dbus signals?",
+    "filename": "man1/dbus-send.1.txt",
+    "line": 14
+  },
+  {
+    "id": 263,
+    "query": "what is dbus method call?",
+    "filename": "man1/dbus-send.1.txt",
+    "line": 21
+  },
+  {
+    "id": 264,
+    "query": "how to monitor all messages?",
+    "filename": "man1/dbus-monitor.1.txt",
+    "line": 12
+  },
+  {
+    "id": 265,
+    "query": "how to filter dbus messages?",
+    "filename": "man1/dbus-monitor.1.txt",
+    "line": 12
+  },
+  {
+    "id": 266,
+    "query": "how to set system bus?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 38
+  },
+  {
+    "id": 267,
+    "query": "how to set session bus?",
+    "filename": "man1/dbus-daemon.1.txt",
+    "line": 41
+  },
+  {
+    "id": 268,
+    "query": "what does dbus-launch do?",
+    "filename": "man1/dbus-launch.1.txt",
+    "line": 7
+  },
+  {
+    "id": 269,
+    "query": "how to scope dbus session?",
+    "filename": "man1/dbus-launch.1.txt",
+    "line": 14
+  },
+  {
+    "id": 270,
+    "query": "how do i check dbus-broker version?",
+    "filename": "man1/dbus-broker.1.txt",
+    "line": 8
+  },
+  {
+    "id": 271,
+    "query": "how to launch broker?",
+    "filename": "man1/dbus-broker-launch.1.txt",
+    "line": 13
+  },
+  {
+    "id": 272,
+    "query": "how to run command in session?",
+    "filename": "man1/dbus-run-session.1.txt",
+    "line": 4
+  },
+  {
+    "id": 273,
+    "query": "what does test-tool do?",
+    "filename": "man1/dbus-test-tool.1.txt",
+    "line": 4
+  },
+  {
+    "id": 274,
+    "query": "what is dbus uuid?",
+    "filename": "man1/dbus-uuidgen.1.txt",
+    "line": 4
+  },
+  {
+    "id": 275,
+    "query": "what variables to update?",
+    "filename": "man1/dbus-update-activation-environment.1.txt",
+    "line": 8
+  },
+  {
+    "id": 276,
+    "query": "what sockets to cleanup?",
+    "filename": "man1/dbus-cleanup-sockets.1.txt",
+    "line": 7
+  },
+  {
+    "id": 277,
+    "query": "how to generate bindings?",
+    "filename": "man1/dbus-binding-tool.1.txt",
+    "line": 4
+  },
+  {
+    "id": 278,
+    "query": "what is container subcommand?",
+    "filename": "man1/docker-container.1.txt",
+    "line": 4
+  },
+  {
+    "id": 279,
+    "query": "what is image subcommand?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 280,
+    "query": "what is network subcommand?",
+    "filename": "man1/docker-network.1.txt",
+    "line": 4
+  },
+  {
+    "id": 281,
+    "query": "what is volume subcommand?",
+    "filename": "man1/docker-volume.1.txt",
+    "line": 14
+  },
+  {
+    "id": 282,
+    "query": "how are docker images built from a dockerfile?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 319
+  },
+  {
+    "id": 283,
+    "query": "what command builds an image from a dockerfile?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 4
+  },
+  {
+    "id": 284,
+    "query": "what flag tags the resulting image?",
+    "filename": "man1/docker-build.1.txt",
+    "line": 153
+  },
+  {
+    "id": 285,
+    "query": "how to create bridge network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 18
+  },
+  {
+    "id": 286,
+    "query": "how do i specify a custom subnet for a network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 95
+  },
+  {
+    "id": 287,
+    "query": "what network modes are supported during build?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 175
+  },
+  {
+    "id": 288,
+    "query": "how do i choose a custom network for build?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 175
+  },
+  {
+    "id": 289,
+    "query": "how do i list containers?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 4
+  },
+  {
+    "id": 290,
+    "query": "what does the quiet flag do in docker ps?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 165
+  },
+  {
+    "id": 291,
+    "query": "how do i format container listings?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 39
+  },
+  {
+    "id": 292,
+    "query": "how do i show all containers?",
+    "filename": "man1/docker-container-ls.1.txt",
+    "line": 141
+  },
+  {
+    "id": 293,
+    "query": "what does docker container prune remove?",
+    "filename": "man1/docker-container-prune.1.txt",
+    "line": 4
+  },
+  {
+    "id": 294,
+    "query": "does start wait for container?",
+    "filename": "man1/docker-container-restart.1.txt",
+    "line": 4
+  },
+  {
+    "id": 295,
+    "query": "how to see resource usage live?",
+    "filename": "man1/docker-container-stats.1.txt",
+    "line": 4
+  },
+  {
+    "id": 296,
+    "query": "how to format stats output?",
+    "filename": "man1/docker-container-stats.1.txt",
+    "line": 52
+  },
+  {
+    "id": 297,
+    "query": "which command shows docker version information?",
+    "filename": "man1/docker-version.1.txt",
+    "line": 4
+  },
+  {
+    "id": 298,
+    "query": "how do i print memusage in docker container stats?",
+    "filename": "man1/docker-container-stats.1.txt",
+    "line": 55
+  },
+  {
+    "id": 299,
+    "query": "how do i filter docker network ls output by label?",
+    "filename": "man1/docker-network-ls.1.txt",
+    "line": 37
+  },
+  {
+    "id": 300,
+    "query": "how to export container data?",
+    "filename": "man1/docker-container-export.1.txt",
+    "line": 9
+  },
+  {
+    "id": 301,
+    "query": "what is container filesystem tar?",
+    "filename": "man1/docker-container-export.1.txt",
+    "line": 4
+  },
+  {
+    "id": 122,
+    "query": "where is zathura config?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 7
+  },
+  {
+    "id": 302,
+    "query": "how do i include another config file?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 64
+  },
+  {
+    "id": 303,
+    "query": "can a config line contain more than one command?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 12
+  },
+  {
+    "id": 304,
+    "query": "how do i make a binding only in fullscreen mode?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 78
+  },
+  {
+    "id": 305,
+    "query": "which keys are available for space tab and arrows?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 126
+  },
+  {
+    "id": 306,
+    "query": "how does exec get the current page number?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 235
+  },
+  {
+    "id": 307,
+    "query": "what does feedkeys do with uppercase keys?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 357
+  },
+  {
+    "id": 308,
+    "query": "how do i remove an existing shortcut?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 445
+  },
+  {
+    "id": 309,
+    "query": "what does guioptions s show?",
+    "filename": "man5/zathurarc.5.txt",
+    "line": 541
+  },
+  {
+    "id": 310,
+    "query": "what happens if i skip --driver when creating a network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 17
+  },
+  {
+    "id": 311,
+    "query": "how do i make a swarm-scoped overlay network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 35
+  },
+  {
+    "id": 312,
+    "query": "what does attachable change for a swarm network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 47
+  },
+  {
+    "id": 313,
+    "query": "how do i set a custom subnet for a new network?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 95
+  },
+  {
+    "id": 314,
+    "query": "what happens if the subnets overlap?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 129
+  },
+  {
+    "id": 315,
+    "query": "what does the --internal option do?",
+    "filename": "man1/docker-network-create.1.txt",
+    "line": 171
+  },
+  {
+    "id": 316,
+    "query": "how to set pipewire config location with env vars?",
+    "filename": "man5/pipewire.conf.5.txt",
+    "line": 38
+  },
+  {
+    "id": 317,
+    "query": "how to set pipewire drop-ins so dictionaries merge?",
+    "filename": "man5/pipewire.conf.5.txt",
+    "line": 48
+  },
+  {
+    "id": 318,
+    "query": "how to set client stream properties with rules?",
+    "filename": "man5/pipewire-client.conf.5.txt",
+    "line": 123
+  },
+  {
+    "id": 319,
+    "query": "how to set alsa volume method to linear?",
+    "filename": "man5/pipewire-client.conf.5.txt",
+    "line": 192
+  },
+  {
+    "id": 320,
+    "query": "how to set jack quantum lock for apps?",
+    "filename": "man5/pipewire-jack.conf.5.txt",
+    "line": 107
+  },
+  {
+    "id": 321,
+    "query": "how to set jack merge-monitor on?",
+    "filename": "man5/pipewire-jack.conf.5.txt",
+    "line": 131
+  },
+  {
+    "id": 322,
+    "query": "how to set pulse startup modules?",
+    "filename": "man5/pipewire-pulse.conf.5.txt",
+    "line": 164
+  },
+  {
+    "id": 323,
+    "query": "how to set filter-chain drop-in configs?",
+    "filename": "man5/pipewire-filter-chain.conf.5.txt",
+    "line": 38
+  },
+  {
+    "id": 321,
+    "query": "how to create custom keybinds for w3m",
+    "filename": "man1/w3m.1.txt",
+    "line": 131
+  },
+  {
+    "id": 322,
+    "query": "how to run sddm preview",
+    "filename": "man1/sddm.1.txt",
+    "line": 164
+  }
+]

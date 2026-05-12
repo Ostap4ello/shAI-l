@@ -1,0 +1,53 @@
+pipewire-filter-chain.conf(5)  File Formats Manual pipewire-filter-chain.conf(5)
+
+NAME
+     pipewire-filter-chain.conf - filter-chain.conf
+
+DESCRIPTION
+     PipeWire example configuration for running audio filters.
+
+
+SYNOPSIS
+     $XDG_CONFIG_HOME/pipewire/filter-chain.conf
+
+
+     /etc/pipewire/filter-chain.conf
+
+
+     /usr/share/pipewire/filter-chain.conf
+
+
+     /usr/share/pipewire/filter-chain.conf.d/
+
+
+     /etc/pipewire/filter-chain.conf.d/
+
+
+     $XDG_CONFIG_HOME/pipewire/filter-chain.conf.d/
+
+
+DESCRIPTION
+     When  pipewire(1) is run using this configuration file, pipewire -c filter-
+     chain.conf, it starts a PipeWire client application  that  publishes  nodes
+     that apply various audio filters to their input.
+
+
+     It is a normal PipeWire client application in all respects.
+
+
+     Drop-in  configuration files filter-chain.conf.d/*.conf can be used to mod-
+     ify the filter configuration, see pipewire.conf(5). Some  examples  are  in
+     /usr/share/pipewire/filter-chain/
+
+
+AUTHORS
+     The          PipeWire          Developers         <https://gitlab.freedesk-
+     top.org/pipewire/pipewire/issues>;    PipeWire    is     available     from
+     <https://pipewire.org>
+
+
+SEE ALSO
+     pipewire(1), pipewire.conf(5)
+
+
+PipeWire                              1.6.4        pipewire-filter-chain.conf(5)

@@ -8,11 +8,12 @@ from typing import Any, Dict, List
 
 from openai import OpenAI
 from shAI_ostap4ello.src.config import get_config_value, load_config
-from shAI_ostap4ello.src.db.db import build, search
+from shAI_ostap4ello.src.db import build, search
 
 import logging
 
 logger = logging.getLogger(__name__)
+logging.getLogger("shAI_ostap4ello.src.db").setLevel(logging.WARNING)
 
 TEST_NAME = "test1"
 TEST_DESCRIPTION = "DB is-in-top-k and MRR test on document scope"
@@ -54,6 +55,8 @@ def run_test(config: Dict[str, Any]) -> str:
 
     db_path = collection_dir / "docs"
     test_cases = _load_test_cases(test_cases_file)
+    cnt = len(test_cases)
+    logger.info(f"Loaded {cnt} test cases from {test_cases_file}")
 
     # Client
     load_config(shai_config)
@@ -87,6 +90,8 @@ def run_test(config: Dict[str, Any]) -> str:
     results_list = []
 
     for i, tc in enumerate(test_cases, 1):
+        if (i % (cnt // 20 + 1)) == 0:
+            logger.info(f"Running test case {i}/{cnt}...")
         found_rank = 0
         tc_start = time.time()
         try:

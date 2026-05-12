@@ -49,6 +49,8 @@ def run_test(config: Dict[str, Any]) -> str:
     shai_config = str(config.get("config_file"))
 
     test_cases = _load_test_cases(test_cases_file)
+    cnt = len(test_cases)
+    logger.info(f"Loaded {cnt} test cases from {test_cases_file}")
 
     # Setup client
     load_config(shai_config)
@@ -63,6 +65,8 @@ def run_test(config: Dict[str, Any]) -> str:
     results_list = []
 
     for i, tc in enumerate(test_cases, 1):
+        if (i % (cnt // 20 + 1)) == 0:
+            logger.info(f"Running test case {i}/{cnt}...")
         tc_start = time.time()
         expected_label = tc["label"]
 

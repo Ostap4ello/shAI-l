@@ -36,6 +36,7 @@ def build(
     model: str,
     batch_size: int = 32,
     index_path_within_db: str = get_default_index_path_within_db(),
+    section_rows: int = 0
 ) -> None:
     # Ensure index_path_within_db is a hidden folder
     if not str(index_path_within_db).startswith("."):
@@ -51,7 +52,15 @@ def build(
     index_path.parent.mkdir(parents=True, exist_ok=True)
     meta_path.parent.mkdir(parents=True, exist_ok=True)
 
-    texts, metadata = load_documents(list_db_documents(doc_dir))
+    if section_rows == 0:
+        texts, metadata = load_documents(list_db_documents(doc_dir))
+    elif section_rows > 0:
+        texts, metadata = load_documents_in_sections(
+            list_db_documents(doc_dir), section_rows
+        )
+    else:
+        raise RuntimeError("Section size cannot be less then 0")
+
     vectors = embed_strings(client, model, texts, batch_size)
     index = build_index(vectors)
     save_index(index, metadata, index_path, meta_path)

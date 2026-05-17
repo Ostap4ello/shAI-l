@@ -41,6 +41,7 @@ def _cmd_build(args: argparse.Namespace) -> None:
             client=client,
             model=model,
             batch_size=args.batch_size,
+            section_rows=args.section_rows,
         )
     except Exception as e:
         logger.warning(f"Error during index build: {e}")
@@ -155,6 +156,14 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
     build_cmd.add_argument(
         "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"
+    )
+    build_cmd.add_argument(
+        "--section-rows",
+        type=int,
+        default=0,
+        help=(
+            "If set, indexes by sections of the chosen size instead of the whole document"
+        ),
     )
     build_cmd.set_defaults(func=_cmd_build)
 

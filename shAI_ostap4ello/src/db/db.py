@@ -6,6 +6,7 @@ from typing import List
 from openai import OpenAI
 
 from .utils.documents import (
+    list_db_documents,
     load_documents,
     load_documents_in_sections,
 )
@@ -49,7 +50,7 @@ def build(
     index_path.parent.mkdir(parents=True, exist_ok=True)
     meta_path.parent.mkdir(parents=True, exist_ok=True)
 
-    texts, metadata = load_documents(doc_dir)
+    texts, metadata = load_documents(list_db_documents(doc_dir))
     vectors = embed_strings(client, model, texts, batch_size)
     index = build_index(vectors)
 

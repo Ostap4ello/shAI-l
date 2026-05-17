@@ -30,16 +30,14 @@ ALLOWED_EXTENSIONS = [
     ".py", ".js", ".ts", ".java", ".c", ".cpp", ".h", ".html", ".css", ".sh", ".bat", ".env"
 ]
 
-def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
-    logger.info(f"Loading documents from: {doc_dir}")
+
+def list_db_documents(doc_dir: Path) -> List[Path]:
+    logger.info(f"Listing documents in: {doc_dir}")
     if not doc_dir.exists() or not doc_dir.is_dir():
         logger.error(f"Document directory not found: {doc_dir}")
         raise RuntimeError(f"Document directory not found: {doc_dir}")
 
-    texts: List[str] = []
-    metadata: List[dict] = []
-
-    file_paths = []
+    doc_paths = []
     for root, _, files in os.walk(doc_dir, followlinks=True):
         for file in files:
             path = Path(root) / file
@@ -48,11 +46,23 @@ def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
                 or path.suffix not in ALLOWED_EXTENSIONS
             ):
                 continue
-            file_paths.append(path.absolute())
-    total_files = len(file_paths)
+            doc_paths.append(path.absolute())
 
-    for idx, path in enumerate(file_paths, start=1):
-        logger.debug(f"\rLoading {idx}/{total_files}: {path}")
+    if len(doc_paths) == 0:
+        raise RuntimeError(f"No readable documents in: {doc_dir}")
+
+    return doc_paths
+
+
+def load_documents(doc_paths: List[Path]) -> Tuple[List[str], List[dict]]:
+    logger.debug(f"Loading documents: {doc_paths}")
+
+    texts: List[str] = []
+    metadata: List[dict] = []
+
+    total = len(doc_paths)
+    for idx, path in enumerate(doc_paths, start=1):
+        logger.debug(f"\rLoading {idx}/{total}: {path}")
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
@@ -62,36 +72,38 @@ def load_documents(doc_dir: Path) -> Tuple[List[str], List[dict]]:
         texts.append(content)
         metadata.append({"path": str(path)})
 
-    if not texts:
-        raise RuntimeError(f"No readable documents in: {doc_dir}")
-
     return texts, metadata
 
-def load_documents_in_sections(doc_paths: List[Path], section_rows: int) -> Tuple[List[str], List[dict]]:
-    logger.debug(f"Loading documents in sections: {doc_paths}")
 
-    sections = []
-    metadata = []
+def load_documents_in_sections( doc_paths: List[Path], section_rows: int
+) -> Tuple[List[str], List[dict]]:
+    logger.debug(
+        f"Loading documents in sections: {doc_paths} (section={section_rows}lines)"
+    )
+
+    sections: List[str] = []
+    metadata: List[dict] = []
 
     for doc_path in doc_paths:
-        one_sections, one_metadata = load_document_in_sections(doc_path, section_rows)
+        one_sections, one_metadata = _load_document_in_sections(doc_path, section_rows)
         sections = sections + one_sections
         metadata = metadata + one_metadata
 
     return sections, metadata
 
-def load_document_in_sections(doc_path: Path, section_rows: int) -> Tuple[List[str], List[dict]]:
-    logger.debug(f"Loading document in sections: {doc_path}")
 
-    if not doc_path.exists() or not doc_path.is_file():
-        logger.error(f"Document not found: {doc_path}")
-        raise RuntimeError(f"Document not found: {doc_path}")
+def _load_document_in_sections(
+    doc_path: Path, section_rows: int
+) -> Tuple[List[str], List[dict]]:
+    logger.debug(
+        f"Loading document in sections: {doc_path} (section={section_rows}lines)"
+    )
 
     # TODO: handling last section - if it lacks rows. Separator?
     # Custom 
 
-    sections = []
-    metadata = []
+    sections: List[str] = []
+    metadata: List[dict] = []
 
     lines = open(doc_path, "r").readlines()
     for i in range(0, len(lines), section_rows):
@@ -99,4 +111,3 @@ def load_document_in_sections(doc_path: Path, section_rows: int) -> Tuple[List[s
         metadata.append({"path": str(doc_path), "from": i, "to": i + 20})
 
     return sections, metadata
-

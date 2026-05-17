@@ -80,7 +80,7 @@ def search(
         db_path, index_path_within_db
     )
 
-    model = _get_index_info(config_path)["model"]
+    model = load_index_config(config_path)["model"]
 
     index, metadata = load_index(index_path, meta_path)
     query_vec = embed_strings(client, model, [query], batch_size=1)
@@ -151,15 +151,4 @@ def get_index_info(
         raise RuntimeError("Index not found. Run build() first.")
 
     _, _, config_path = resolve_index_paths(db_path, index_path_within_db)
-    return _get_index_info(config_path)
-
-def _get_index_info(
-    config_path: Path,
-) -> dict:
-    model = load_index_config(config_path).get("model", "")
-    if model.strip() == "":
-        raise RuntimeError(
-            f"Erroneous db config ({config_path}): wrong or no model is specified"
-        )
-
-    return {"model": model}
+    return load_index_config(config_path)

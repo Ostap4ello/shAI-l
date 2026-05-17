@@ -29,11 +29,14 @@ def save_index_config(config_path: Path, model: str) -> None:
 
 def load_index_config(config_path: Path) -> dict:
     logger.info(f"Loading index config from: {config_path}")
-    if not config_path.exists():
-        logger.warning(f"Config not found: {config_path}. Returning empty config.")
-        return {}
-    try:
-        return json.loads(config_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        logger.error(f"Failed to parse config: {config_path}. Error: {exc}")
-        raise RuntimeError(f"Invalid index config: {config_path}") from exc
+    config = {}
+
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+
+    if not "model" in config.keys():
+        raise RuntimeError(
+            f"Error in db config ({config_path}): no model is specified"
+        )
+
+    return config
+

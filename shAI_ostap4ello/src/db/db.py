@@ -15,6 +15,7 @@ from .utils.config import (
     load_index_config,
     resolve_index_paths,
     save_index_config,
+    get_empty_config as get_empty_db_config
 )
 from .utils.faiss_utils import (
     build_index,
@@ -53,9 +54,11 @@ def build(
     texts, metadata = load_documents(list_db_documents(doc_dir))
     vectors = embed_strings(client, model, texts, batch_size)
     index = build_index(vectors)
-
     save_index(index, metadata, index_path, meta_path)
-    save_index_config(config_path, model)
+
+    index_config = get_empty_db_config()
+    index_config["model"] = model
+    save_index_config(config_path, index_config)
 
 
 def check(

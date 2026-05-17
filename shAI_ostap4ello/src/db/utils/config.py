@@ -7,6 +7,19 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_INDEX_PATH_WITHIN_DB = ".index"
+CONFIG_SCHEMA = {"model": ""}
+
+
+def get_empty_config() -> dict:
+    return CONFIG_SCHEMA.copy()
+
+
+def is_config_valid(config: dict) -> bool:
+    for k in CONFIG_SCHEMA.keys():
+        if not k not in config.keys():
+            logger.error(f"Could not find field '{k}' in db config")
+            return False
+    return True
 
 
 def resolve_index_paths(
@@ -23,8 +36,10 @@ def get_default_index_path_within_db() -> str:
     return DEFAULT_INDEX_PATH_WITHIN_DB
 
 
-def save_index_config(config_path: Path, model: str) -> None:
-    config_path.write_text(json.dumps({"model": model}, indent=2), encoding="utf-8")
+def save_index_config(config_path: Path, config: dict) -> None:
+    if not is_config_valid(config):
+        raise RuntimeError(f"Erroroneous db config ({config_path})")
+    config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
 
 
 def load_index_config(config_path: Path) -> dict:
@@ -33,10 +48,8 @@ def load_index_config(config_path: Path) -> dict:
 
     config = json.loads(config_path.read_text(encoding="utf-8"))
 
-    if not "model" in config.keys():
-        raise RuntimeError(
-            f"Error in db config ({config_path}): no model is specified"
-        )
+    if not is_config_valid(config):
+        raise RuntimeError(f"Erroroneous db config ({config_path})")
 
     return config
 

@@ -5,16 +5,20 @@ from typing import List
 
 from openai import OpenAI
 
-from .utils.faiss_utils import (
-    build_faiss_index,
+from .utils.documents import (
     load_documents,
     load_documents_in_sections,
-    load_index,
-    save_index,
-    save_index_config,
+)
+from .utils.config import (
+    get_default_index_path_within_db,
     load_index_config,
     resolve_index_paths,
-    get_default_index_path_within_db,
+    save_index_config,
+)
+from .utils.faiss_utils import (
+    build_index,
+    load_index,
+    save_index,
 )
 
 from ..llm import embed_strings
@@ -47,7 +51,7 @@ def build(
 
     texts, metadata = load_documents(doc_dir)
     vectors = embed_strings(client, model, texts, batch_size)
-    index = build_faiss_index(vectors)
+    index = build_index(vectors)
 
     save_index(index, metadata, index_path, meta_path)
     save_index_config(config_path, model)
@@ -120,7 +124,7 @@ def search_in_files_dynamic(
     query_vec = vectors[-1].reshape(1, -1)
     vectors = vectors[:-1]
 
-    index = build_faiss_index(vectors)
+    index = build_index(vectors)
 
     distances, indices = index.search(query_vec, top_k)
 

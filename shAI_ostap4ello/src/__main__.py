@@ -113,7 +113,7 @@ def main() -> None:
         )
         load_config(config_path_str=pre_args.config, create=pre_args.create_config)
         if pre_args.create_config:
-            print(f"Config file created at {pre_args.config}. Exiting as requested.")
+            print(f"Config file created at {pre_args.config}")
             raise SystemExit(0)
 
     parser = cli_parser()

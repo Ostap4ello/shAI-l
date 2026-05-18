@@ -56,6 +56,9 @@ This is a minimalistic shell assistant that leverages athe technologies of local
     shai --create-config --create <path-to-file>
     # Create default db dir (if not overriden in config/flags)
     mkdir -p ~/.local/share/shai_db
+    # Pull models used by shai (see model/embed_model fields in config)
+    shai shart_ollama --create
+    shai utils pull_model <model/embed_model>
     ```
 
 

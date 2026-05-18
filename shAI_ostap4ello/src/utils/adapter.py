@@ -5,7 +5,6 @@ from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
-OLLAMA_DOCKER_SCRIPT = "ollama-docker.sh"
 OLLAMA_CONTAINER_DEFAULT_NAME = "ollama-node-1"
 OLLAMA_DEFAULT_CONTEXT_LENGTH = 32000
 OLLAMA_DEFAULT_GPUS = "all"
@@ -44,9 +43,7 @@ def _call_bash_script(
         while True:
             # Use select to monitor both streams for readability
             if process.stdout and process.stderr:
-                ready, _, _ = select.select(
-                    [process.stdout, process.stderr], [], []
-                )
+                ready, _, _ = select.select([process.stdout, process.stderr], [], [])
 
                 for stream in ready:
                     line = stream.readline()
@@ -141,7 +138,9 @@ def start_ollama(
         logger.info(f"Ollama Docker container started successfully.")
     except RuntimeError as e:
         if create:
-            logger.warning(f"Failed to start Ollama container. Trying to run it instead.")
+            logger.warning(
+                f"Failed to start Ollama container. Trying to run it instead."
+            )
             result = run_ollama(context_length=context_length, gpus=gpus, name=name)
         else:
             raise e
@@ -159,9 +158,7 @@ def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME, remove=False):
 
 def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:
     logger.debug(f"Checking if Ollama Docker container with name: {name} is running")
-    _, stdout, _ = _call_bash_script(
-        "ollama-docker.sh", ["--name", name, "status"]
-    )
+    _, stdout, _ = _call_bash_script("ollama-docker.sh", ["--name", name, "status"])
     if stdout == "- Container is up.\n- Ollama is up.\n":
         logger.info("Ollama container is up.")
         return True
@@ -172,6 +169,21 @@ def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:
 
 def convert_man_pages_to_text(src_dir, out_dir):
     logger.info(f"Converting Groff files from {src_dir} to {out_dir}")
+
     def stdout_callback(s):
         logger.info(s)
-    return _call_bash_script("compile-groff.sh", ["-i", src_dir, "-o", out_dir], stdout_callback=stdout_callback)
+
+    return _call_bash_script(
+        "compile-groff.sh",
+        ["-i", src_dir, "-o", out_dir],
+        stdout_callback=stdout_callback,
+    )
+
+
+def pull_model(model_name: str, name: str = OLLAMA_CONTAINER_DEFAULT_NAME):
+    logger.info(f"Pulling model '{model_name}' into container '{name}'")
+
+    return _call_bash_script(
+        "ollama-docker.sh",
+        ["--name", name, "c", "pull", model_name],
+    )

@@ -63,6 +63,21 @@ def _cmd_is_ollama_running(args: argparse.Namespace) -> None:
         raise SystemExit(1)
 
 
+def _cmd_pull_model(args: argparse.Namespace) -> None:
+    """Pull a model into the Ollama container via the helper script."""
+    try:
+        # pull_model is provided by adapter
+        retcode, stdout, stderr = pull_model(args.model_name, name=args.name)
+        # NOTE: removed due to unstable ollama cli output
+        # if stdout:
+        #     print(stdout)
+        # if stderr:
+        #     print(stderr, file=sys.stderr)
+    except Exception as e:
+        logger.error(f"Error pulling model {args.model_name}: {e}")
+        raise SystemExit(1)
+
+
 def _cmd_convert(args: argparse.Namespace) -> None:
     try:
         convert_man_pages_to_text(src_dir=args.src_dir, out_dir=args.out_dir)
@@ -148,6 +163,17 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
     )
     parser_status.set_defaults(func=_cmd_is_ollama_running)
+
+    parser_pull = subparsers.add_parser(
+        "pull_model",
+        help="Pull a model into the Ollama container via the docker helper script",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_pull.add_argument("model_name", help="Model name to pull (e.g., qwen3:1.7b)")
+    parser_pull.add_argument(
+        "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
+    )
+    parser_pull.set_defaults(func=_cmd_pull_model)
 
     parser_convert = subparsers.add_parser(
         "convert_man_pages",

@@ -6,5 +6,8 @@ __all__ = [
     "stop_ollama",
     "is_ollama_running",
     "convert_man_pages_to_text",
+    "pull_model",
+    "rm_model",
+    "ls_models",
     "get_prompt",
 ]

@@ -1,15 +1,55 @@
 import os
 import subprocess
 import logging
+import json
+import time
+from urllib import request, error
 from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
-OLLAMA_CONTAINER_DEFAULT_NAME = "ollama-node-1"
-OLLAMA_DEFAULT_CONTEXT_LENGTH = 32000
-OLLAMA_DEFAULT_GPUS = "all"
-
 COMPILE_GROFF_SCRIPT = "compile-groff.sh"
+OLLAMA_DOCKER_SCRIPT = "ollama-docker.sh"
+
+
+def _http_req(
+    method: str, url: str, payload: Optional[dict] = None
+) -> dict:
+    data = None
+    headers = {}
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+
+    req = request.Request(
+        url=url,
+        data=data,
+        headers=headers,
+        method=method,
+    )
+
+    try:
+        with request.urlopen(req) as resp:
+            body = resp.read().decode("utf-8").strip()
+    except error.HTTPError as e:
+        body = e.read().decode("utf-8").strip()
+        raise RuntimeError(
+            f"Ollama HTTP {method} {url} failed with status {e.code}: {body}"
+        ) from e
+    except error.URLError as e:
+        raise RuntimeError(
+            f"Failed to reach service at {url}: {e.reason}"
+        ) from e
+
+    if body == "":
+        return {}
+
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(
+            f"Invalid JSON from Ollama HTTP {method} {url}: {body}"
+        ) from e
 
 
 def _call_bash_script(
@@ -101,11 +141,7 @@ def _call_bash_script(
         raise RuntimeError(f"Error executing script: {script_path}: {e}") from e
 
 
-def run_ollama(
-    context_length=OLLAMA_DEFAULT_CONTEXT_LENGTH,
-    gpus=OLLAMA_DEFAULT_GPUS,
-    name=OLLAMA_CONTAINER_DEFAULT_NAME,
-):
+def run_ollama(context_length: int, gpus: str, name: str):
     logger.info(f"Running Ollama Docker container")
     logger.debug(f"name: {name}, context_length: {context_length}, gpus: {gpus}")
     result = _call_bash_script(
@@ -124,12 +160,7 @@ def run_ollama(
     return result
 
 
-def start_ollama(
-    context_length=OLLAMA_DEFAULT_CONTEXT_LENGTH,
-    gpus=OLLAMA_DEFAULT_GPUS,
-    name=OLLAMA_CONTAINER_DEFAULT_NAME,
-    create=False,
-):
+def start_ollama(context_length: int, gpus: str, name: str, create: bool):
     logger.info(f"Starting Ollama Docker container")
     logger.debug(f"name: {name}, context_length: {context_length}, gpus: {gpus}")
     result = None
@@ -147,7 +178,7 @@ def start_ollama(
     return result
 
 
-def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME, remove=False):
+def stop_ollama(name: str, remove: bool):
     logger.info(f"Stopping Ollama Docker")
     logger.debug(f"name: {name}")
     if remove:
@@ -156,7 +187,7 @@ def stop_ollama(name=OLLAMA_CONTAINER_DEFAULT_NAME, remove=False):
         return _call_bash_script("ollama-docker.sh", ["--name", name, "stop"])
 
 
-def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:
+def is_ollama_running(name: str) -> bool:
     logger.debug(f"Checking if Ollama Docker container with name: {name} is running")
     _, stdout, _ = _call_bash_script("ollama-docker.sh", ["--name", name, "status"])
     if stdout == "- Container is up.\n- Ollama is up.\n":
@@ -167,7 +198,7 @@ def is_ollama_running(name=OLLAMA_CONTAINER_DEFAULT_NAME) -> bool:
         return False
 
 
-def convert_man_pages_to_text(src_dir, out_dir):
+def convert_man_pages_to_text(src_dir: str, out_dir: str):
     logger.info(f"Converting Groff files from {src_dir} to {out_dir}")
 
     def stdout_callback(s):
@@ -180,10 +211,39 @@ def convert_man_pages_to_text(src_dir, out_dir):
     )
 
 
-def pull_model(model_name: str, name: str = OLLAMA_CONTAINER_DEFAULT_NAME):
-    logger.info(f"Pulling model '{model_name}' into container '{name}'")
+def wait_ollama_ready(ollama_url: str, timeout_sec: int = 120, interval_sec: float = 2.0) -> None:
+    deadline = time.time() + timeout_sec
+    last_error: Optional[Exception] = None
+    while time.time() < deadline:
+        try:
+            _http_req("GET", f"{ollama_url.rstrip("/")}/api/tags")
+            return
+        except Exception as e:
+            last_error = e
+            time.sleep(interval_sec)
 
-    return _call_bash_script(
-        "ollama-docker.sh",
-        ["--name", name, "c", "pull", model_name],
+    raise RuntimeError(
+        f"Ollama service did not become ready at {ollama_url}"
+    ) from last_error
+
+
+def pull_model(ollama_url: str, model_name: str) -> dict:
+    logger.info(f"Pulling model '{model_name}' via Ollama HTTP API")
+    return _http_req(
+        "POST", f"{ollama_url.rstrip("/")}/api/pull", {"model": model_name, "stream": False}
     )
+
+
+def rm_model(ollama_url: str, model_name: str) -> dict:
+    logger.info(f"Removing model '{model_name}' via Ollama HTTP API")
+    return _http_req("DELETE", f"{ollama_url.rstrip("/")}/api/delete", {"model": model_name})
+
+
+def ls_models(ollama_url: str) -> list[dict]:
+    logger.info("Listing models via Ollama HTTP API")
+    response = _http_req("GET", f"{ollama_url.rstrip("/")}/api/tags")
+    models = response.get("models")
+    if not isinstance(models, list):
+        raise RuntimeError(f"Invalid /api/tags response format: {response}")
+    return models
+

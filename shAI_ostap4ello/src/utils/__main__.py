@@ -9,6 +9,7 @@ import sys
 from .adapter import *
 from .fetch_man import fetch_manpages_to_db, MAN_ROOT, DEFAULT_SECTIONS, MERGE_POLICIES
 
+DEFAULT_OLLAMA_URL="http://127.0.0.1:11434/"
 DEFAULT_DOCKER_CONTAINER_NAME = "ollama-node-1"
 DEFAULT_DOCKER_CONTEXT_LENGTH = 32000
 DEFAULT_DOCKER_GPUS = "all"
@@ -64,17 +65,51 @@ def _cmd_is_ollama_running(args: argparse.Namespace) -> None:
 
 
 def _cmd_pull_model(args: argparse.Namespace) -> None:
-    """Pull a model into the Ollama container via the helper script."""
+    """Pull a model via the Ollama HTTP API."""
     try:
-        # pull_model is provided by adapter
-        retcode, stdout, stderr = pull_model(args.model_name, name=args.name)
-        # NOTE: removed due to unstable ollama cli output
-        # if stdout:
-        #     print(stdout)
-        # if stderr:
-        #     print(stderr, file=sys.stderr)
+        response = pull_model(DEFAULT_OLLAMA_URL, args.model_name)
+        status = response.get("status")
+        if isinstance(status, str) and status:
+            print(status)
+        else:
+            print(f"Model '{args.model_name}' pull request completed.")
     except Exception as e:
         logger.error(f"Error pulling model {args.model_name}: {e}")
+        raise SystemExit(1)
+
+
+def _cmd_rm_model(args: argparse.Namespace) -> None:
+    """Remove a model via the Ollama HTTP API."""
+    try:
+        response = rm_model(DEFAULT_OLLAMA_URL, args.model_name)
+        status = response.get("status")
+        if isinstance(status, str) and status:
+            print(status)
+        else:
+            print(f"Model '{args.model_name}' removed.")
+    except Exception as e:
+        logger.error(f"Error removing model {args.model_name}: {e}")
+        raise SystemExit(1)
+
+
+def _cmd_ls_models(args: argparse.Namespace) -> None:
+    """List available models via the Ollama HTTP API."""
+    try:
+        models = ls_models(DEFAULT_OLLAMA_URL)
+        print(models)
+        if not models:
+            print("No models found.")
+            return
+
+        for model in models:
+            name = model.get("name", "<unknown>")
+            size = model.get("size")
+            if isinstance(size, int):
+                print(f"Name: {name}\nSize: {size//10**6}MB\n")
+            else:
+                print(name)
+    except Exception as e:
+        logger.error(f"Error listing models: {e}")
         raise SystemExit(1)
 
 
@@ -166,14 +201,26 @@ def _cli_parser() -> argparse.ArgumentParser:
 
     parser_pull = subparsers.add_parser(
         "pull_model",
-        help="Pull a model into the Ollama container via the docker helper script",
+        help="Pull a model via the Ollama HTTP API",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser_pull.add_argument("model_name", help="Model name to pull (e.g., qwen3:1.7b)")
-    parser_pull.add_argument(
-        "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
-    )
     parser_pull.set_defaults(func=_cmd_pull_model)
+
+    parser_rm = subparsers.add_parser(
+        "rm_model",
+        help="Remove a model via the Ollama HTTP API",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_rm.add_argument("model_name", help="Model name to remove (e.g., qwen3:1.7b)")
+    parser_rm.set_defaults(func=_cmd_rm_model)
+
+    parser_ls = subparsers.add_parser(
+        "ls_models",
+        help="List available models via the Ollama HTTP API",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_ls.set_defaults(func=_cmd_ls_models)
 
     parser_convert = subparsers.add_parser(
         "convert_man_pages",

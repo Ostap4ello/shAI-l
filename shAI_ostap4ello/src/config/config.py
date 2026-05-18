@@ -45,6 +45,7 @@ def get_default_config() -> configparser.ConfigParser:
     }
 
     config["utils"] = {
+        "ollama_url": "http://127.0.0.1:11434/",
         "ollama_context_length": "32000",
         "ollama_gpus": "all",
         "ollama_container_name": "ollama-node-1",
@@ -212,6 +213,9 @@ def propagate_config() -> None:
     )
     utils_main.DEFAULT_FETCH_MERGE_STRATEGY = config.get(
         "utils", "merge_strategy", fallback="abort"
+    )
+    utils_main.DEFAULT_OLLAMA_URL = config.get(
+        "utils", "ollama_url", fallback="http://127.0.0.1:11434/"
     )
 
     logger.debug("Config propagated to module defaults.")

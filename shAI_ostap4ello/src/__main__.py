@@ -3,6 +3,8 @@ import logging
 import sys
 import signal
 
+from shAI_ostap4ello.src.config.config import get_config_value
+
 from .config import DEFAULT_CONFIG_PATH, load_config
 from .db.__main__ import _cli_parser as _db_cli_parser
 from .interpreter.interpreter import main as interpreter_main
@@ -130,7 +132,7 @@ def main() -> None:
         force=True,
     )
 
-    if not is_ollama_running():
+    if not is_ollama_running(get_config_value("utils", "ollama_container_name")):
         logger.warning(
             "Ollama does not appear to be running. All LLM interactions will "
             "fail. Try using `shai utils start_ollama` to start it."

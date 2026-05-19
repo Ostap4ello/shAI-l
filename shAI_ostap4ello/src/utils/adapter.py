@@ -211,7 +211,8 @@ def convert_man_pages_to_text(src_dir: str, out_dir: str):
     )
 
 
-def wait_ollama_ready(ollama_url: str, timeout_sec: int = 120, interval_sec: float = 2.0) -> None:
+def wait_ollama_ready(ollama_url: str, timeout_sec: int = 10, interval_sec: float = 2.0) -> None:
+    logger.info(f"Waiting for ollama service on '{ollama_url}'")
     deadline = time.time() + timeout_sec
     last_error: Optional[Exception] = None
     while time.time() < deadline:

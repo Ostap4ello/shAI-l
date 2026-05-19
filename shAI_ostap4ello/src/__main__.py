@@ -1,18 +1,24 @@
 import argparse
 import logging
+from pathlib import Path
 import sys
 import signal
 
-from shAI_ostap4ello.src.config.config import get_config_value
 
-from .config import DEFAULT_CONFIG_PATH, load_config
 from .db.__main__ import _cli_parser as _db_cli_parser
-from .interpreter.interpreter import main as interpreter_main
 from .llm.__main__ import _cli_parser as _llm_cli_parser
 from .rag.__main__ import _cli_parser as _rag_cli_parser
 from .utils.__main__ import _cli_parser as _utils_cli_parser
 
-from .utils import is_ollama_running
+from .config import DEFAULT_CONFIG_PATH, load_config, get_config_value
+from .interpreter.interpreter import main as interpreter_main
+from .utils import (
+    is_ollama_running,
+    pull_model,
+    start_ollama,
+    stop_ollama,
+    wait_ollama_ready,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +27,45 @@ DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_MODEL = "qwen3:1.7b"
 DEFAULT_LOG_LEVEL = "INFO"
+
+
+def _cmd_ollama_init(args: argparse.Namespace) -> None:
+    init_shai()
+
+def init_shai():
+    db_path = Path(get_config_value("db", "db_path", str)).expanduser().resolve()
+    logger.info(f"Creating db folder({db_path})")
+    db_path.mkdir(parents=True, exist_ok=True)
+
+    models = [
+        get_config_value("llm", "model", str),
+        get_config_value("llm", "embed_model", str),
+        get_config_value("rag", "model", str),
+    ]
+    logger.info(f"Initializing Ollama container for configured models ({models})")
+    url = get_config_value("utils", "ollama_url", str)
+    was_ollama_running = is_ollama_running(get_config_value("utils", "ollama_container_name"))
+
+    if not was_ollama_running:
+        try:
+            start_ollama(context_length=3200, gpus="none", name="tmp_shai", create=True)
+            wait_ollama_ready(url)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            raise SystemExit(1)
+
+    for model in models:
+        try:
+            pull_model(url, model)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+
+    if not was_ollama_running:
+        try:
+            stop_ollama(name="tmp_shai", remove=True)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            raise SystemExit(1)
 
 def _interpreter_cmd(args: argparse.Namespace) -> None:
     interpreter_main(args.config, args.log_level)
@@ -68,6 +113,16 @@ def cli_parser() -> argparse.ArgumentParser:
         add_help=False,
         help="Miscellaneous utilities",
     )
+    init_parser = subparsers.add_parser(
+        "init",
+        help=(
+            "Create default database folder, create/start Ollama container, pull"
+            "models from config, then remove container and exit"
+        ),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    init_parser.set_defaults(func=_cmd_ollama_init)
+
     _interpreter_parser = subparsers.add_parser(
         "interpreter", help="ShAI shell"
     )

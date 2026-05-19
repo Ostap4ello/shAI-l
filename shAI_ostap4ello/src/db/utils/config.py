@@ -16,7 +16,7 @@ def get_empty_config() -> dict:
 
 def is_config_valid(config: dict) -> bool:
     for k in CONFIG_SCHEMA.keys():
-        if not k not in config.keys():
+        if not k in config.keys():
             logger.error(f"Could not find field '{k}' in db config")
             return False
     return True

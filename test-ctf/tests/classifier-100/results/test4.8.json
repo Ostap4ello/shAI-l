@@ -1,0 +1,709 @@
+{
+  "test": "test4",
+  "correct/total": "65/100",
+  "accuracy": "65.0%",
+  "model": "gemma3:1b",
+  "avg_latency": 0.2329,
+  "testcases": [
+    {
+      "id": 1,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 1.2966
+    },
+    {
+      "id": 2,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2312
+    },
+    {
+      "id": 3,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2333
+    },
+    {
+      "id": 4,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2256
+    },
+    {
+      "id": 5,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.247
+    },
+    {
+      "id": 6,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2184
+    },
+    {
+      "id": 7,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2313
+    },
+    {
+      "id": 8,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2374
+    },
+    {
+      "id": 9,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2367
+    },
+    {
+      "id": 10,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2217
+    },
+    {
+      "id": 11,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2185
+    },
+    {
+      "id": 12,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2185
+    },
+    {
+      "id": 13,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2273
+    },
+    {
+      "id": 14,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2221
+    },
+    {
+      "id": 15,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2168
+    },
+    {
+      "id": 16,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2293
+    },
+    {
+      "id": 17,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2125
+    },
+    {
+      "id": 18,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2301
+    },
+    {
+      "id": 19,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2161
+    },
+    {
+      "id": 20,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2189
+    },
+    {
+      "id": 21,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2162
+    },
+    {
+      "id": 22,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2242
+    },
+    {
+      "id": 23,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2249
+    },
+    {
+      "id": 24,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2283
+    },
+    {
+      "id": 25,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2097
+    },
+    {
+      "id": 26,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2194
+    },
+    {
+      "id": 27,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2148
+    },
+    {
+      "id": 28,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.232
+    },
+    {
+      "id": 29,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.224
+    },
+    {
+      "id": 30,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2151
+    },
+    {
+      "id": 31,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2156
+    },
+    {
+      "id": 32,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2295
+    },
+    {
+      "id": 33,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2196
+    },
+    {
+      "id": 34,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2237
+    },
+    {
+      "id": 35,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2513
+    },
+    {
+      "id": 36,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2329
+    },
+    {
+      "id": 37,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2172
+    },
+    {
+      "id": 38,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2272
+    },
+    {
+      "id": 39,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2173
+    },
+    {
+      "id": 40,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2148
+    },
+    {
+      "id": 41,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2265
+    },
+    {
+      "id": 42,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2141
+    },
+    {
+      "id": 43,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2265
+    },
+    {
+      "id": 44,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2169
+    },
+    {
+      "id": 45,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2315
+    },
+    {
+      "id": 46,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2173
+    },
+    {
+      "id": 47,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.228
+    },
+    {
+      "id": 48,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2482
+    },
+    {
+      "id": 49,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2242
+    },
+    {
+      "id": 50,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.2176
+    },
+    {
+      "id": 51,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2158
+    },
+    {
+      "id": 52,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2165
+    },
+    {
+      "id": 53,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2329
+    },
+    {
+      "id": 54,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2149
+    },
+    {
+      "id": 55,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.215
+    },
+    {
+      "id": 56,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2292
+    },
+    {
+      "id": 57,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2228
+    },
+    {
+      "id": 58,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2184
+    },
+    {
+      "id": 59,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2248
+    },
+    {
+      "id": 60,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2221
+    },
+    {
+      "id": 61,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2173
+    },
+    {
+      "id": 62,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2199
+    },
+    {
+      "id": 63,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2167
+    },
+    {
+      "id": 64,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2231
+    },
+    {
+      "id": 65,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2247
+    },
+    {
+      "id": 66,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2229
+    },
+    {
+      "id": 67,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2161
+    },
+    {
+      "id": 68,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2357
+    },
+    {
+      "id": 69,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2169
+    },
+    {
+      "id": 70,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2229
+    },
+    {
+      "id": 71,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2184
+    },
+    {
+      "id": 72,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2142
+    },
+    {
+      "id": 73,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2142
+    },
+    {
+      "id": 74,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2147
+    },
+    {
+      "id": 75,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2241
+    },
+    {
+      "id": 76,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2213
+    },
+    {
+      "id": 77,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2174
+    },
+    {
+      "id": 78,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2242
+    },
+    {
+      "id": 79,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2216
+    },
+    {
+      "id": 80,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2208
+    },
+    {
+      "id": 81,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2209
+    },
+    {
+      "id": 82,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2228
+    },
+    {
+      "id": 83,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2194
+    },
+    {
+      "id": 84,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.217
+    },
+    {
+      "id": 85,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2201
+    },
+    {
+      "id": 86,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2161
+    },
+    {
+      "id": 87,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2275
+    },
+    {
+      "id": 88,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2166
+    },
+    {
+      "id": 89,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.217
+    },
+    {
+      "id": 90,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2159
+    },
+    {
+      "id": 92,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2178
+    },
+    {
+      "id": 93,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2202
+    },
+    {
+      "id": 94,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.216
+    },
+    {
+      "id": 95,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2199
+    },
+    {
+      "id": 96,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2114
+    },
+    {
+      "id": 97,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2223
+    },
+    {
+      "id": 98,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2134
+    },
+    {
+      "id": 99,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2161
+    },
+    {
+      "id": 100,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.2231
+    },
+    {
+      "id": 101,
+      "expected": "natlang",
+      "predicted": "bash",
+      "correct": 0,
+      "latency": 0.219
+    }
+  ]
+}

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from openai import OpenAI
+from shAI_ostap4ello.src.__main__ import init_shai
 from shAI_ostap4ello.src.config import get_config_value, load_config
 
 import logging
@@ -54,6 +55,7 @@ def run_test(config: Dict[str, Any]) -> str:
 
     # Setup client
     load_config(shai_config)
+    init_shai()
     api_key = get_config_value("llm", "api_key", str)
     api_base_url = get_config_value("llm", "api_base_url", str)
     model = get_config_value("llm", "model", str)

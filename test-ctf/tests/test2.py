@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logging.getLogger("shAI_ostap4ello.src.db").setLevel(logging.WARNING)
 
 TEST_NAME = "test2"
-TEST_DESCRIPTION = "DB is-in-top-k and MRR test on passage scope using extended search"
+TEST_DESCRIPTION = "DB is-in-top-k and MRR test on document scope using passage-level re-ranking"
 TEST_CONFIG_SCHEMA = {
     "collection_dir": "",
     "test_cases_file": "",

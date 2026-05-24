@@ -2,9 +2,10 @@ import logging
 import sys
 import signal
 
+from ..utils.__main__ import DEFAULT_DOCKER_CONTAINER_NAME
 from ..utils import is_ollama_running, start_ollama, stop_ollama
 from ..llm import get_client
-from ..rag import classify_is_bash
+from ..workflows import classify_is_bash
 from ..config import load_config, get_config_value
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ DEFAULT_KEEP_OLLAMA = False
 
 
 def ollama_check_or_run() -> bool:
-    if is_ollama_running():
+    if is_ollama_running(DEFAULT_DOCKER_CONTAINER_NAME):
         logger.info("Ollama is running.")
         return False
     else:

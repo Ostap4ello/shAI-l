@@ -7,7 +7,9 @@ import logging
 import sys
 import signal
 
-from .rag import rag_pipeline
+from ..db.__main__ import DEFAULT_DB_PATH, DEFAULT_INDEX_PATH_WITHIN_DB
+
+from .rag import rag_simple
 from ..llm import get_client
 
 logger = logging.getLogger(__name__)
@@ -42,7 +44,7 @@ def _cli_parser():
     find_cmd.add_argument(
         "query", type=str, help="The query to process with the RAG pipeline"
     )
-    find_cmd.set_defaults(func=_cmd_find)
+    find_cmd.set_defaults(func=_cmd_rag)
 
     return parser
 
@@ -51,12 +53,21 @@ def _get_client() -> OpenAI:
     return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
 
 
-def _cmd_find(args: argparse.Namespace) -> None:
+def _cmd_rag(args: argparse.Namespace) -> None:
     client = _get_client()
-    results = rag_pipeline(
-        client=client, model=DEFAULT_MODEL, query=args.query, top_k=5
-    )
-    assert isinstance(results, str), "Expected RAG pipeline output to be a string"
+    try:
+        results = rag_simple(
+            client=client,
+            gen_model=DEFAULT_MODEL,
+            query=args.query,
+            db_path=DEFAULT_DB_PATH,
+            index_path_within_db=DEFAULT_INDEX_PATH_WITHIN_DB,
+            top_k=5,
+        )
+    except Exception as e:
+        logger.error(f"Error in RAG pipeline: {e}")
+        raise SystemExit(1)
+
     print(results)
 
 

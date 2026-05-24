@@ -25,7 +25,7 @@ def is_config_valid(config: dict) -> bool:
 def resolve_index_paths(
     db_path: str, index_path_within_db: str
 ) -> tuple[Path, Path, Path]:
-    index_dir = Path(db_path) / index_path_within_db
+    index_dir = Path(db_path).expanduser().resolve() / index_path_within_db
     index_path = index_dir / "index"
     meta_path = index_dir / "index.meta.json"
     config_path = index_dir / "config.json"

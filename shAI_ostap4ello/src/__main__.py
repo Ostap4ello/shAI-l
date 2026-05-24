@@ -7,7 +7,7 @@ import signal
 
 from .db.__main__ import _cli_parser as _db_cli_parser
 from .llm.__main__ import _cli_parser as _llm_cli_parser
-from .rag.__main__ import _cli_parser as _rag_cli_parser
+from .workflows.__main__ import _cli_parser as _w_cli_parser
 from .utils.__main__ import _cli_parser as _utils_cli_parser
 
 from .config import DEFAULT_CONFIG_PATH, load_config, get_config_value
@@ -96,8 +96,8 @@ def cli_parser() -> argparse.ArgumentParser:
         help="Database indexing and retrieval",
     )
     subparsers.add_parser(
-        "rag",
-        parents=[_rag_cli_parser()],
+        "workflows",
+        parents=[_w_cli_parser()],
         add_help=False,
         help="RAG-enabled generation",
     )

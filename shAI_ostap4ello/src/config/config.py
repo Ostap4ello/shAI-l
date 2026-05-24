@@ -188,14 +188,14 @@ def propagate_config() -> None:
     )
 
     # Propagate RAG defaults (from default config)
-    from ..rag import __main__ as rag_main
+    from ..workflows import __main__ as ws_main
 
-    rag_main.DEFAULT_API_BASE_URL = config.get(
+    ws_main.DEFAULT_API_BASE_URL = config.get(
         "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
     )
-    rag_main.DEFAULT_API_KEY = config.get("llm", "api_key", fallback="ollama")
-    rag_main.DEFAULT_MODEL = config.get("rag", "model", fallback="qwen3:1.7b")
-    rag_main.DEFAULT_EMBED_MODEL = config.get(
+    ws_main.DEFAULT_API_KEY = config.get("llm", "api_key", fallback="ollama")
+    ws_main.DEFAULT_MODEL = config.get("rag", "model", fallback="qwen3:1.7b")
+    ws_main.DEFAULT_EMBED_MODEL = config.get(
         "llm", "embed_model", fallback="ibm/granite-embedding:125m"
     )
 

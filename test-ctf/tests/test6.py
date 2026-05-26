@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """End-to-end latency testing"""
 
+from contextlib import redirect_stdout
+import os
 import signal
 import sys
 import time
@@ -21,6 +23,7 @@ TEST_CONFIG_SCHEMA = {
     "results_file": "",
     "config_file": "",
     "section_size": "",
+    "repeats": "",
 }
 
 
@@ -32,7 +35,8 @@ def _load_test_cases(path: Path) -> List[Dict[str, dict]]:
 def shai(argv_base: list, argv_mod: list):
     argv = argv_base + argv_mod
     try:
-        _shai(argv)
+        with open(os.devnull, "w") as f, redirect_stdout(f):
+            _shai(argv)
     except SystemExit as e:
         if e.code != 0:
             logger.error(f"shai with argv {argv} exited with code {e.code}")
@@ -52,13 +56,13 @@ def run_test(config: Dict[str, Any]) -> str:
     results_file = config.get("results_file")
     shai_config = str(config.get("config_file"))
     section_size = int(config.get("section_size", 0))
+    repeats = int(config.get("repeats", 1))
     extended_search = bool(config.get("extended_search", False))
     tc = _load_test_cases(test_cases_file)
     assert type(tc) is dict
 
     argv_base = ["shai", "--config", shai_config]
 
-    repeats = 10
     results = {}
 
     # TODO: quiet mode for logging
@@ -82,11 +86,11 @@ def run_test(config: Dict[str, Any]) -> str:
         lat += (time.time() - tc_start)
     results["build-100"] = lat / repeats
 
-    logger.info("Starting index build latency tests on end-to-end (1000)")
+    logger.info("Starting index build latency tests on sample-1000")
     lat = 0
     for _ in range(repeats):
         tc_start = time.time()
-        shai(argv_base_db, ["--db-path", "./tests/end-to-end/docs/"])
+        shai(argv_base_db, ["--db-path", "./tests/sample-1000/docs/"])
         lat += (time.time() - tc_start)
     results["build-1000"] = lat / repeats
 
@@ -113,11 +117,11 @@ def run_test(config: Dict[str, Any]) -> str:
         lat += (time.time() - tc_start)
     results["search-100"] = lat / repeats
 
-    logger.info("Starting plain search latency tests on end-to-end (1000)")
+    logger.info("Starting plain search latency tests on sample-1000")
     lat = 0
     for i in range(repeats):
         tc_start = time.time()
-        shai(argv_base_dbs, [f"{tcs[i]}", "--db-path", "./tests/end-to-end/docs/"])
+        shai(argv_base_dbs, [f"{tcs[i]}", "--db-path", "./tests/sample-1000/docs/"])
         lat += (time.time() - tc_start)
     results["search-1000"] = lat / repeats
 
@@ -178,11 +182,11 @@ def run_test(config: Dict[str, Any]) -> str:
         lat += (time.time() - tc_start)
     results["rag-100"] = lat / repeats
 
-    logger.info("Starting RAG workflow latency tests on end-to-end (1000)")
+    logger.info("Starting RAG workflow latency tests on sample-1000")
     lat = 0
     for i in range(repeats):
         tc_start = time.time()
-        shai(argv_base_wf, [f"{tcs[i]}", "--db-path", "./tests/end-to-end/docs/"])
+        shai(argv_base_wf, [f"{tcs[i]}", "--db-path", "./tests/sample-1000/docs/"])
         lat += (time.time() - tc_start)
     results["rag-1000"] = lat / repeats
 

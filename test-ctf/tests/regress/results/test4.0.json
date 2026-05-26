@@ -1,0 +1,30 @@
+{
+  "test": "test4",
+  "correct/total": "3/3",
+  "accuracy": "100.0%",
+  "model": "ibm/granite3.1-moe:1b",
+  "avg_latency": 0.6227,
+  "testcases": [
+    {
+      "id": 1,
+      "expected": "bash",
+      "predicted": "bash",
+      "correct": 1,
+      "latency": 0.921
+    },
+    {
+      "id": 2,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.2662
+    },
+    {
+      "id": 3,
+      "expected": "natlang",
+      "predicted": "natlang",
+      "correct": 1,
+      "latency": 0.6808
+    }
+  ]
+}

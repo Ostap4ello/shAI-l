@@ -1,0 +1,9 @@
+{
+    "argv": [ "shai" ],
+    "children": [ ["-h"], ["--help"],
+        {
+            "argv": [ "llm" ],
+            "children": [ ["-h"], ["--help"] ]
+        }
+    ]
+}

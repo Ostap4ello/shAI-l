@@ -144,14 +144,17 @@ def handle_sigint(signum: int, frame: object) -> None:
     raise SystemExit(0)
 
 
-def main() -> None:
+def main(argv: list | None = None) -> None:
     def handle_sigint(signum: int, frame: object) -> None:
         print("\nInterrupted. Exiting cleanly.", file=sys.stderr)
         raise SystemExit(0)
 
     signal.signal(signal.SIGINT, handle_sigint)
 
-    argv = sys.argv[1:]
+    if argv is None:
+        argv = sys.argv[1:]
+    else:
+        argv = argv[1:]
 
     # Pre-parse
     pre_parser = cli_parser()

@@ -125,6 +125,8 @@ def search_in_files_dynamic(
 ) -> List[dict]:
     # TODO: dynamic function - create lazy indexing and caching instead
 
+    file_paths = list(set(file_paths))
+
     texts, metadata = load_documents_in_sections(
         [Path(p) for p in file_paths], section_rows
     )

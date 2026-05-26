@@ -1,0 +1,21 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-bake - Build from a file
+
+
+
+SYNOPSIS
+     docker bake [OPTIONS] [TARGET...]
+
+
+
+DESCRIPTION
+     Build from a file
+
+
+
+SEE ALSO
+     docker(1)
+
+Docker Community                    May 2026                           DOCKER(1)

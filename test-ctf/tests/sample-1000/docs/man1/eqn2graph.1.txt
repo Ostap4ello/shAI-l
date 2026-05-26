@@ -1,0 +1,54 @@
+eqn2graph(1)                 General Commands Manual                eqn2graph(1)
+
+Name
+     eqn2graph - convert an eqn equation into a cropped image
+
+Synopsis
+     eqn2graph [-format output-format] [convert-argument ...]
+
+     eqn2graph --help
+
+     eqn2graph -v
+     eqn2graph --version
+
+Description
+     eqn2graph  reads  a  one-line  eqn(1)  equation from the standard input and
+     writes an image file, by default in Portable Network Graphics (PNG) format,
+     to the standard output.
+
+     The input EQN code should not be preceded by the .EQ  macro  that  normally
+     precedes  it within groff(1) macros; nor do you need to have dollar-sign or
+     other delimiters around the equation.
+
+     Arguments not recognized by eqn2graph are  passed  to  the  ImageMagick  or
+     GraphicsMagick  program convert(1).  By specifying these, you can give your
+     image a border, set the image's pixel  density,  or  perform  other  useful
+     transformations.
+
+     The  output  image  is clipped using convert's -trim option to the smallest
+     possible bounding box that contains all the black pixels.
+
+Options
+     --help displays a usage message, while -v and --version show version infor-
+     mation; all exit afterward.
+
+     -format output-format
+            Write the image  in  output-format,  which  must  be  understood  by
+            convert; the default is PNG.
+
+Environment
+     GROFF_TMPDIR
+     TMPDIR
+     TMP
+     TEMP   These  environment  variables are searched in the order shown to de-
+            termine the directory where temporary files  will  be  created.   If
+            none are set, /tmp is used.
+
+Authors
+     eqn2graph   was  written  by  Eric  S.  Raymond,  based  on  a  recipe  for
+     pic2graph(1), by W. Richard Stevens.
+
+See also
+     pic2graph(1), grap2graph(1), eqn(1), groff(1), convert(1)
+
+groff 1.24.1                       2026-03-15                       eqn2graph(1)

@@ -1,0 +1,55 @@
+decode-dimms(1)                   User Commands                  decode-dimms(1)
+
+NAME
+     decode-dimms - decode the information found in memory module SPD EEPROMs
+
+SYNOPSIS
+     decode-dimms [-c] [-f [-b]] [-x|-X file [files..]]
+     decode-dimms -h
+
+DESCRIPTION
+     The  purpose of the decode-dimms tool is to decode the information found in
+     memory module SPD EEPROMs.  The SPD data is read either  from  the  running
+     system  or dump files.  In the former case, the tool requires a kernel mod-
+     ule to be loaded: eeprom, at24 or ee1004 (for DDR4 SDRAM.)
+
+PARAMETERS
+     -f, --format
+            Print nice html output
+
+     -b, --bodyonly
+            Don't print html header (useful for postprocessing the output)
+
+     --side-by-side
+            Display all DIMMs side-by-side if possible
+
+     --merge-cells
+            Merge neighbour cells with  identical  values  (side-by-side  output
+            only, default)
+
+     --no-merge-cells
+            Don't merge neighbour cells with identical values (side-by-side out-
+            put only)
+
+     -c, --checksum
+            Decode completely even if checksum fails
+
+     -x     Read data from hexdump files
+
+     -X     Same as -x except treat multibyte hex data as little endian
+
+     -h, --help
+            Display the usage summary
+
+BUGS
+     To  report  bugs  or send fixes, please write to the Linux I2C mailing list
+     <linux-i2c@vger.kernel.org> with Cc to the current maintainer: Jean Delvare
+     <jdelvare@suse.de>.
+
+SEE ALSO
+     decode-vaio(1)
+
+AUTHORS
+     Philip Edelbrock, Christian Zuckschwerdt, Burkart Lingner, Jean Delvare
+
+i2c-tools                           Nov 2017                     decode-dimms(1)

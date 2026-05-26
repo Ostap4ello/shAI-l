@@ -1,0 +1,165 @@
+BT_INPUT(1)                          btparse                         BT_INPUT(1)
+
+NAME
+     bt_input - input/parsing functions in btparse library
+
+SYNOPSIS
+        void  bt_set_stringopts (bt_metatype_t metatype, btshort options);
+        AST * bt_parse_entry_s (char *    entry_text,
+                                char *    filename,
+                                int       line,
+                                btshort    options,
+                                boolean * status);
+        AST * bt_parse_entry   (FILE *    infile,
+                                char *    filename,
+                                btshort    options,
+                                boolean * status);
+        AST * bt_parse_file    (char *    filename,
+                                btshort    options,
+                                boolean * overall_status);
+
+DESCRIPTION
+     The  functions  described here are used to read and parse BibTeX data, con-
+     verting it from raw text to abstract-syntax trees (ASTs).
+
+     bt_set_stringopts ()
+            void bt_set_stringopts (bt_metatype_t metatype, btshort options);
+
+         Set the string-processing options  for  a  particular  entry  metatype.
+         This  affects  the  entry  post-processing  done by bt_parse_entry_s(),
+         bt_parse_entry(), and bt_parse_file().  If bt_set_stringopts() is never
+         called, the four metatypes default to the following sets of string  op-
+         tions:
+
+            BTE_REGULAR    BTO_CONVERT | BTO_EXPAND | BTO_PASTE | BTO_COLLAPSE
+            BTE_COMMENT    0
+            BTE_PREAMBLE   0
+            BTE_MACRODEF   BTO_CONVERT | BTO_EXPAND | BTO_PASTE
+
+         For example,
+
+            bt_set_stringopts (BTE_COMMENT, BTO_COLLAPSE);
+
+         will  cause  the  library  to collapse whitespace in the value from all
+         comment entries; the AST returned by one of the "bt_parse_*"  functions
+         will reflect this change.
+
+     bt_parse_entry ()
+            AST * bt_parse_entry (FILE *    infile,
+                                  char *    filename,
+                                  btshort    options,
+                                  boolean * status);
+
+         Scans  and parses the next BibTeX entry in "infile".  You should supply
+         "filename" to help btparse generate accurate error  messages;  the  li-
+         brary  keeps track of "infile"'s current line number internally, so you
+         don't  need  to  pass  that  in.   "options"  should  be  a  bitmap  of
+         non-string-processing  options  (currently,  "BTO_NOSTORE"  to  disable
+         storing macro expansions is the only such option).  *status will be set
+         to "TRUE" if the entry parsed successfully or with only minor warnings,
+         and "FALSE" if there were any serious lexical or syntactic errors.   If
+         "status"  is  "NULL", then the parse status will be unavailable to you.
+         Both minor warnings and serious errors are reported on "stderr".
+
+         Returns a pointer to the abstract-syntax tree (AST) describing the  en-
+         try  just  parsed,  or "NULL" if no more entries were found in "infile"
+         (this will leave "infile" at end-of-file).  Do not  attempt  to  second
+         guess  bt_parse_entry()  by  detecting end-of-file yourself; it must be
+         allowed to determine this on its own so it can  clean  up  some  static
+         data that is preserved between calls on the same file.
+
+         bt_parse_entry()  has  two  important restrictions that you should know
+         about.  First, you should let btparse manage all the input on the file;
+         this is for reasons both superficial (so the library knows the  current
+         line number in order to generate accurate error messages) and fundamen-
+         tal  (the  library  must  be  allowed to detect end-of-file in order to
+         cleanup certain static variables and allow you to parse another  file).
+         Second,  you  cannot interleave the parsing of two different files; at-
+         tempting to do so will result in a fatal error  that  will  crash  your
+         program.   This  is  a direct result of the static state maintained be-
+         tween calls of bt_parse_entry().
+
+         Because  of  two  distinct  "failures"  possible  for  bt_parse_entry()
+         (end-of-file,  which  is expected but means to stop processing the cur-
+         rent file; and error-in-input, which is not expected but allows you  to
+         continue  processing  the  same  file), you should usually call it like
+         this:
+
+            while (entry = bt_parse_entry (file, filename, options, &ok))
+            {
+               if (ok)
+               {
+                  /* ... process entry ... */
+               }
+            }
+
+         At the end of this loop, "feof (file)" will be true.
+
+     bt_parse_entry_s ()
+            AST * bt_parse_entry_s (char *    entry_text,
+                                    char *    filename,
+                                    int       line,
+                                    btshort    options,
+                                    boolean * status)
+
+         Scans and parses a single complete BibTeX entry contained in a  string,
+         "entry_text".  If you read this string from a file, you should help bt-
+         parse  generate  accurate  error  messages by supplying the name of the
+         file as "filename" and the line number of the beginning of the entry as
+         "line"; otherwise, set "filename" to "NULL" and "line" to 1.  "options"
+         and "status" are the same as for bt_parse_entry().
+
+         Returns a pointer to the abstract-syntax tree (AST) describing the  en-
+         try just parsed, and "NULL" if no entries were found in "entry_text" or
+         if "entry_text" was "NULL".
+
+         You  should  call bt_parse_entry_s() once more than the total number of
+         entries you wish to parse; on  the  final  call,  set  "entry_text"  to
+         "NULL" so the function knows there's no more text to parse.  This final
+         call allows it to clean up some structures allocated on the first call.
+         Thus, bt_parse_entry_s() is usually used like this:
+
+            char *  entry_text;
+            btshort  options = 0;
+            boolean ok;
+            AST *   entry_ast;
+
+            while (entry_text = get_more_text ())
+            {
+               entry_ast = bt_parse_entry_s (entry_text, NULL, 1, options, &ok);
+               if (ok)
+               {
+                  /* ... process entry ... */
+               }
+            }
+
+            bt_parse_entry_s (NULL, NULL, 1, options, NULL);    /* cleanup */
+
+         assuming that get_more_text() returns a pointer to the text of an entry
+         to parse, or "NULL" if there's no more text available.
+
+     bt_parse_file ()
+            AST * bt_parse_file (char *    filename,
+                                 btshort    options,
+                                 boolean * status)
+
+         Scans  and  parses  an  entire BibTeX file.  If "filename" is "NULL" or
+         "-", then "stdin" will be read; otherwise, attempts to open  the  named
+         file.   If  this attempt fails, prints an error message to "stderr" and
+         returns  "NULL".   "options"  and  "status"  are  the   same   as   for
+         bt_parse_entry()---note  that *status will be "FALSE" if there were any
+         errors in the entire file; for finer granularity of error-checking, you
+         should use bt_parse_entry().
+
+         Returns a pointer to a linked list of ASTs representing the entries  in
+         the  file,  or  "NULL" if no entries were found in the file.  This list
+         can be traversed with bt_next_entry(), and the individual entries  then
+         traversed as usual (see bt_traversal).
+
+SEE ALSO
+     btparse, bt_postprocess, bt_traversal
+
+AUTHOR
+     Greg Ward <gward@python.net>
+
+btparse, version 0.91              2025-07-14                        BT_INPUT(1)

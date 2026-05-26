@@ -1,0 +1,26 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-stack-rm - Remove one or more stacks
+
+
+
+SYNOPSIS
+     docker stack rm [OPTIONS] STACK [STACK...]
+
+
+
+DESCRIPTION
+     Remove one or more stacks
+
+
+
+OPTIONS
+     -d, --detach[=true]      Do not wait for stack removal
+
+
+
+SEE ALSO
+     docker-stack(1)
+
+Docker Community                    May 2026                           DOCKER(1)

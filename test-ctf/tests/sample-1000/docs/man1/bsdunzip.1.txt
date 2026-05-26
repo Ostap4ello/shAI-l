@@ -1,0 +1,67 @@
+The following options are available: When extracting a text file,
+convert DOS-style line endings to Unix-style line endings.  Match
+file  names  case-insensitively.  Extract to stdout/screen.  When
+extracting files from the zipfile, they are  written  to  stdout.
+This  is similar to but does not suppress normal output.  Extract
+files into the specified directory rather than the current direc-
+tory.  Update existing.  Extract only files from the zipfile if a
+file with the same name already exists on disk and is older  than
+the  former.   Otherwise,  the file is silently skipped.  Convert
+filenames from the specified encoding.  Ignore directories stored
+in the zipfile; instead, extract all files directly into the  ex-
+traction directory.  Convert the names of the extracted files and
+directories  to  lowercase.   List, rather than extract, the con-
+tents of the zipfile.  No overwrite.  When extracting a file from
+the zipfile, if a file with the same name already exists on disk,
+the file is silently skipped.  Overwrite.  When extracting a file
+from the zipfile, if a file with the same name already exists  on
+disk,  the  existing file is replaced with the file from the zip-
+file.  Extract to stdout.  When extracting files  from  the  zip-
+file,  they  are  written  to  stdout.  The normal output is sup-
+pressed as if was specified.  Extract  encrypted  files  using  a
+password.   Putting a password on the command line using this op-
+tion can be insecure.  Quiet: print less  information  while  ex-
+tracting.  Test: do not extract anything, but verify the checksum
+of  every  file  in the archive.  Update.  When extracting a file
+from the zipfile, if a file with the same name already exists  on
+disk,  the  existing file is replaced with the file from the zip-
+file if and only if the latter is newer than the former.   Other-
+wise,  the file is silently skipped.  List verbosely, rather than
+extract, the contents of the zipfile.  This differs from by using
+the long listing.  Note that most of the data is  currently  fake
+and  does  not reflect the content of the archive.  Exclude files
+matching the pattern Print four digit years in  listings  instead
+of  two.   Emulate  mode.  Enabling mode changes the way in which
+additional arguments are parsed.  Currently only mode 1  is  sup-
+ported,  which  lists the file names one per line.  Optional list
+of members to extract from the zipfile.   Can  include  patterns,
+e.g., will extract all files and dirs below memberdir.  Note that
+only  one of and may be specified.  If specified filename is then
+data is read from If the environment  variable  is  defined,  the
+command-line  option  has no effect, and additional debugging in-
+formation will be printed to The utility aims to be  sufficiently
+compatible  with  other implementations to serve as a drop-in re-
+placement in the context of the system.  No attempt has been made
+to replicate functionality which is not required  for  that  pur-
+pose.   For  compatibility  reasons, command-line options will be
+recognized if they are listed not only before but also after  the
+name  of  the  zipfile.   Normally, the option should only affect
+files which are marked as text files in the zipfile's central di-
+rectory.  Since the library does not provide access to  that  in-
+formation,  it  is  not  available  to the utility.  Instead, the
+utility will assume that a file is a text file  if  no  non-ASCII
+characters  are  present  within  the  first block of data decom-
+pressed for that file.  If non-ASCII characters appear in  subse-
+quent  blocks  of data, a warning will be issued.  The utility is
+only able to process ZIP archives handled by Depending on the in-
+stalled version of this may or may not include self-extracting or
+ZIPX archives.  The utility appeared in The utility and this man-
+ual page were written by It uses the  library  developed  by  The
+utility  performs two scans of the command-line for arguments be-
+fore and after the archive name, so as to maintain  compatibility
+with  Info-ZIP  unzip.  As a result, the POSIX double-dash string
+used to separate options from arguments will need to be repeated.
+For example, to extract a "-a.jpg" from "-b.zip" with  overwrite,
+one would need to invoke
+
+

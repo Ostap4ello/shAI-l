@@ -1,0 +1,51 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-container-kill - Kill one or more running containers
+
+
+
+SYNOPSIS
+     docker container kill [OPTIONS] CONTAINER [CONTAINER...]
+
+
+
+DESCRIPTION
+     The  docker  kill subcommand kills one or more containers. The main process
+     inside the container is sent SIGKILL signal (default), or the  signal  that
+     is specified with the --signal option. You can reference a container by its
+     ID, ID-prefix, or name.
+
+
+     The  --signal  flag  sets  the  system call signal that is sent to the con-
+     tainer.  This signal can be a signal name in the format SIG<NAME>, for  in-
+     stance  SIGINT,  or  an unsigned number that matches a position in the ker-
+     nel's syscall table, for instance 2.
+
+
+     While the default (SIGKILL) signal will terminate the container, the signal
+     set through --signal may be non-terminal, depending on the container's main
+     process. For example, the SIGHUP signal in most cases will be non-terminal,
+     and the container will continue running after receiving the signal.
+
+
+            Note
+
+
+            ENTRYPOINT and CMD in the shell form  run  as  a  child  process  of
+            /bin/sh  -c,  which  does not pass signals. This means that the exe-
+            cutable is not the container^as PID 1 and does not receive Unix  sig-
+            nals.
+
+
+
+
+OPTIONS
+     -s, --signal=""      Signal to send to the container
+
+
+
+SEE ALSO
+     docker-container(1)
+
+Docker Community                    May 2026                           DOCKER(1)

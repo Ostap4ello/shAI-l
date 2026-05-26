@@ -1,0 +1,23 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-swarm - Manage Swarm
+
+
+
+SYNOPSIS
+     docker swarm
+
+
+
+DESCRIPTION
+     Manage Swarm
+
+
+
+SEE ALSO
+     docker(1),  docker-swarm-ca(1), docker-swarm-init(1), docker-swarm-join(1),
+     docker-swarm-join-token(1), docker-swarm-leave(1),  docker-swarm-unlock(1),
+     docker-swarm-unlock-key(1), docker-swarm-update(1)
+
+Docker Community                    May 2026                           DOCKER(1)

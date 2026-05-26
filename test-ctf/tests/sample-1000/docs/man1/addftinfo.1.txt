@@ -1,0 +1,73 @@
+addftinfo(1)                 General Commands Manual                addftinfo(1)
+
+Name
+     addftinfo - add font metrics to troff fonts for use with groff
+
+Synopsis
+     addftinfo [-asc-height n] [-body-depth n] [-body-height n] [-cap-height n]
+               [-comma-depth n] [-desc-depth n] [-fig-height n] [-x-height n]
+               resolution unit-width font
+
+     addftinfo --help
+
+     addftinfo -v
+     addftinfo --version
+
+Description
+     addftinfo reads an AT&T troff font description file font, adds further font
+     metric information required by GNU troff(1), and writes the combined result
+     to  the  standard output stream.  The information added is derived from the
+     font's existing parameters and assumptions about  traditional  troff  names
+     for characters.  Among the font metrics added are the heights and depths of
+     characters  (how far each extends vertically above and below the baseline).
+     The resolution and unit-width arguments should be the same  as  the  corre-
+     sponding  parameters  in  the  DESC file.  font is the name of the file de-
+     scribing the font; if font ends with "I", the font is assumed to be oblique
+     (or italic).
+
+Options
+     --help displays a usage message, while -v and --version show version infor-
+     mation; all exit afterward.
+
+     All other options change parameters that are used to derive the heights and
+     depths.  Like the existing quantities in the font  description  file,  each
+     value  n  is in scaled points, inches/resolution for a font whose type size
+     is unit-width; see groff_font(5).
+
+     -asc-height n
+            height of characters with ascenders, such as "b", "d", or "l"
+
+     -body-depth n
+            depth of characters such as parentheses
+
+     -body-height n
+            height of characters such as parentheses
+
+     -cap-height n
+            height of uppercase letters such as "A"
+
+     -comma-depth n
+            depth of a comma
+
+     -desc-depth n
+            depth of characters with descenders, such as "p", "q", or "y"
+
+     -fig-height
+            height of figures (numerals)
+
+     -x-height n
+            height of lowercase letters without ascenders such as "x"
+
+     addftinfo makes no attempt to use the specified parameters to infer unspec-
+     ified parameters.  If a parameter is not specified,  the  default  will  be
+     used.   The  defaults  are  chosen to produce reasonable values for a Times
+     font.
+
+Exit status
+     addftinfo exits with status 0 on successful operation, and status 2 if  the
+     program cannot interpret its command-line arguments.
+
+See also
+     groff_font(5), groff(1), groff_char(7)
+
+groff 1.24.1                       2026-03-15                       addftinfo(1)

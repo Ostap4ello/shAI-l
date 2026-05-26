@@ -1,0 +1,34 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-load - Load an image from a tar archive or STDIN
+
+
+
+SYNOPSIS
+     docker load [OPTIONS]
+
+
+
+DESCRIPTION
+     Alias for docker image load.
+
+
+
+OPTIONS
+     -i, --input=""      Read from tar archive file, instead of STDIN
+
+
+     --platform=[]       Load  only the given platform(s). Formatted as a comma-
+     separated        list        of        "os[/arch[/variant]]"         (e.g.,
+     "linux/amd64,linux/arm64/v8").
+
+
+     -q, --quiet[=false]      Suppress the load output
+
+
+
+SEE ALSO
+     docker(1)
+
+Docker Community                    May 2026                           DOCKER(1)

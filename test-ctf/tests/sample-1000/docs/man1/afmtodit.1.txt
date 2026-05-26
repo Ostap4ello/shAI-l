@@ -1,0 +1,211 @@
+afmtodit(1)                  General Commands Manual                 afmtodit(1)
+
+Name
+     afmtodit - adapt Adobe Font Metrics files for groff PostScript and PDF out-
+     put
+
+Synopsis
+     afmtodit [-ckmnqsx] [-a slant] [-d device-description-file] [-e encoding-
+              file] [-f internal-name] [-i italic-correction-factor] [-o output-
+              file] [-w space-width] afm-file map-file font-description-file
+
+     afmtodit --help
+
+     afmtodit -v
+     afmtodit --version
+
+Description
+     afmtodit  generates  a font description file for use with groff(1)'s ps and
+     pdf output devices from an Adobe Font Metric file, afm-file.  map-file  as-
+     sociates a groff ordinary or special character name with a PostScript glyph
+     name.   Output is written in groff_font(5) format to font-description-file,
+     a file named for the intended groff font name (but see the -o option).
+
+     map-file should contain a sequence of lines of the form
+            ps-glyph groff-char
+     where ps-glyph is the PostScript glyph name and groff-char is a groff ordi-
+     nary (if of unit length) or special (if longer) character identifier.   The
+     same  ps-glyph  can  occur multiple times in the file; each groff-char must
+     occur at most once.  Lines starting with "#" and blank lines  are  ignored.
+     If  the  file isn't found in the current directory, it is sought in the de-
+     vps/generate subdirectory of the default font directory.
+
+     If a PostScript glyph is not mentioned in map-file, and a  groff  character
+     name  can't  be  deduced  using  the Adobe Glyph List (AGL, built into afm-
+     todit), then afmtodit puts the PostScript glyph into  the  groff  font  de-
+     scription  file  as an unnamed glyph which can only be accessed by the "\N"
+     escape sequence in a roff document.  In particular, this is true for  glyph
+     variants  named  in  the  form "foo.bar"; all glyph names containing one or
+     more periods are mapped to unnamed entities.  Unless -e is  specified,  the
+     encoding defined in the AFM file (i.e., entries with non-negative codes) is
+     used.  Refer to section "Using Symbols" in Groff: The GNU Implementation of
+     troff, the groff Texinfo manual, or groff_char(7), which describe how groff
+     character identifiers are constructed.
+
+     Glyphs  not  encoded  in  the  AFM file (i.e., entries indexed as "-1") are
+     still available in groff; they get glyph index values greater than 255  (or
+     greater  than  the  biggest  code used in the AFM file in the unlikely case
+     that it is greater than 255) in the groff font description file.  Unencoded
+     glyph indices don't have a specific order; it is best to access  them  only
+     via special character identifiers.
+
+     If  the font file proper (not just its metrics) is available, listing it in
+     the files /usr/share/groff/1.24.1/font/devps/download and /usr/share/groff/
+     1.24.1/font/devpdf/download enables it to be embedded in  the  output  pro-
+     duced by grops(1) and gropdf(1), respectively.
+
+     If  the  -i option is used, afmtodit automatically generates an italic cor-
+     rection, a left italic correction, and  a  subscript  correction  for  each
+     glyph  (the  significance of these is explained in groff_font(5)); they can
+     be specified for individual glyphs by adding to the afm-file lines  of  the
+     form:
+            italicCorrection ps-glyph n
+            leftItalicCorrection ps-glyph n
+            subscriptCorrection ps-glyph n
+     where  ps-glyph is the PostScript glyph name, and n is the desired value of
+     the corresponding parameter in thousandths of an em.  Such  parameters  are
+     normally needed only for italic (or oblique) fonts.
+
+     The  -s option should be given if the font is "special", meaning that groff
+     should search it whenever a glyph is not found in the current font.  To en-
+     able this search, font-description-file can be listed as an argument to the
+     fonts directive in the output device's DESC file; alternatively, a document
+     can designate it with the special request.  If the  font  is  not  special,
+     there  is  no need to do either, since troff(1) will automatically mount it
+     when it is first used.
+
+Options
+     --help displays a usage message, while -v and --version show version infor-
+     mation; all exit afterward.
+
+     -a slant
+            Use slant as the slant ("angle") parameter in the  font  description
+            file;  this  is used by groff in the positioning of accents.  By de-
+            fault afmtodit uses the negative of the ItalicAngle specified in the
+            AFM file; with true italic fonts it is sometimes desirable to use  a
+            slant  that  is  less  than  this.   If you find that an italic font
+            places accents over base glyphs too far to the right, use -a to give
+            it a smaller slant.
+
+     -c     Include comments in the font description file identifying the  Post-
+            Script font.
+
+     -d device-description-file
+            The  device  description  file  is desc-file rather than the default
+            DESC.  If not found in the current directory, the devps subdirectory
+            of the default font directory is searched (this is true for both the
+            default device description file and a file given with option -d).
+
+     -e encoding-file
+            The PostScript font should be reencoded  to  use  the  encoding  de-
+            scribed  in  enc-file.   The  format  of  enc-file  is  described in
+            grops(1).  If not found in the current directory, the  devps  subdi-
+            rectory of the default font directory is searched.
+
+     -f internal-name
+            The internal name of the groff font is set to name.
+
+     -i italic-correction-factor
+            Generate  an italic correction for each glyph so that its width plus
+            its italic correction is  equal  to  italic-correction-factor  thou-
+            sandths  of  an  em  plus  the amount by which the right edge of the
+            glyph's bounding box is to the right of its origin.  If  this  would
+            result in a negative italic correction, use a zero italic correction
+            instead.
+
+            Also  generate  a  subscript  correction equal to the product of the
+            tangent of the slant of the font and four fifths of the x-height  of
+            the  font.   If  this would result in a subscript correction greater
+            than the italic correction, use a subscript correction equal to  the
+            italic correction instead.
+
+            Also  generate  a  left  italic  correction  for each glyph equal to
+            italic-correction-factor thousandths of an em  plus  the  amount  by
+            which  the  left  edge of the glyph's bounding box is to the left of
+            its origin.  The left italic correction may be negative  unless  op-
+            tion -m is given.
+
+            This  option is normally needed only with italic (or oblique) fonts.
+            The font description files distributed with groff were created using
+            an option of -i50 for italic fonts.
+
+     -o output-file
+            Write to output-file instead of font-description-file.
+
+     -k     Omit any kerning data from the groff font; use only  for  monospaced
+            (constant-width) fonts.
+
+     -m     Prevent  negative  left  italic correction values.  Font description
+            files for roman styles distributed  with  groff  were  created  with
+            "-i0 -m" to improve spacing with eqn(1).
+
+     -n     Don't  output  a  "ligatures"  command for this font; use with mono-
+            spaced (constant-width) fonts.
+
+     -q     Quieten duplicate mapping warnings; see section "Diagnostics" below.
+
+     -s     Add the "special" directive to the font description file.
+
+     -w space-width
+            Use space-width as the width of inter-word spaces.
+
+     -x     Don't use the built-in Adobe Glyph List.
+
+Exit status
+     afmtodit exits with status 0 on successful operation, status 2 if the  pro-
+     gram  cannot  interpret  its command-line arguments, and status 1 if it en-
+     counters an error during operation.
+
+Files
+     /usr/share/groff/1.24.1/font/devps/DESC
+            describes the ps output device.
+
+     /usr/share/groff/1.24.1/font/devps/F
+            describes the font known as F on device ps.
+
+     /usr/share/groff/1.24.1/font/devps/download
+            lists fonts available for embedding within the  PostScript  document
+            (or download to the device).
+
+     /usr/share/groff/1.24.1/font/devps/generate/dingbats.map
+     /usr/share/groff/1.24.1/font/devps/generate/dingbats-reversed.map
+     /usr/share/groff/1.24.1/font/devps/generate/slanted-symbol.map
+     /usr/share/groff/1.24.1/font/devps/generate/symbol.map
+     /usr/share/groff/1.24.1/font/devps/generate/text.map
+            map names in the Adobe Glyph List to groff special character identi-
+            fiers  for Zapf Dingbats (ZD), reversed Zapf Dingbats (ZDR), slanted
+            symbol (SS), symbol (S), and text fonts, respectively.   These  map-
+            files produce the font description files provided with groff for the
+            grops output driver.
+
+Diagnostics
+     AGL name 'x' already mapped to groff name 'y'; ignoring AGL name 'uniXXXX'
+            You  can disregard these if they're in the form shown, where the ig-
+            nored AGL name contains four hexadecimal  digits  XXXX.   The  Adobe
+            Glyph  List  (AGL) has its own names for glyphs; they are often dif-
+            ferent from groff's special character names.  afmtodit is construct-
+            ing a mapping from groff special character names to AGL names;  this
+            can be a one-to-one or many-to-one mapping, but one-to-many will not
+            work,  so  afmtodit discards the excess mappings.  For example, if x
+            is Delta, y is *D, and XXXX is 0394, afmtodit is  telling  you  that
+            the  groff  font description that it is writing cannot map the groff
+            special character \[*D] to AGL glyphs Delta and uni0394 at the  same
+            time.
+
+            If you get a message like this but are unhappy with which mapping is
+            ignored,  a  remedy  is  to craft an alternative map-file and re-run
+            afmtodit using it.
+
+            When the -q option is used, these messages are suppressed  in  favor
+            of  a  count of how many would have been emitted were the option not
+            present.
+
+See also
+     Groff: The GNU Implementation of troff, by Trent A. Fisher and Werner  Lem-
+     berg,  is the primary groff manual.  Section "Using Symbols" may be of par-
+     ticular note.  You can browse it  interactively  with  "info  '(groff)Using
+     Symbols'".
+
+     groff(1), gropdf(1), grops(1), groff_font(5)
+
+groff 1.24.1                       2026-03-15                        afmtodit(1)

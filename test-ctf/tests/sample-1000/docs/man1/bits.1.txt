@@ -1,0 +1,117 @@
+BITS(1)                           User Commands                          BITS(1)
+
+NAME
+     bits - convert bit masks or lists from/to various formats
+
+SYNOPSIS
+     bits [-h] [-V] [-w number] [mode] [mask|list]...
+
+DESCRIPTION
+     The bits utility converts between bit masks and bit lists. It supports com-
+     bining multiple masks or lists using bitwise operations.
+
+POSITIONAL ARGUMENTS
+     mask
+         A  set  of  bits  specified  as  a hexadecimal mask value (for example:
+         0xeec2).
+
+     list
+         A set of bits specified as a comma-separated list of bit IDs (for exam-
+         ple: 1,5,29,32).
+
+     If no argument is specified, the sets of bits will be  read  from  standard
+     input, one group per line.
+
+     Consecutive  IDs  can be compressed as ranges (for example: 5,6,7,8,9,10 ->
+     5-10).
+
+     Optionally, if an argument starts with a comma, it will be parsed as a sin-
+     gle   hexadecimal   mask   split   in   32-bit   groups    (for    example:
+     ,00014000,00000000,00020000 -> 17,78,80).
+
+     By  default,  all  groups will be OR'ed together. If a group has one of the
+     prefixes &, ^, or ~, it will be combined with the resulting  mask  using  a
+     different binary operation:
+
+     &mask|&list
+         The  group  will  be combined with a binary AND operation. That is: all
+         bits that are set to 1 in the group AND in the combined groups  so  far
+         will be preserved as 1. All other bits will be reset to 0.
+
+     ^mask|^list
+         The  group  will  be combined with a binary XOR operation. That is: all
+         bits that are set to 1 in the group AND to 0 in the combined groups  so
+         far  (or the other way around) will be set to 1. Bits that are set both
+         to 1 or both to 0 will be reset to 0.
+
+     ~mask|~list
+         All bits set to 1 in the group will be cleared (reset to 0) in the com-
+         bined groups so far.
+
+OPTIONS
+     -w number, --width number
+         The maximum number of bits in the masks handled by bits. The default is
+         8192. Any bit larger than this number will be truncated.
+
+     -h, --help
+         Display help text and exit.
+
+     -V, --version
+         Display version and exit.
+
+CONVERSION MODE
+     One of the following conversion modes can be specified. If  not  specified,
+     it defaults to -m, --mask.
+
+     -b, --binary
+         Print the combined arguments as a binary mask value.
+
+     -g, --grouped-mask
+         Print  the  combined  arguments  as  a hexadecimal mask value in 32-bit
+         comma-separated groups.
+
+     -l, --list
+         Print the combined arguments as a list of bit IDs. Consecutive IDs  are
+         compressed to ranges.
+
+     -m, --mask
+         Print the combined arguments as a hexadecimal mask value (default).
+
+EXAMPLES
+         ~$ bits --mask 4,5-8 16,30
+         0x400101f0
+
+         ~$ bits --list 0xeec2
+         1,6,7,9-11,13-15
+
+         ~$ bits --binary 4,5-8 16,30
+         0b100_0000_0000_0001_0000_0001_1111_0000
+
+         ~$ bits --list ,00300000,03000000,30000003
+         0,1,28,29,56,57,84,85
+
+         ~$ bits --list 1,2,3,4 ~3-10
+         1,2
+
+         ~$ bits --list 1,2,3,4 ^3-10
+         1,2,5-10
+
+         ~$ bits --grouped-mask 2,22,74,79
+         8400,00000000,00400004
+
+         ~$ bits --width 64 --list 2,22,74,79
+         2,22
+
+AUTHORS
+     Robin Jarry.
+
+REPORTING BUGS
+     For        bug       reports,       use       the       issue       tracker
+     <https://github.com/util-linux/util-linux/issues>.
+
+AVAILABILITY
+     The bits command is part of the util-linux package which can be  downloaded
+     from                  Linux                  Kernel                 Archive
+     <https://www.kernel.org/pub/linux/utils/util-linux/>.
+
+util-linux 2.42.1                  2026-05-18                            BITS(1)

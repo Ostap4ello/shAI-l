@@ -1,0 +1,784 @@
+DWARFDUMP()                                                          DWARFDUMP()
+
+NAME
+     dwarfdump - dumps DWARF debug information of an ELF object
+
+SYNOPSIS
+     dwarfdump [options] objectfilename
+
+DESCRIPTION
+     The  dwarfdump command prints or checks DWARF sections as requested by spe-
+     cific options.  With no options (but with the required objectfilename ) all
+     sections print (but some sections cannot be printed  independently  safely,
+     so  those  are only printed at offsets where the .debug_info section refers
+     to those sections).
+
+     For split-dwarf (DWARF5) object files see Split Object Files,  DWARF5  sec-
+     tion 7.3.
+
+
+     Nearly  all  options  are available in the traditional (single-letter) form
+     and in a long-options form with meaningful names.  New options are only  in
+     the long-options form.
+
+
+     With  no options dwarfdump prints a basic set of DWARF section information.
+     If any option is given on the command line the basic set is ignored and one
+     must tell dwarfdump what to print or check (for example by  adding  the  -a
+     option).
+
+
+     The  printing  options  and the checking options are mutually exclusive (if
+     checking options are selected the section details are  not  printed).  When
+     errors  are  encountered dwarfdump does attempt to print sufficient context
+     so that one can understand exactly where the error is in the  DWARF.   This
+     change makes checking really large object files much easier.
+
+     The  format  is intended to be human readable.  If a script is to parse the
+     output, the --format-dense (-d) option is useful.
+
+     DWARF expressions are broken out to print each expression  (DW_OP_plus  for
+     example)  in a block on a separate line.  To restore the previous behavior,
+     sort of like --format-dense but only applying to blocks of DWARF expression
+     operators (DW_OP*).  the --format-expr-ops-joined is useful.  If the option
+     is placed in the dwarfdump.conf file (see the file itself for  the  format)
+     it will apply without needing to put it on the command line.
+
+
+     Not all sections actually exist in any given object file.
+
+     The  output  format  may change from release to release, so it is unwise to
+     depend too heavily on the format.
+
+     Frame information (.debug_frame and .eh_frame) is heavily dependent on  the
+     ABI/ISA  of  the  object file.  By default we use a generic set of register
+     names handling up to 100 registers named r0-r99.
+
+     There are three different ways compiler writers separate the DWARF informa-
+     tion from an executable/shared-object.  One  is  DWARF5  Split  Dwarf  (the
+     --file-tied option is useful for these). Another is GNU debuglink (libdwarf
+     automatically  finds  the  DWARF when given the name of the executable, use
+     --no-follow-debuglink to suppress this and make possible printing the back-
+     trace data in section .eh_frame).  The third way is  on  Macos:  the  debug
+     DWARF  is in a separate object (dwarfdump/libdwarf automatically find it if
+     it is present, --no-follow-debuglink suppresses this  finding).   See  also
+     --suppress-debuglink-crc.
+
+     In  many cases one can get additional detail by specifying -v (sometimes -v
+     -v gets even more, see the --verbose discussion below).  When printing DIEs
+     (Debugging Information Entries) the options -G (showing global offsets) and
+     -M (naming the DW_FORM* of attributes) (or their -- counterparts) can be  a
+     great aid to understanding DWARF..
+
+     The  --format-registers (-R)  option  uses a built-in generic register name
+     set handling up to 1200 registers named r0-r1199.
+
+     The --file-abi=<abi> (-x abi=<abi>) description below shows how to name  an
+     abi  and  use that to guide the --print-frame (-f) or --print-eh-frame (-F)
+     processing.
+
+     One of --print-frame (-f) or  --print-eh-frame (-F)  implies  lots  of  abi
+     (register  names,  register  counts) in the output, but sections other than
+     frame sections may also need register names.
+
+
+     Unless the cpu for the object file being dumped has many registers, do  not
+     use  --format-registers  or -file-abi=<abi> as those can be needlessly slow
+     dumping frame sections. Instead, use the  correct  abi  (if  it  exists  in
+     dwarfdump.conf)  or  a generic such as --file-abi=abi=generic100 or --file-
+     abi=abi=generic500
+      .
+
+     The most useful abi choices are likely mips or x86 or x86_64 or ppc or arm
+      .   Without  --format-registers (-R)   or   -file-abi=<abi> (-x abi=<abi>)
+     dwarfdump  uses a compiled-in generic set of register names.  If no --file-
+     name=<path> (-x name=<path>)  is  given,  dwarfdump  looks  for   "./dwarf-
+     dump.conf", "$HOME/dwarfdump.conf", "$HOME/.dwarfdump.conf", "<install-pre-
+     fix>/lib/dwarfdump.conf"  and  takes  the  first it finds.  Use the --show-
+     dwarfdump-conf option  to see what dwarfdump finds.  If one or more --file-
+     name=<path> (-x name=<path>) is given the last of these  is  used  and  all
+     other such files are ignored.
+
+ERROR CHECKING
+     Some  checking  ( -k) options (See "Check DWARF Integrity" in the help out-
+     put) print so-called harmless errors.  These are compiler  errors  that  do
+     not  cause  any known problem and are only detected inside libdwarf itself.
+     These are difficult to properly report in dwarfdump and any  error  strings
+     may not appear close to the time the error was encountered.
+
+     If  one  or  more abbreviation attributes are duplicated in an abbreviation
+     list for some Debugging Information Entry (a direct violation of the  DWARF
+     standard)  you  will find that adding the option --no-dup-attr-check to the
+     options will enable you to see the broken set of attributes by  changing  a
+     flag inside libdwarf itself.  One could use the option -kD to find out what
+     duplicated attributes exist in the object file.
+
+     If zlib compression was used on the DWARF sections in the object file being
+     read  the  real  section names such as .zdebug_info etc will be reported by
+     dwarfdump.  When dwarfdump says something is at offset 55  of  .zdebug_info
+     (or the like) keep in mind that the offset applies to the uncompressed sec-
+     tion (in memory), not the .zdebug_ compressed section in objectfilename.
+
+
+URI-STYLE INPUT STRINGS
+     The  <objectfilename> and all the options taking name strings look for URIs
+     and translate the URI strings to characters by default.  So  any  single  %
+     character is treated as if the following two characters are hex digits rep-
+     resenting the underlying true character.  Various characters are meaningful
+     to  shells (such as bash or sh) and to getopt (such as the space character)
+     If the URI translation does anything it prints the before and after of  the
+     URI  translation  on  standard  output, so inspection of the first lines of
+     output will show if URI did anything.  The actual  options  themselves  are
+     assumed  to be non-URI.  So in the option --format-producer=S&T (-cS&T) the
+     & character might cause input issues so --format-producer=S%26T  should  be
+     used instead.  To actually input a single % character (in a name, for exam-
+     ple), double it to %% on the command line (or use %25).
+
+     Options  --format-suppress-uri (-U)  (turning  off  URI interpretation) and
+     --format-suppress-uri-msg (-q) (making finding URI sequences  silent)  give
+     finer control of URI interpretation.
+
+     As  an  example,  to  get  a string 'a b' make the string 'a%20b' (here the
+     quote (') is for exposition not part of the string, though  quote  is  cer-
+     tainly problematic in a name).  Instead of escaping " quotes in the string,
+     type  %25,  as in 'a "b' should be typed 'a%20%25b'.  Any characters can be
+     typed in URI style, not just characters which are problematic to the  shell
+     or  getopt.   We  strongly  suggest you not type URI-style characters where
+     such are not needed or use the % character itself in command  line  strings
+     unless you must.
+
+URI-STYLE OUTPUT (printing)
+     Dwarfdump  translates  any  characters  in  strings  which are not ordinary
+     printable ASCII (and some which are ASCII) in the reverse of  the  previous
+     section.   It  prints into a uri-style output in the form %xx, where xx are
+     hex digits in the form of  ASCII  0-9a-0f.   The  percent  character(%)  is
+     printed as '%25'
+
+     This  is  a  clumsy way to deal with UTF-8 strings and sensible way to deal
+     with the low ASCII values that on many systems cause one's terminal to  be-
+     have  oddly. Such translations are not idempotent so dwarfdump avoids doing
+     the translation more than once on any  string.   See  option  --format-sup-
+     press-sanitize below to eliminate the output transformation.
+
+
+PRINTING OPTIONS
+     --print-all (-a)
+            Print  each  section as independently as possible. Sections that can
+            safely be printed independently (like .debug_abbrev)  have  relevant
+            info printed in the report (sometimes dependent on -v).
+
+
+     --print-abbrev (-b)
+            Print the .debug_abbrev section. Because the DWARF specifications do
+            not  rule  out  garbage data areas in .debug_abbrev (if they are not
+            referenced from .debug_info) any garbage bytes can  result  in  this
+            print failing.
+
+
+     --print-loc (-c)
+            Print locations lists.
+
+
+     --print-debug-gnu
+            Print  the .debug_gnu_pubnames and .debug_gnu_typenames sections.
+
+
+     --print-fission
+            Print  the .gdb_index, .debug_cu_index,
+             .debug_tu_index, .gnu.debuglink,
+              and .note.gnu.build-id sections.
+
+
+     --print-gnu-debuglink
+            Print .gnu_debuglink and .note.gnu.build-id sections
+
+
+     --print-frame (-f)
+            Print the .debug_frame section.
+
+     --print-eh-frame (-F)
+            Print the GNU .eh_frame section.
+
+
+     --print-info (-i)
+            Print the .debug_info section.
+
+
+     --print-fission (-I)
+            Print  any .gdb_index, .debug_cu_index, and .debug_tu_index sections
+            that exist in the object.
+
+
+     --print-gnu-debuglink
+            If the .gnu_debuglink section is present its content is printed.  If
+            the .note.gnu.build-id section is present its  content  is  printed.
+            If  a  DWARF  containing  file  named by the content of the .gnu_de-
+            buglink section exists the name will be printed.
+
+
+     --print-lines (-l)
+            Print the .debug_info section and the associated line section data.
+
+     --print-lines-short (-ls)
+            Print the .debug_info section and the associated line section  data,
+            but  omit  the  <pc> address.  Useful when a comparison of line sec-
+            tions from objects with slight differences is required.
+
+
+     --print-macinfo (-m)
+            Print the .debug_macinfo (DWARF  2,3,4)  and  .debug_macro  (DWARF5)
+            sections.   The  .debug_macro  reporting  may  show  output  labeled
+            MACRONOTES, mentioning macro content  that  might  be  questionable.
+            See also --check-macros (-kw).
+
+
+     --print-ranges (-N)
+            Print  .debug_ranges  section.   Because the DWARF specifications do
+            not rule out garbage data areas in .debug_ranges (if  they  are  not
+            referenced  from  .debug_info)  any garbage bytes can result in this
+            print failing.
+
+
+     --print-pubnames (-p)
+            Print the .debug_pubnames section.
+
+
+     --print-str-offsets
+            Print the .debug_str_offsets section.
+
+
+     --print-aranges (-r)
+            Print the .debug_aranges section.
+
+     --print-strings (-s)
+            Print .debug_string section.
+
+
+     --print-section-allocations
+            Print a short summary of  section  memory  allocations.   Summarizes
+            malloc and mmap section allocations separately.
+
+
+     --print-static (-ta)
+            Print  the  IRIX  only  sections .debug_static_funcs and .debug_sta-
+            tic_vars.
+
+
+     --print-type (-y)
+            Print the .debug_pubtypes  section  (and  .debug_typenames,  an  SGI
+            IRIX-only section).
+
+
+     --version (-V)
+            Print a dwarfdump date/version string and stop.
+
+
+CHECKING OPTIONS
+     --check-all (-ka)
+            Turns  on  all checking options except --check-frame-extended (-kxe)
+            (which might be slow enough one might not want to use it routinely.)
+
+
+     --check-abbrev (-kb)
+            Checks for certain abbreviations section errors when reading DIEs.
+
+
+     --check-macros (-kw)
+            Checks for issues in DWARF5 .debug_macro and identifies issues  that
+            might  be  questionable  but  not necessarily errors with the string
+            MACRONOTES (and reports some MACRONOTES  that  --print-macinfo  will
+            not  show).   It also checks .debug_macinfo, but less thoroughly and
+            never emits MACRONOTES for .debug_macinfo.   See  also  --print-mac-
+            info (-m).  (regrettably inconsistent spelling...).
+
+
+     --check-constants (-kc)
+            Checks for errors in constants in debug_info.
+
+
+     -check-show (-kd)
+            Turns  on full reporting of error totals per producer.  (the default
+            shows less detail).
+
+     --check-silent-ks
+            Turns off some verbose checking detection.
+
+
+     --check-attr-dup (-kD)
+            Turns on reporting of duplicated attributes.  Duplicated  attributes
+            on  a  single  DW_TAG  are improper DWARF, but at least one compiler
+            emitted such.
+
+     --check-pubnames (-ke)
+            Turns on reading pubnames and checking for fde errors.
+
+     --check-frame-info (-kf)
+            Turns on checking for FDE errors (.debug_frame and .eh_frame).
+
+     --check-files-lines (-kF)
+            Turns on checking for line table errors.
+
+     --check-gaps (-kg)
+            Turns on checking for unused gaps in .debug_info (these gaps are not
+            an error, just a waste of space).
+
+     --check-unique (-kG)
+            Print only unique errors. Error lines are  simplified  (hex  numbers
+            removed,  for  example) and when a given message string would other-
+            wise appear again it is suppressed.
+
+     --check-summary (-ki)
+            Causes a summary of checking results per compiler (producer)  to  be
+            printed at the end.
+
+
+     --check-loc (-kl)
+            Turns on locations list checking.
+
+     --check-ranges (-km)
+            Turns on checking of ranges.
+
+     --check-aranges (-kM)
+            Turns on checking of aranges.
+
+
+     --check-tag-attr (-kr)
+            Turns  on DIE tag-attr combinations checking, looking for surprising
+            attributes for DIE tags.  Prints a DWARF-CHECK message for each such
+            found.  It does not report common extensions as errors.   A  summary
+            of  usage  is printed at the end.  Common extensions to the standard
+            are allowed as if standard.  See the -C (--format-extensions) option
+            to  show  common  extensions  as  DWARF-CHECK  messages.   See  -kuf
+            (--check-usage-extended)  to  add  additional details to the summary
+            report.
+
+
+     --check-usage (-ku)
+            The same as -kr except only the summary is printed at the end,   the
+            detailed DWARF-CHECK messages per instance are not printed.
+
+
+     --check-attr-encodings (-kE)
+            Checks  the integer encoding representation of constant FORMs in de-
+            bug_info, computing whether these integer values could fit in  fewer
+            bytes  if  represented  in  LEB128 and reports the space saving that
+            would achieve.
+
+
+     --check-forward-refs (-kR)
+            Turns on reading DIEs and checking  for  forward  declarations  from
+            DW_AT_specification  attributes.  (which are not an error but can be
+            a source of inefficiency for debuggers).
+
+     --check-self-refs (-kS)
+            Turns on checking DIE references for circular references.
+
+     --check-tag-tag (-kt)
+            Turns on tag-tag combinations checking, looking for surprising  par-
+            ent-child  DIE  relationships.  It does not report common extensions
+            as errors.  Common extensions to the  standard  are  allowed  as  if
+            standard.   See  the  -C (--format-extensions) option to show common
+            extensions as errors.
+
+
+     --check-frame-basic (-kx)
+            Turns on basic frames checking for .debug_frame and .eh_frame).
+
+     --check-frame-extended (-kxe)
+            Turns off basic check_frames and turns on  extended  frame  checking
+            for .debug_frame and .eh_frame.  This option can be slow.
+
+
+     --check-type (-ky)
+            Turns on type_offset checking (ensuring local attribute  offsets re-
+            fer  to  what  they  should) and that DW_AT_decl_file and some other
+            offsets refer to appropriate locations.
+
+
+MISCELLANEOUS OPTIONS
+     --allocate-via-mmap
+            When possible, libdwarf will use mmap rather  than  malloc  to  load
+            section content into memory.
+
+
+     --suppress-de-alloc-tree
+            Tells  libdwarf  to  omit tracking and dealloc of all memory alloca-
+            tions, relying on your code to do the dealloc.  Use  valgrind  or  a
+            compiler  option like -fsanitize to check your application for fail-
+            ures to dealloc appropriately. Improves libdwarf performance  a  few
+            percent.
+
+
+     --suppress-debuglink-crc
+            Tell libdwarf to avoid calculating debuglink crc values, saving some
+            runtime at startup and removing a useful check. However, finding al-
+            ternate debuglink or buildid files remains enabled.
+
+
+     --no-follow-debuglink
+            Tells  dwarfdump  and  libdwarf not to pay any attention to .gnu.de-
+            buglink or .gnu.note.buildid or Macos dSYM  references.
+
+
+OPTION MODIFIERS
+     --format-extensions (-C)
+            This is a secondary option after --check-tag-tag (-kt)  or  --check-
+            tag-attr (-kr)  or  Normally  when  checking  for tag-tag or tag-at-
+            tribute combinations both the standard combinations and some  common
+            extensions  are allowed (not reported).  With this option the exten-
+            sions are taken out of the class of allowed combinations.
+
+
+     -kuf (--check-usage-extended)
+            This modifies --check-tag-attr (-kr) or --check-usage (-ku) to print
+            additional details in the summary.  Add the  -kuf (--check-usage-ex-
+            tended) before or after the option it modifies.
+
+
+     --format-dense (-d)
+            When  printing DIEs, put all the attributes for each DIE on the same
+            (long) line as the TAG. This makes searching for DIE information (as
+            with grep) much simpler as the entire DIE is on one line.
+
+
+     --format-suppress-offsets (-D)
+            Turns off the display of section offsets  and  attribute  values  in
+            printed  output.  So the .debug_info output is just TAGs and Attrib-
+            utes.  For pubnames (and the like) it removes offsets from the  out-
+            put.   For  locations  lists it removes offsets from the output, but
+            that is useless since the attribute values  don't  show  so  neither
+            does the location data.
+
+
+     --format-ellipsis (-e)
+            Turns  on  truncation  of  attribute  and  tag  names.  For  example
+            DW_TAG_foo becomes foo. Not compatible with  checking,  only  useful
+            for printing DIEs.
+
+
+     --format-global-offsets (-G)
+            When printing, add global offsets to the offsets printed.
+
+
+     --format-limit=<num> (-H number)
+            When  printing  or  checking .debug_info, this terminates the search
+            after 'number' compilation units. When  printing  frame  information
+            this  terminates  the  FDE reporting after 'number' FDEs and the CIE
+            reporting (which occurs if one adds -v) after 'number' CIEs. Example
+            '--format-limit=1'
+
+
+     --format-attr-name (-M)
+            When printing, show the FORM for each attribute.  If a -v  is  added
+            (or  more  than  one)  then details of any form indirection are also
+            shown.
+
+
+     --format-suppress-lookup (-n)
+            When printing frames, this turns off the search for  function  names
+            in  inner scopes.  Unless the language used to build the object file
+            supports function definitions in inner scopes there is no  point  in
+            looking  for function names in inner scopes.  And a really large ob-
+            ject the search can take more time than one wants to wait.  This op-
+            tion suppresses the inner scope search.
+
+
+     --file-output=<path> (-Ofile=<path>)
+            The <path> will be used as the file name for output instead of writ-
+            ing to stdout (stdout is the default).
+
+
+     --format-suppress-data (-Q)
+            Suppresses section data printing (set automatically with a  checking
+            option).
+
+
+     --format-suppress-sanitize
+            Suppresses the default string-printing translations so non-ascii and
+            non-printable  characters  from  the  object file are printed as-is.
+            See "URI-STYLE OUTPUT" above.
+
+
+     --format-suppress-uri (-U)
+            Suppresses the default URI translation of following options  on  the
+            command line.  See "URI-STYLE INPUT STRINGS" above.
+
+
+     --format-registers (-R)
+            When printing frames for ABIs with lots of registers, this allows up
+            to  1200  registers  to be named (like R999) without choosing an ABI
+            with, for example '-x abi=ppc' or, equivalently, '--file-abi=ppc'
+
+
+     --verbose (-v)
+            Increases the detail shown when printing.  In some  sections,  using
+            more -v options will increase the detail (one to four are useful) or
+            may  change  the  report to show, for example, the actual line-data-
+            commands instead of the resultant line-table.  Two to  four  -v  op-
+            tions  make a difference when printing DIEs and rnglists (-i), lines
+            (-l), frames (-f,-F), gdb_index(-I).  Additional -v beyond  four  do
+            not currently add-to or change the output.
+
+     --show-dwarfdump-conf
+            Shows what files are checked to find a dwarfdump.conf and its regis-
+            ter naming tables.
+
+
+LIMITING OUTPUT
+     The  simplest  limiting  option  is  to stop the examination/printing after
+     <num> compilation units.  See -H and  --format-limit  above.   This  option
+     also  limits  the  number of FDEs and CIEs printed from any .debug_frame or
+     .eh_frame section.
+
+
+     The --search (-S) options print information about the compilation unit  and
+     DIE  where  the  string(s) appear.  These cannot be combined with other op-
+     tions.  At most one of each of the following is effective (so  for  example
+     one  can only have one 'match', but one can have a 'match', an 'any', and a
+     'regex').  Any --search (-S) causes  the  .debug_info  section  to  be  in-
+     spected.   No  checking options or printing options should be supplied with
+     --search(-S) options.  The strings should use URI-style to avoid  any  con-
+     flicts  with  the  command-line  parser  applicable  (bash,  sh,  ...)   or
+     getopt(), as well as using URI to deal with searching for strings  in  non-
+     ASCII  such  as  French, (etc) or the now-nearly-universal UTF8.  The regex
+     implementation only allows ASCII in the expression and the expression  only
+     handles  basic  regular expressions, which are like Posix Basic Regular Ex-
+     pressions (PBRE), but the () grouping construct in PBRE  seems  unnecessary
+     here so we suggest not using () grouping
+
+     These  are  particularly useful when the amount of DWARF information output
+     by -i is multiple gigabytes of data.
+
+     If -Sv used instead of -S , the number of occurrences is printed.  (see be-
+     low for an example).
+
+
+     --search-match=<string> (-Smatch=string)
+
+     --search-match-count=<string> (-Svmatch=string)
+            When printing DIEs for each tag value or attribute name that matches
+            'string' exactly print the compilation unit information and its sec-
+            tion offset.  Any CU with no match is not printed.  The 'string'  is
+            read  as a URI string.  The count (Sv) form reports the count of oc-
+            currences.
+
+
+     --search-any=<string> (-Sany=string)
+
+     --search-any-count=<string> (-Svany=string)
+            When printing DIEs for each tag value or attribute  name  that  con-
+            tains  'string' somewhere in the tag or attribute (case insensitive)
+            print the compilation unit information and its section offset.   Any
+            CU  with  no  match  is  not printed.  The 'string' is read as a URI
+            string.  The count (Sv) form reports the count of occurrences.
+
+
+     --search-regex=string (-Sregex=string)
+
+     --search-regex-count=string (-Svregex=string)
+            When printing DIEs for each tag value or attribute  name  where  the
+            'string'  regular  expression matches print the compilation unit in-
+            formation and its section offset.  Any  CU  with  no  match  is  not
+            printed.  The 'string' is read as a URI string.  The count (Sv) form
+            reports the count of occurrences.
+
+
+     The  string  cannot have spaces or other characters which are meaningful to
+     getopt(3) and the shell will strip off quotes and other characters.  So the
+     string is assumed to be in URI style and is translated.  In other words, to
+     match 'a b' make the -S string 'a%20b' Instead of escaping " quotes in  the
+     string, type %25, as in
+      'a "b' should be typed 'a%20%25b' (the ' are for exposition here, not part
+     of  the strings).  Any characters can be typed in URI style, not just char-
+     acters which are problematic to the shell or getopt.
+
+     The --search-any (-Sany) and --regex-any (-Sregex) options are only  usable
+     if  regular-expression  library  functions  required are found at configure
+     time.
+
+     The --search-print (-W) option is a modifier to  the  -S  option,  and  in-
+     creases  the  amount  of output -S prints.  An example v modifier to the -S
+     option is shown below.  And we show the -W in context with a -S option.
+
+
+     --search-match-count=string
+            Prints information about the DIEs that -S  matches  and  prints  the
+            count of occurrences.
+
+
+     -S match=string1 -W
+
+
+     --search-match=string1 --search-print-tree
+            Prints  the  parent  tree  and  the  children tree for the DIEs that
+            --search-match  matches.
+
+
+     -S match=string2 -Wp
+
+
+     --search-match=string2 --search-print-parent
+            Prints the parent tree for the DIEs that -S matches.
+
+
+     -S match=string3 -Wc
+
+     --search-match=string3 --search-print-children
+            Prints the children tree for the DIEs that -S matches.
+
+
+     --format-gcc (-cg)
+            Restricts  printing/checking  to  compilers  whose  producer  string
+            starts with 'GNU' and turns off -cs.
+
+
+     --format-snc (-cs)
+            Restricts  printing/checking  to  compilers  whose  producer  string
+            starts with 'SN' and turns off -cg.
+
+
+     --format-producer=<name> (-c<name>)
+            Restricts printing/checking to compilers whose producer string  con-
+            tains  'name'  (not  case  sensitive).   The 'name' is read as a URI
+            string.
+
+
+
+OTHER OPTIONS
+     -x name=<path>
+
+     --file-name=/p/a/t/h.conf (-xname=/p/a/t/h.conf)
+            The file path given is the name of a file assumed  to  be  a  dwarf-
+            dump.conf-like file.  The file path is read as a URI string.
+
+
+     -x abi=ppc
+
+     --file-abi=ppc
+            Selects  the abi (from a dwarfdump.conf file) to be used in printing
+            frame information (here using ppc as an example).  The abi  is  read
+            as a URI string.
+
+
+     --format-group-number=<n> (-x groupnumber=<n>)
+            For an object file with both DWARF5 split dwarf (.debug_info.dwo for
+            example)   and  ordinary DWARF sections (.debug_info for example) in
+            the single object file one must use --format-group-number=2 to print
+            the dwo sections.  Adding --file-tied=<path> naming the object  file
+            ties in the non-dwo skeleton sections (the <path> is to the skeleton
+            object file when the main object file is dwo/dwp).
+
+
+     -x tied=/t/i/depath
+
+     --file-tied=/t/i/depath
+            Used  when  opening  a main object that is a .dwo or .dwp file.  For
+            example  if  /path/to/myapp.dwp  is  the  split-dwarf   object   and
+            /path/to/myapp    is   the   executable,   do   "dwarfdump   --file-
+            tied=/path/to/myapp /path/to/myapp.dwp"  .  The tied file path names
+            the executable which has the .debug_addr section  that  may  be  re-
+            ferred  to  from  the main object. See Split Objects (aka Debug Fis-
+            sion) in the DWARF5 standard.  This cannot be used with Macos  debug
+            or GNU debuglink, such files do not have a Split Dwarf object file.
+
+
+     -x line5=s2l
+
+     --file-line5=s2l
+            Normally used only to test libdwarf interfaces.  There are 4 differ-
+            ent  interface function sets and to ensure they all work this option
+            lets us choose which to use.  The options are 's2l' (default, Allows
+            standard and two-level line tables using the latest interface  func-
+            tions),  'std'  (Allows  standard single level line tables using the
+            latest interface functions), 'orig' (allows DWARF2,3,4 original line
+            tables using an older  interface  function  set),  'orig2l'  (allows
+            original  line  tables and some two-level line tables using an older
+            interface set).
+
+
+     --print-producers
+            -P When checking this adds the list of compilation-unit  names  seen
+            for each producer-compiler to the printed checking results.
+
+     -q
+
+     --format-suppress-uri-msg
+            When  a  URI is found and translated while reading the command line,
+            be quiet about the URI translation. That is, don't print the  origi-
+            nal and translated option strings.
+
+
+     -u cuname
+
+     --format-file=<file>
+            Turns  on  selective  printing of DIEs (printing like -i).  Only the
+            DIEs for a  compilation  unit  that  match  the  name  provided  are
+            printed.  If the compilation unit is ./a/b/c.c the 'cuname' you pro-
+            vide should be c.c as the characters through the final path-separat-
+            ing / are ignored.  If 'cuname' begins with a / then the entire name
+            string  of  a  compilation  unit must match 'cuname'.  The 'file' is
+            read as a URI string.
+
+
+     -U
+
+     --format-suppress-uri
+            Turn off the URI interpretation of  the  command  line  strings  en-
+            tirely.  Must  be  be on the command line before any URI strings en-
+            countered to be fully effective.  Likely something no one  needs  to
+            do.
+
+
+     -h
+
+     --help
+            Show this man page.
+
+SPLIT DWARF
+     With Split Dwarf (DWARF5) the main body of the DWARF is in a separate file,
+     often having the name suffix .dwp or .dwo .
+
+     For   example   if   /path/to/myapp.dwp   is  the  split-dwarf  object  and
+     /path/to/myapp is the executable, do "dwarfdump  --file-tied=/path/to/myapp
+     /path/to/myapp.dwp"   .   The tied file path names the executable which has
+     the .debug_addr section and other sections that may be referred to from the
+     .dwo/.dwp object.
+
+     See Split Object Files (sometimes called Debug Fission) in the DWARF5 stan-
+     dard, section 7.3.
+
+
+FILES
+     dwarfdump
+
+      ./dwarfdump.conf
+
+     $(HOME)/.dwarfdump.conf
+
+     $(HOME)/dwarfdump.conf
+
+     <install-prefix>/lib/dwarfdump.conf
+
+NOTES
+     As of version 2.2.0 dwarfdump will check block FORMS such as DW_FORM_block2
+     (etc) for content that looks like a valid UTF8 string. Any such is  printed
+     in  hex  with  a leading 0x and ending with a colon (:). Following that the
+     string (if longer than 1 byte and less than 5000  bytes  long)  is  printed
+     with  a leading "Block As Quoted String " which is there so to make search-
+     ing for such in dwarfdump output relatively simple.
+
+     In some cases compilers use DW_FORM_data1 (for example) and in  such  cases
+     the  signedness  of  the value must be taken from context.  Rather than at-
+     tempt to determine the  context,  dwarfdump  prints  the  value  with  both
+     signedness  whenever  there  is ambiguity about the correct interpretation.
+     For example, "DW_AT_const_value           176(as signed = -80)".  For  nor-
+     mal  DWARF consumers that correctly and fully evaluate all attributes there
+     is no ambiguity of signedness: the ambiguity for dwarfdump is due to dwarf-
+     dump evaluating DIEs in a simple order and not keeping track of  much  con-
+     text.
+
+BUGS
+     Support  for  printing  certain  DWARF5 location expressions is incomplete.
+     Report problems to libdwarf-list -at- linuxmail -dot- org
+
+                                                                     DWARFDUMP()

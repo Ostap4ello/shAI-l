@@ -1,0 +1,8 @@
+expands  files to standard output.  typically takes a filename as
+an argument or reads standard input when used in a pipe.  In both
+cases decompressed data is written to standard output.  To decom-
+press a file: To decompress standard input in a pipe: Both  exam-
+ples  achieve the same results - a decompressed file by redirect-
+ing output.
+
+

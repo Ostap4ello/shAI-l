@@ -1,0 +1,21 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-service-rm - Remove one or more services
+
+
+
+SYNOPSIS
+     docker service rm SERVICE [SERVICE...]
+
+
+
+DESCRIPTION
+     Remove one or more services
+
+
+
+SEE ALSO
+     docker-service(1)
+
+Docker Community                    May 2026                           DOCKER(1)

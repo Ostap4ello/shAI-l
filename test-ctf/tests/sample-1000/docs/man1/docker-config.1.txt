@@ -1,0 +1,22 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-config - Manage Swarm configs
+
+
+
+SYNOPSIS
+     docker config
+
+
+
+DESCRIPTION
+     Manage Swarm configs
+
+
+
+SEE ALSO
+     docker(1),  docker-config-create(1),  docker-config-inspect(1), docker-con-
+     fig-ls(1), docker-config-rm(1)
+
+Docker Community                    May 2026                           DOCKER(1)

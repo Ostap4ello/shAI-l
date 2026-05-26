@@ -1,0 +1,30 @@
+DEBUGEDIT-CLASSIFY-AR(1)          User Commands         DEBUGEDIT-CLASSIFY-AR(1)
+
+NAME
+     debugedit-classify-ar  -  Checks  whether  ELF  archive  members  should be
+     processed
+
+SYNOPSIS
+     debugedit-classify-ar [OPTION...] FILE
+
+DESCRIPTION
+     -m, --max-members=NUM
+            Maximum number of archive members to accept
+
+     -q, --quiet
+            Don't show any output (not even errors)
+
+     -v, --verbose
+            Show extra output
+
+   Help options:
+     -?, --help
+            Show this help message
+
+     -u, --usage
+            Display brief usage message
+
+     -V, --version
+            Show program version
+
+debugedit-classify-ar 5.3          March 2026           DEBUGEDIT-CLASSIFY-AR(1)

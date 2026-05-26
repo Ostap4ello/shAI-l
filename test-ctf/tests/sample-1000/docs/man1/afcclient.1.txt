@@ -1,0 +1,85 @@
+afcclient(1)                 General Commands Manual                afcclient(1)
+
+NAME
+     afcclient - Interact with AFC/HouseArrest service on a connected device.
+
+SYNOPSIS
+     afcclient [OPTIONS] [COMMAND ...]
+
+
+DESCRIPTION
+     Utility  to  interact  with  AFC/HouseArrest service. This allows access to
+     parts of the filesystem on an iOS device.
+
+     afcclient can be used interactively with a command prompt, or run a  single
+     command and exit.
+
+
+COMMANDS
+     devinfo
+            print device information
+
+     info PATH
+            print file attributes of file at PATH
+
+     ls PATH
+            print directory contents of PATH
+
+     mv OLD NEW
+            rename file OLD to NEW
+
+     mkdir PATH
+            create directory at PATH
+
+     ln [-s] FILE [LINK]
+            Create  a (symbolic) link to file named LINKNAME. NOTE: This feature
+            has been disabled in newer versions of iOS.
+
+     rm [-rf] PATH
+            remove item at PATH
+
+     get [-rf] PATH [LOCALPATH]
+            transfer file at PATH from device to LOCALPATH, or current directory
+            if omitted. If LOCALPATH is a directory, the file will be stored in-
+            side the directory.
+
+     put [-rf] LOCALPATH [PATH]
+            transfer local file at LOCALPATH to device at PATH, or  current  di-
+            rectory  if omitted. If PATH is a directory, the file will be stored
+            inside the directory.
+
+     OPTIONS
+
+     -u, --udid UDID
+            target specific device by UDID
+
+     -n, --network
+            connect to network device (not  recommended,  since  the  connection
+            might be terminated at any time)
+
+     --container <appid>
+            Access the app container directory of the app with given appid
+
+     --documents <appid>
+            Access the Documents directory of the app with given appid
+
+     -h, --help
+            Prints usage information
+
+     -d, --debug
+            Enable communication debugging
+
+     -v, --version
+            Prints version information
+
+
+AUTHOR
+     Nikias Bassen
+
+
+ON THE WEB
+     https://libimobiledevice.org
+
+     https://github.com/libimobiledevice/libimobiledevice
+
+                                                                    afcclient(1)

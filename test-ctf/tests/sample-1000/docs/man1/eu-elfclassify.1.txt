@@ -1,0 +1,158 @@
+EU-ELFCLASSIFY(1)            General Commands Manual           EU-ELFCLASSIFY(1)
+
+NAME
+     eu-elfclassify - Determine the type of an ELF file.
+
+SYNOPSIS
+     eu-elfclassify [--core]
+             [--debug-only]
+             [--elf]
+             [--elf-archive]
+             [--elf-file]
+             [--executable]
+             [--library]
+             [--linux-kernel-module]
+             [--loadable]
+             [--program]
+             [--shared]
+             [--unstripped]
+             [-f| --file]
+             [--no-stdin]
+             [--stdin]
+             [--stdin0]
+             [-z| --compressed]
+             [--matching]
+             [--no-print]
+             [--not-matching]
+             [--print]
+             [--print0]
+             [-q| --quiet]
+             [-v| --verbose]
+             [-?| --help]
+             [--usage]
+             [-V| --version]      elffile...
+
+DESCRIPTION
+     eu-elfclassify identifies the primary purpose of a particular kind of
+      ELF file or files
+
+OPTIONS
+     The long and short forms of options, shown here as alternatives, are equiv-
+     alent.  All  of the classification options must apply at the same time to a
+     particular file.  Classification options can  be  negated  using  a  --not-
+     prefix.
+
+   Classification Options
+     --core
+         File is an ELF core dump file.
+
+     --debug-only
+         File  is  a  debug  only  ELF file (separate .debug, .dwo or dwz multi-
+         file).
+
+     --elf
+         File looks like an ELF object or archive/static library (default).
+
+     --elf-archive
+         File is an ELF archive or static library.
+
+     --elf-file
+         File is an regular ELF object (not an archive/static library).
+
+     --executable
+         File is (primarily) an ELF program executable (not primarily a DS.O)
+
+     --library
+         File is an ELF shared object (DSO) (might also be an executable).
+
+     --linux-kernel-module
+         File is a linux kernel module.
+
+     --loadable
+         File is a loadable ELF object (program or shared object).
+
+     --program
+         File is an ELF program executable (might also be a DSO).
+
+     --shared
+         File is (primarily) an ELF shared object (DSO) (not primarily  an  exe-
+         cutable).
+
+     --unstripped
+         File  is  an ELF file with symbol table or .debug_* sections and can be
+         stripped further.
+
+   Input flags
+     -f
+     --file
+         Only classify regular (not symlink nor special device) files.
+
+     --no-stdin
+         Do not read files from standard input (default).
+
+     --stdin
+         Also read file names to process from standard input, separated by  new-
+         lines.
+
+     --stdin0
+         Also read file names to process from standard input, separated by ASCII
+         NUL bytes.
+
+     -z
+     --compressed
+         Try to open compressed files or embedded (kernel) ELF images.
+
+   Output flags
+     --matching
+         If printing file names, print matching files (default).
+
+     --no-print
+         Do not output file names.
+
+     --not-matching
+         If printing file names, print files that do not match.
+
+     --print
+         Output names of files, separated by newline.
+
+     --print0
+         Output names of files, separated by ASCII NUL.
+
+    Additional flags
+     -q
+
+     --quiet
+         Suppress some error output (counterpart to --verbose).
+
+     -v
+
+     --verbose
+         Output additional information (can be specified multiple times).
+
+     -?
+
+     --help
+         Give this help list.
+
+     --usage
+         Give a short usage message.
+
+     -V
+
+     --version
+         Print program version.
+
+
+AUTHOR
+     Written by Florian Wiemer.
+
+REPORTING BUGS
+     Please reports bugs at https://sourceware.org/bugzilla/
+
+COPYRIGHT
+     Copyright  ^A(C)  2019  Red  Hat  Inc.  License GPLv3+: GNU GPL version 3 or
+     later <https://gnu.org/licenses/gpl.html>.  This is free software: you  are
+     free  to  change  and redistribute it.  There is NO WARRANTY, to the extent
+     permitted by law.
+
+elfutils                           2019-Aug-20                 EU-ELFCLASSIFY(1)

@@ -1,0 +1,22 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-stack - Manage Swarm stacks
+
+
+
+SYNOPSIS
+     docker stack [OPTIONS]
+
+
+
+DESCRIPTION
+     Manage Swarm stacks
+
+
+
+SEE ALSO
+     docker(1),  docker-stack-config(1),  docker-stack-deploy(1),  docker-stack-
+     ls(1), docker-stack-ps(1), docker-stack-rm(1), docker-stack-services(1)
+
+Docker Community                    May 2026                           DOCKER(1)

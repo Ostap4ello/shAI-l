@@ -1,0 +1,21 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-tag - Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+
+
+
+SYNOPSIS
+     docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
+
+
+
+DESCRIPTION
+     Alias for docker image tag.
+
+
+
+SEE ALSO
+     docker(1)
+
+Docker Community                    May 2026                           DOCKER(1)

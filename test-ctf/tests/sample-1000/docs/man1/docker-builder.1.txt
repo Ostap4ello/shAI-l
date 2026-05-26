@@ -1,0 +1,21 @@
+DOCKER(1)                      Docker User Manuals                     DOCKER(1)
+
+NAME
+     docker-builder - Manage builds
+
+
+
+SYNOPSIS
+     docker builder
+
+
+
+DESCRIPTION
+     Manage builds
+
+
+
+SEE ALSO
+     docker(1), docker-builder-build(1), docker-builder-prune(1)
+
+Docker Community                    May 2026                           DOCKER(1)

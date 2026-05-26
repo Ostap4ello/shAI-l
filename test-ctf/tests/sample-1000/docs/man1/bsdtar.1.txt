@@ -1,0 +1,488 @@
+creates  and manipulates streaming archive files.  This implemen-
+tation can extract from tar, pax, cpio, zip, jar, ar,  xar,  rar,
+rpm,  7-zip,  and  ISO 9660 cdrom images and can create tar, pax,
+cpio, ar, zip, 7-zip, and shar archives.  The first synopsis form
+shows a option word.  This usage is  provided  for  compatibility
+with  historical  implementations.   See  below for details.  The
+other synopsis forms show the preferred usage.  The first  option
+to  is  a  mode  indicator  from the following list: Create a new
+archive containing the specified items.  The long option form  is
+Like but new entries are appended to the archive.  Note that this
+only works on uncompressed archives stored in regular files.  The
+option  is  required.   The long option form is List archive con-
+tents to stdout.  The long option form is Like  but  new  entries
+are  added  only  if they have a modification date newer than the
+corresponding entry in the archive.  Note that this only works on
+uncompressed archives stored in regular files.  The option is re-
+quired.  The long form is Extract to disk from the archive.  If a
+file with the same name appears more than once  in  the  archive,
+each  copy  will be extracted, with later copies overwriting (re-
+placing) earlier copies.  The long option form  is  In  or  mode,
+each  specified  file or directory is added to the archive in the
+order specified on the command line.  By default, the contents of
+each directory are also archived.  In extract or list  mode,  the
+entire  command  line  is  read  and parsed before the archive is
+opened.  The pathnames or patterns on the command  line  indicate
+which  items  in  the  archive should be processed.  Patterns are
+shell-style globbing patterns as documented  in  Unless  specifi-
+cally  stated  otherwise, options are applicable in all operating
+modes.  (c and r modes only) The specified archive is opened  and
+the  entries in it will be appended to the current archive.  As a
+simple example, writes a new archive to standard output  contain-
+ing a file and all of the entries from In contrast, creates a new
+archive  with only two entries.  Similarly, reads an archive from
+standard input (whose format will  be  determined  automatically)
+and converts it into a gzip-compressed pax-format archive on std-
+out.   In this way, can be used to convert archives from one for-
+mat to another.  (c mode only) Use the archive suffix to decide a
+set of the format and the compressions.   As  a  simple  example,
+creates  a  new  archive with restricted pax format and gzip com-
+pression, creates a new archive with restricted  pax  format  and
+bzip2 compression and uuencode compression, creates a new archive
+with  zip  format,  ignores the option, and creates a new archive
+with restricted pax format and gzip compression, if it is unknown
+suffix or no suffix, creates a new archive  with  restricted  pax
+format and bzip2 compression.  (c, r, u, x modes only) Archive or
+extract  POSIX.1e  or NFSv4 ACLs.  This is the reverse of and the
+default behavior in c, r, and u modes (except on Mac OS X) or  if
+is run in x mode as root.  On Mac OS X this option translates ex-
+tended  ACLs to NFSv4 ACLs.  To store extended ACLs the option is
+preferred.  Ignored for compatibility with other implementations.
+Specify the block size, in 512-byte records, for tape drive  I/O.
+As  a  rule,  this  argument  is only needed when reading from or
+writing to tape drives, and usually not even then as the  default
+block  size of 20 records (10240 bytes) is very common.  In c and
+r mode, this changes the directory before  adding  the  following
+files.   In  x mode, change directories after opening the archive
+but before extracting entries from the archive.  (x mode only) to
+the current directory after processing any options and before ex-
+tracting any files.  (use with Only set the modification time  if
+the file is newer than the date specified in (x mode only) Before
+removing file system objects to replace them, clear platform-spe-
+cific  file  attributes or file flags that might prevent removal.
+Do not process files or directories that match the specified pat-
+tern.  Note that exclusions  take  precedence  over  patterns  or
+filenames specified on the command line.  Do not process files or
+directories  internally  used  by the version control systems and
+(c, r, u, x modes only) Archive or extract platform-specific file
+attributes or file flags.  This is the reverse of and the default
+behavior in c, r, and u modes or if is run in  x  mode  as  root.
+(c,  r,  u  mode  only)  Use the specified format for the created
+archive.  Supported formats include and Other formats may also be
+supported; see for  more  information  about  currently-supported
+formats.   In  r and u modes, when extending an existing archive,
+the format specified here must be compatible with the  format  of
+the existing archive on disk.  Read the archive from or write the
+archive  to the specified file.  The filename can be for standard
+input or standard output.  The default varies by system;  on  the
+default  is  on  Linux,  the default is Use the provided group id
+number.  On extract, this overrides the group id in the  archive;
+the  group  name in the archive will be ignored.  On create, this
+overrides the group id read from disk; if is not also  specified,
+the  group  name will be set to match the group id.  Use the pro-
+vided group name.  On extract, this overrides the group  name  in
+the  archive;  if  the  provided group name does not exist on the
+system, the group id (from the archive or from the  option)  will
+be  used  instead.  On create, this sets the group name that will
+be stored in the archive; the name will not be  verified  against
+the  system  group  database.   Use the provided group, if is not
+provided, can be either a group name or numeric id.  See the  op-
+tion  for  details.  (c and r modes only) Symbolic links named on
+the command line will be followed; the target of the link will be
+archived, not the link itself.  (c and r modes only) Synonym  for
+Synonym  for  Show usage.  (x mode only) Mac OS X specific (v10.6
+or later). Compress extracted regular files  with  HFS+  compres-
+sion.   An alias of for compatibility with GNU tar.  Process only
+files or directories that match the specified pattern.  Note that
+exclusions specified with take precedence over inclusions.  If no
+inclusions are explicitly specified, all entries are processed by
+default.   The  option  is  especially  useful   when   filtering
+archives.   For  example,  the command creates a new archive con-
+taining only the entries from containing the string (c mode only)
+Compress the resulting archive with In  extract  or  list  modes,
+this option is ignored.  Note that this implementation recognizes
+XZ  compression  automatically  when  reading  archives.  (c mode
+only) Compress the resulting archive  with  In  extract  or  list
+modes,  this  option  is  ignored.  Note that this implementation
+recognizes bzip2 compression automatically when reading archives.
+(x mode only) Do not overwrite existing files.  In particular, if
+a file appears more than once in an archive,  later  copies  will
+not overwrite earlier copies.  (x mode only) Do not overwrite ex-
+isting  files  that  are newer than the versions appearing in the
+archive being extracted.  (c and r modes only) All symbolic links
+will be followed.  Normally, symbolic links are archived as such.
+With this option, the target of the link  will  be  archived  in-
+stead.   (c  and r modes only) Issue a warning message unless all
+links to each file are archived.  (c mode only) Compress the  re-
+sulting archive with In extract or list modes, this option is ig-
+nored.   Note  that this implementation recognizes lrzip compres-
+sion automatically when reading archives.  (c mode only) Compress
+the archive with lz4-compatible compression  before  writing  it.
+In extract or list modes, this option is ignored.  Note that this
+implementation  recognizes  lz4  compression  automatically  when
+reading archives.  (c mode only) Compress the archive with  zstd-
+compatible  compression  before  writing  it.  In extract or list
+modes, this option is ignored.   Note  that  this  implementation
+recognizes  zstd compression automatically when reading archives.
+(c mode only) Compress the resulting archive  with  the  original
+LZMA  algorithm.   In  extract  or list modes, this option is ig-
+nored.  Use of this option is discouraged and new archives should
+be created with instead.  Note that  this  implementation  recog-
+nizes  LZMA  compression automatically when reading archives.  (c
+mode only) Compress the resulting archive with In extract or list
+modes, this option is ignored.   Note  that  this  implementation
+recognizes  LZO  compression automatically when reading archives.
+(x mode only) Do not extract modification time.  By default,  the
+modification  time is set to the time stored in the archive.  (c,
+r, u and x mode only) Mac OS X specific.  Archive or extract  ex-
+tended  ACLs  and  extended  file attributes using in AppleDouble
+format.  This is the reverse of and the default behavior in c, r,
+and u modes or if is run in x mode as root.  Currently  supported
+only  for  pax  formats (c, r, u modes only) Set the modification
+times of added files to the specified date.  Do not  operate  re-
+cursively  on  the  content of directories.  (c, r, u modes only)
+Only include files and directories newer than the specified date.
+This compares ctime entries.  (c, r, u modes only) Like except it
+compares mtime entries instead of ctime entries.  (c, r, u  modes
+only) Only include files and directories newer than the specified
+file.   This  compares  ctime entries.  (c, r, u modes only) Like
+except it compares mtime entries instead of  ctime  entries.   (c
+and  r  modes  only)  Honor the nodump file flag by skipping this
+file.  (x mode only) Mac OS X specific (v10.6 or later).  Do  not
+compress  extracted regular files which were compressed with HFS+
+compression before archived.  By default,  compress  the  regular
+files  again  with  HFS+  compression.  (use with or Filenames or
+patterns are separated by null characters, not by newlines.  This
+is often used to read filenames output by the option to (c, r, u,
+x modes only) Do not archive or extract POSIX.1e or  NFSv4  ACLs.
+This is the reverse of and the default behavior if is run as non-
+root  in x mode (on Mac OS X as any user in c, r, u and x modes).
+(c, r, u, x modes only) Do not archive or extract file attributes
+or file flags.  This is the reverse of and the  default  behavior
+if  is  run as non-root in x mode.  (c, r, u and x mode only) Mac
+OS X specific.  Do not archive or extract ACLs and extended  file
+attributes  using  in AppleDouble format.  This is the reverse of
+and the default behavior if is run as non-root in x mode.  (c, r,
+u modes only) Do not read  sparse  file  information  from  disk.
+This  is  the  reverse  of  (x mode only) Do not create temporary
+files and use to replace the original ones.  This is the  reverse
+of (x mode only) Do not extract owner and group IDs.  This is the
+reverse  of  and  the default behavior if is run as non-root.  (x
+mode only) Do not extract full permissions  (SGID,  SUID,  sticky
+bit,  file attributes or file flags, extended file attributes and
+ACLs).  This is the reverse of and the default behavior if is run
+as non-root.  (c, r, u, x modes only) Do not archive  or  extract
+extended file attributes.  This is the reverse of and the default
+behavior  if is run as non-root in x mode.  This is equivalent to
+On extract, it causes user and group names in the archive  to  be
+ignored  in  favor of the numeric user and group ids.  On create,
+it causes user and group names to not be stored in  the  archive.
+(x,  t modes only) In extract (-x) mode, files will be written to
+standard out rather than being extracted to disk.  In  list  (-t)
+mode,  the file listing will be written to stderr rather than the
+usual stdout.  (x mode) Use the user and group of the  user  run-
+ning  the  program  rather  than  those specified in the archive.
+Note that this has no significance unless is specified,  and  the
+program  is  being  run by the root user.  In this case, the file
+modes and flags from the archive will be restored,  but  ACLs  or
+owner  information  in  the  archive will be discarded.  (c, r, u
+mode) A synonym for (c, r, u modes only) Only include  files  and
+directories  older  than the specified date.  This compares ctime
+entries.  (c, r, u modes only) Like except it compares mtime  en-
+tries  instead  of  ctime entries.  (c, r, u modes only) Only in-
+clude files and directories older than the specified file.   This
+compares ctime entries.  (c, r, u modes only) Like except it com-
+pares  mtime  entries  instead  of  ctime  entries.  (c, r, and u
+modes) Do not cross mount points.  Select optional behaviors  for
+particular  modules.   The  argument  is a text string containing
+comma-separated keywords and values.  These  are  passed  to  the
+modules  that handle particular formats to control how those for-
+mats will behave.  Each option has one of  the  following  forms:
+The  key  will be set to the specified value in every module that
+supports it.  Modules that do not support this  key  will  ignore
+it.   The  key  will be enabled in every module that supports it.
+This is equivalent to The key will be disabled  in  every  module
+that  supports it.  As above, but the corresponding key and value
+will be provided only to modules whose name matches The  complete
+list of supported modules and keys for create and append modes is
+in  and  for  extract and list modes in Examples of supported op-
+tions: Support Joliet extensions.  This is  enabled  by  default,
+use  or  to disable.  Support Rock Ridge extensions.  This is en-
+abled by default, use or to disable.  A decimal integer from 1 to
+9 specifying the gzip compression level.  Store timestamp.   This
+is  enabled  by  default,  use or to disable.  Use as compression
+method.  Supported values are bzip2, gzip, lzo (ultra fast),  and
+zpaq (best, extremely slow).  A decimal integer from 1 to 9 spec-
+ifying  the lrzip compression level.  A decimal integer from 1 to
+9 specifying the lzop compression level.  Enable stream checksum.
+This is by default, use to disable.  Enable block checksum  (Dis-
+abled  by default).  A decimal integer from 4 to 7 specifying the
+lz4 compression block size (7 is set by default).  Use the previ-
+ous block of the block being compressed for a compression dictio-
+nary to improve compression ratio.  A decimal integer  specifying
+the  zstd  compression level.  Supported values depend on the li-
+brary version, common values are from 1 to 22.  Specify the  num-
+ber  of  worker  threads  to  use, or 0 to use as many threads as
+there are CPU cores in the system.  Start a new compression frame
+at the beginning of each file in  the  archive.   In  combination
+with do not start a new compression frame unless the uncompressed
+size  of  the current frame is at least bytes.  The number may be
+followed by or to indicate kilobytes, megabytes or gigabytes  re-
+spectively.   In  combination with do not start a new compression
+frame unless the compressed size of the current frame is at least
+bytes.  The number may be followed by or to  indicate  kilobytes,
+megabytes  or  gigabytes  respectively.   Start a new compression
+frame as soon as possible after the uncompressed size of the cur-
+rent frame exceeds bytes.  The number may be followed  by  or  to
+indicate  kilobytes, megabytes or gigabytes respectively.  Values
+less than 1,024 will be rejected.  Start a new compression  frame
+as  soon  as  possible  after  the compressed size of the current
+frame exceeds bytes.  The number may be followed by or  to  indi-
+cate kilobytes, megabytes or gigabytes respectively.  Values less
+than 1,024 will be rejected.  A decimal integer from 1 to 9 spec-
+ifying the lzop compression level.  A decimal integer from 0 to 9
+specifying  the  xz  compression  level.   Specify  the number of
+worker threads to use.  Setting threads  to  a  special  value  0
+makes  use  as many threads as there are CPU cores on the system.
+The mtree writer module allows you to specify  which  mtree  key-
+words  will  be  included  in the output.  Supported keywords in-
+clude: The default is equivalent to: Enables  all  of  the  above
+keywords.  You can also use to disable all keywords.  Enable gen-
+eration of lines in the output.  Produce human-readable output by
+indenting  options  and  splitting  lines to fit into 80 columns.
+Use as compression method.  Supported values  are  store  (uncom-
+pressed)  and  deflate (gzip algorithm).  Enable encryption using
+traditional zip encryption.  Use as encryption  type.   Supported
+values  are zipcrypt (traditional zip encryption), aes128 (WinZip
+AES-128 encryption) and aes256 (WinZip AES-256 encryption).   Ig-
+nore zeroed blocks in the archive, which occurs when multiple tar
+archives  have  been concatenated together.  Without this option,
+only the contents of the  first  concatenated  archive  would  be
+read.   This option is comparable to the option of GNU tar.  If a
+provided option is not supported by any module, that is  a  fatal
+error.   Preserve  pathnames.   By  default,  absolute  pathnames
+(those that begin with a / character) have the leading slash  re-
+moved  both  when  creating  archives  and  extracting from them.
+Also, will refuse to extract archive entries whose pathnames con-
+tain or whose target directory would be  altered  by  a  symlink.
+This  option  suppresses these behaviors.  (x mode only) Preserve
+file permissions.  Attempt to restore the full  permissions,  in-
+cluding  file modes, file attributes or file flags, extended file
+attributes and ACLs, if available, for each item  extracted  from
+the  archive.  This is the reverse of and the default if is being
+run as root.  It can be partially overridden by  also  specifying
+or  The  is used to extract or create an encrypted archive.  Cur-
+rently, zip is the only supported format  that  supports  encryp-
+tion.  You shouldn't use this option unless you realize how inse-
+cure  use  of this option is.  (c, r, u mode only) Synonym for (x
+and t mode only) Extract or list only  the  first  archive  entry
+that  matches  each pattern or filename operand.  Exit as soon as
+each specified pattern or filename has been matched.  By default,
+the archive is always read to the very end, since  there  can  be
+multiple entries with the same name and, by convention, later en-
+tries  overwrite  earlier  entries.  This option is provided as a
+performance optimization.  (c, r, u modes only) Read sparse  file
+information  from  disk.   This is the reverse of and the default
+behavior.  (x mode only) Extract  files  as  sparse  files.   For
+every  block  on disk, check first if it contains only NULL bytes
+and  seek  over  it  otherwise.   This  works  similar   to   the
+conv=sparse  option  of  dd.  Modify file or archive member names
+according to The pattern has the format where is a basic  regular
+expression,  is  the  replacement string of the matched part, and
+the optional trailing letters modify how the replacement is  han-
+dled.   If  is  not matched, the pattern is skipped.  Within ~ is
+substituted with the match, \1 to \9 with the content of the cor-
+responding captured group.  The  optional  trailing  g  specifies
+that  matching should continue after the matched part and stop on
+the first unmatched pattern.  The optional trailing  s  specifies
+that the pattern applies to the value of symbolic links.  The op-
+tional  trailing p specifies that after a successful substitution
+the original path name and the new path name should be printed to
+standard error.  The optional trailing b specifies that the  sub-
+stitution  should  be  matched  from  the beginning of the string
+rather than from right after the position at which  the  previous
+matching  substitution ended.  Optional trailing H, R, or S char-
+acters suppress substitutions for hardlink targets, regular file-
+names, or symlink targets, respectively.  Optional trailing h, r,
+or s characters enable substitutions for hardlink targets,  regu-
+lar  filenames, or symlink targets, respectively.  The default is
+which applies substitutions to all names.  In particular,  it  is
+never  necessary  to  specify  h, r, or s.  (x mode only) Extract
+files atomically.  By default unlinks the original file with  the
+same  name as the extracted file (if it exists), and then creates
+it immediately under the same name and writes to it.  For a short
+period of time, applications trying to access the file might  not
+find it, or see incomplete results.  If is enabled, first creates
+a unique temporary file, then writes the new contents to the tem-
+porary  file, and finally renames the temporary file to its final
+name atomically using This guarantees that an application access-
+ing the file, will either see the old contents or  the  new  con-
+tents  at  all times.  (x mode only) Extract owner and group IDs.
+This is the reverse of and the default  behavior  if  is  run  as
+root.   Remove  the  specified  number  of leading path elements.
+Pathnames with fewer elements will  be  silently  skipped.   Note
+that  the  pathname  is edited after checking inclusion/exclusion
+patterns but before security checks.  In x or t mode,  will  read
+the list of names to be extracted from In c mode, will read names
+to  be  archived  from  The special name on a line by itself will
+cause the current directory to be changed to the directory speci-
+fied on the following line.  Names are terminated by newlines un-
+less is specified.  Note that also disables the special  handling
+of  lines  containing Note:  If you are generating lists of files
+using you probably want to use as well.  (c, r, u modes only) Af-
+ter archiving all files, print a  summary  to  stderr.   (x  mode
+only)  Unlink  files  before  creating them.  This can be a minor
+performance optimization if most files  already  exist,  but  can
+make things slower if most files do not already exist.  This flag
+also  causes  to remove intervening directory symlinks instead of
+reporting an error.  See the section below for more details.  Use
+the provided user id number and ignore the  user  name  from  the
+archive.  On create, if is not also specified, the user name will
+be set to match the user id.  Use the provided user name.  On ex-
+tract,  this  overrides the user name in the archive; if the pro-
+vided user name does not exist on the system, it will be  ignored
+and  the  user  id  (from the archive or from the option) will be
+used instead.  On create, this sets the user name  that  will  be
+stored  in the archive; the name is not verified against the sys-
+tem user database.  Pipe the input (in x or t mode) or the output
+(in c mode) through instead of using the builtin compression sup-
+port.  Use the provided user, if is not provided, can  be  either
+an  username or numeric id.  See the option for details.  Produce
+verbose output.  In create and extract modes, will list each file
+name as it is read from or written to the archive.  In list mode,
+will produce output similar to that of An additional option  will
+also  provide  ls-like details in create and extract mode.  Print
+version of and and exit.  Ask for confirmation for every  action.
+Read  a  list of exclusion patterns from the specified file.  See
+for more information about the handling of exclusions.  (c, r, u,
+x modes only) Archive or extract extended file attributes.   This
+is  the  reverse of and the default behavior in c, r, and u modes
+or if is run in x mode as root.  (c mode only) Compress  the  re-
+sulting archive with In extract or list modes, this option is ig-
+nored.   Note  that this implementation recognizes bzip2 compres-
+sion automatically when reading archives.  (c mode only) Compress
+the resulting archive with In extract or list modes, this  option
+is  ignored.   Note  that this implementation recognizes compress
+compression automatically when reading archives.  (c  mode  only)
+Compress  the  resulting  archive  with In extract or list modes,
+this option is ignored.  Note that this implementation recognizes
+gzip compression automatically when reading archives.   The  fol-
+lowing  environment variables affect the execution of The default
+options for format readers and compression readers.   The  option
+overrides  this.  The default options for format writers and com-
+pression writers.  The option overrides this.  The locale to use.
+See for more information.  The default device.  The option  over-
+rides  this.   Please see the description of the option above for
+more details.  The timezone to use when  displaying  dates.   See
+for more information.  The following creates a new archive called
+that  contains two files and To view a detailed table of contents
+for this archive: To extract all entries from the archive on  the
+default  tape drive: To examine the contents of an ISO 9660 cdrom
+image: To move file hierarchies, invoke as or more  traditionally
+In  create mode, the list of files and directories to be archived
+can also include directory change instructions of  the  form  and
+archive inclusions of the form For example, the command line will
+create  a  new archive will read the file from the current direc-
+tory and add it to the output archive.  It will  then  read  each
+entry from and add those entries to the output archive.  Finally,
+it  will  switch  to the directory and add to the output archive.
+An input file in format can be used to create an  output  archive
+with  arbitrary ownership, permissions, or names that differ from
+existing data on disk: $ cat  input.mtree  #mtree  usr/bin  uid=0
+gid=0   mode=0755   type=dir  usr/bin/ls  uid=0  gid=0  mode=0755
+type=file content=myls $ tar -cvf output.tar @input.mtree The and
+switches accept a variety of common date and time specifications,
+including and The argument can be used to control various details
+of archive generation or reading.  For example, you can  generate
+mtree output which only contains and keywords: or you can set the
+compression  level  used  by gzip or xz compression: For more de-
+tails, see the explanation of the and  API  calls  that  are  de-
+scribed in and The bundled-arguments format is supported for com-
+patibility with historic implementations.  It consists of an ini-
+tial  word  (with no leading - character) in which each character
+indicates an option.  Arguments follow as  separate  words.   The
+order  of the arguments must match the order of the corresponding
+characters in the bundled command word.  For  example,  specifies
+three  flags  and  The and flags both require arguments, so there
+must be two additional items on the command line.  The is the ar-
+gument to the flag, and is the argument to the  flag.   The  mode
+options c, r, t, u, and x and the options b, f, l, m, o, v, and w
+comply  with SUSv2.  For maximum portability, scripts that invoke
+should use the bundled-argument format above, should limit  them-
+selves  to  the  and modes, and the and options.  Additional long
+options are provided to improve compatibility with other tar  im-
+plementations.   Certain  security  issues  are  common  to  many
+archiving programs, including  In  particular,  carefully-crafted
+archives  can  request that extract files to locations outside of
+the target directory.  This can potentially be used to cause  un-
+witting  users  to  overwrite  files they did not intend to over-
+write.  If the archive is being extracted by the  superuser,  any
+file  on  the  system  can potentially be overwritten.  There are
+three ways this can happen.  Although has mechanisms  to  protect
+against  each  one,  savvy  users should be aware of the implica-
+tions: Archive entries can have absolute pathnames.  By  default,
+removes  the  leading  character  from filenames before restoring
+them to guard against this problem.   Archive  entries  can  have
+pathnames  that include components.  By default, will not extract
+files containing components in their pathname.   Archive  entries
+can exploit symbolic links to restore files to other directories.
+An archive can restore a symbolic link to another directory, then
+use  that  link  to restore a file into that directory.  To guard
+against this, checks each extracted path for  symlinks.   If  the
+final  path element is a symlink, it will be removed and replaced
+with the archive entry.  If is specified, any  intermediate  sym-
+link  will  also  be  unconditionally removed.  If neither nor is
+specified, will refuse to extract the entry.   To  protect  your-
+self, you should be wary of any archives that come from untrusted
+sources.   You should examine the contents of an archive with be-
+fore extraction.  You should use the option to ensure  that  will
+not overwrite any existing files or the option to remove any pre-
+existing  files.  You should generally not extract archives while
+running with super-user privileges.  Note that the option to dis-
+ables the security checks above and  allows  you  to  extract  an
+archive  while  preserving any absolute pathnames, components, or
+symlinks to other directories.  There is no current  POSIX  stan-
+dard for the tar command; it appeared in but was dropped from The
+options  supported  by this implementation were developed by sur-
+veying a number of existing tar implementations as  well  as  the
+old  POSIX specification for tar and the current POSIX specifica-
+tion for pax.  The ustar and pax interchange file formats are de-
+fined by for the pax command.  A command appeared in Seventh Edi-
+tion Unix, which was released in January, 1979.  There have  been
+numerous  other  implementations, many of which extended the file
+format.  John Gilmore's public-domain implementation  (circa  No-
+vember,  1987) was quite influential, and formed the basis of GNU
+tar.  GNU tar was included as the standard system tar  in  begin-
+ning  with  This is a complete re-implementation based on the li-
+brary.  It was first released with in May,  2005.   This  program
+follows  for  the  definition  of  the option.  Note that GNU tar
+prior to version 1.15 treated as a synonym for the  option.   The
+option  may  differ  from  historic implementations.  All archive
+output is written in correctly-sized blocks, even if  the  output
+is  being  compressed.   Whether  or not the last output block is
+padded to a full block size varies depending on  the  format  and
+the  output  device.  For tar and cpio formats, the last block of
+output is padded to a full block size  if  the  output  is  being
+written to standard output or to a character or block device such
+as  a  tape  drive.   If the output is being written to a regular
+file, the last block will not be padded.  Many  compressors,  in-
+cluding and complain about the null padding when decompressing an
+archive created by although they still extract it correctly.  The
+compression and decompression is implemented internally, so there
+may  be  insignificant  differences between the compressed output
+generated by and that generated by The default should be to  read
+and  write archives to the standard I/O paths, but tradition (and
+POSIX) dictates  otherwise.   The  and  modes  require  that  the
+archive  be  uncompressed  and located in a regular file on disk.
+Other archives can be modified using mode with the extension.  To
+archive a file called or you must specify it as or  respectively.
+In  create  mode,  a  leading  is  always  removed.  A leading is
+stripped unless the option is specified.  There needs to be  bet-
+ter support for file selection on both create and extract.  There
+is not yet any support for multi-volume archives.  Converting be-
+tween dissimilar archive formats (such as tar and cpio) using the
+convention can cause hard link information to be lost.  This is a
+consequence  of the incompatible ways that different archive for-
+mats store hardlink information.
+
+

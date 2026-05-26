@@ -1,0 +1,80 @@
+The utility can play, record, mix, and process audio files on the
+fly.   During  playback,  reads  audio data concurrently from all
+played files, mixes it and plays the result on the device.  Simi-
+larly, it stores audio data recorded from the device into  corre-
+sponding  files.   An  mode  could be used to process audio files
+without involving audio hardware.   Processing  includes:  Change
+the sound encoding.  Route the sound from one channel to another.
+Control  the  per-file playback volume.  Finally, can accept MIDI
+messages usable for: Volume control.  Start,  stop  and  relocate
+playback  and  recording.  The options are as follows: The buffer
+size of the audio device in frames.  Default is 7680.  The  audio
+file  channels  count.   The default is 2, i.e. stereo.  Increase
+log verbosity.  Encoding of the audio file.  The default  is  En-
+coding  names use the following scheme: signedness or followed by
+the precision in bits, the byte-order or the number of bytes  per
+sample,  and  the alignment or Only the signedness and the preci-
+sion are mandatory.  Examples: Use  this  audio  device.   Device
+mode  and parameters are determined from audio files.  Default is
+Go to the given time position and  start  playback  or  recording
+there.   This  option  is  equivalent to an incoming MMC relocate
+message with the same position.  The position is expressed as the
+number of samples (at device sample rate).  Audio file type.  The
+following file types are supported: Headerless  file.   Microsoft
+WAV   file   format.   Apple's  audio  interchange  file  format.
+Sun/NeXT audio file format.  Try to guess, depending on the  file
+name.  This is the default.  Play this audio file.  If the option
+argument  is  then  standard  input  will be used.  Map the given
+range of source channels into  the  given  range  of  destination
+channels.   Off-line mode.  Read input files and store the result
+in the output files, processing them on the fly.   This  mode  is
+useful  to  mix,  demultiplex,  resample or re-encode audio files
+off-line.  It requires at least one input and one  output  Record
+into  this  audio  file.  If the option argument is then standard
+output will be used.  Time offset where the beginning of the file
+belongs.  The first sample of the file will be played or recorded
+when the device reaches the given position.  The position is  ex-
+pressed  as  the number of samples (at device sample rate).  Con-
+trol audio device properties through this MIDI  port.   This  in-
+cludes per-stream volumes and the ability to synchronously start,
+stop and relocate audio files.  Sample rate in Hertz of the audio
+file.   The default is Software volume attenuation of the file to
+play.  The value must be between  1  and  127,  corresponding  to
+-42dB  and  -0dB attenuation in 1/3dB steps.  The default is 127,
+i.e. no attenuation.  On the command  line,  per-file  parameters
+must  precede  the  file  definition  If is sent or it terminates
+recording to files.  can be controlled through MIDI as follows: a
+MIDI channel is assigned  to  each  stream,  and  the  volume  is
+changed  using  the  standard  volume controller (number 7).  The
+master volume can be changed using  the  standard  master  volume
+system  exclusive message.  All audio files are controlled by the
+following MMC messages: All files are relocated to the  requested
+time  position.   If  it is beyond the end of a file, the file is
+temporarily disabled until a valid position is requested.   Play-
+back  and/or  recording is started.  Playback and/or recording is
+stopped and all files are rewound back to the starting  position.
+MIDI  control  is intended to be used together with For instance,
+the following command will create two devices: the default and  a
+MMC-controlled  one  $ sndiod -r 48000 -z 480 -s default -t slave
+-s mmc Programs using behave normally, while programs using  wait
+for the MMC start signal and start synchronously.  Then, the fol-
+lowing  command will play a file on the audio device, giving full
+control to MIDI software or hardware connected to the MIDI  port:
+$  aucat -f snd/mmc -q midithru/0 -i file.wav At this stage, will
+start, stop and relocate automatically following all user actions
+in the MIDI sequencer, assuming it's configured to  transmit  MMC
+on and Furthermore, the MIDI sequencer could be configured to use
+the  port as MTC clock source, assured to be synchronous to play-
+back of Mix and play two files while recording a  third  file:  $
+aucat  -i  file1.wav  -i file2.wav -o file3.wav Record channels 2
+and 3 into one stereo file and channels  6  and  7  into  another
+stereo  file  using  a 44.1kHz sampling rate for both: $ aucat -r
+44100 -m 2:3/0:1 -o file1.wav -m 6:7/0:1  -o  file2.wav  Split  a
+stereo file into two mono files: $ aucat -n -i stereo.wav -c 1 -m
+0:0/0:0  -o left.wav \         -m 1:1/0:0 -o right.wav Resampling
+is low quality.  There are limitations inherent to the  and  file
+formats:  not all encodings are supported, file sizes are limited
+to 2GB, and the files must support the operation (e.g.  pipes  do
+not support it).
+
+

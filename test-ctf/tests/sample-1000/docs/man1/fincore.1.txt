@@ -1,0 +1,102 @@
+FINCORE(1)                        User Commands                       FINCORE(1)
+
+NAME
+     fincore - count pages of file contents in core
+
+SYNOPSIS
+     fincore [options] file...
+
+DESCRIPTION
+     fincore  counts  pages of file contents being resident in memory (in core),
+     and reports the numbers. If an error occurs during counting, then an  error
+     message  is printed to the stderr and fincore continues processing the rest
+     of files listed in a command line. fincore uses the cachestat(2) syscall to
+     count resident pages. If the cachestat(2)  syscall  is  not  available  and
+     cachestat  usage  is  not  forced with the --cachestat option, then fincore
+     uses the mincore(2) syscall as a fallback. The cachestat(2) syscall is more
+     efficient than mincore because it does not require a  page  table  lock  to
+     walks page tables, and also reports more information than mincore, like the
+     number  of  cached  pages, dirty pages, pages marked for writeback, evicted
+     pages, and recently evicted  pages.  Another  difference  between  the  two
+     syscalls  is  that  if  write permissions are not granted to the file, then
+     cachestat(2) returns an error, while mincore(2) for security  reasons,  re-
+     turns fake data as if all pages were resident in memory (c.f.r. kernel com-
+     mit           "make          mincore()          more          conservative"
+     <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=134fca9063ad4851de767d1768180e5dede9a881>).
+
+     The default output is subject to change. So whenever possible, you should
+     avoid using default outputs in your scripts. Always explicitly define ex-
+     pected columns by using --output columns-list in environments where a sta-
+     ble output is required.
+
+OPTIONS
+     -n, --noheadings
+         Do not print a header line in status output.
+
+     -b, --bytes
+         Print sizes in bytes rather than in human-readable form.
+
+         By default, sizes are shown in units that are powers of 1024 bytes. The
+         formal abbreviations for these units (KiB, MiB, GiB, ...)  are  further
+         shortened to just their first letter: K, M, G, ....
+
+     -c, --total
+         produce a grand total.
+
+     -C, --cachestat
+         force usage of the cachestat(2) syscall instead of mincore(2), and fail
+         if it's not available.
+
+     -o, --output list
+         Define  output columns. See the --help output to get a list of the cur-
+         rently supported columns. The default list of columns may  be  extended
+         if list is specified in the format +list.
+
+     --output-all
+         Output all available columns.
+
+     -r, --raw
+         Produce  output  in  raw  format. All potentially unsafe characters are
+         hex-escaped (\x<code>).
+
+     -J, --json
+         Use JSON output format.
+
+     -R, --recursive
+         Recursively check all files in directories.
+
+     -h, --help
+         Display help text and exit.
+
+     -V, --version
+         Display version and exit.
+
+ENVIRONMENT
+     LIBSMARTCOLS_DEBUG=all
+         enables libsmartcols debug output.
+
+     LIBSMARTCOLS_DEBUG_PADDING=on
+         use visible padding characters.
+
+     LIBSMARTCOLS_JSON=compact|lines
+         Controls JSON output format when using  --json.  Supported  values  are
+         compact  for  JSON  output  with minimal whitespace, and lines for JSON
+         Lines format (one JSON object per line). If unset or set to  any  other
+         value, pretty-printed JSON is used.
+
+AUTHORS
+     Masatake YAMATO <yamato@redhat.com>
+
+SEE ALSO
+     mincore(2), getpagesize(2), getconf(1p) cachestat(2)
+
+REPORTING BUGS
+     For        bug       reports,       use       the       issue       tracker
+     <https://github.com/util-linux/util-linux/issues>.
+
+AVAILABILITY
+     The fincore command is part of the util-linux package which  can  be  down-
+     loaded            from            Linux            Kernel           Archive
+     <https://www.kernel.org/pub/linux/utils/util-linux/>.
+
+util-linux 2.42.1                  2026-05-18                         FINCORE(1)

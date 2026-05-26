@@ -1,0 +1,403 @@
+ddcutil(1)                   General Commands Manual                  ddcutil(1)
+
+NAME
+     ddcutil - Query and change monitor settings
+
+SYNOPSIS
+     ddcutil [options] command [command-arguments] [options]
+
+     Options  can  be  written  either before or after the command and its argu-
+     ments.
+
+
+
+
+DESCRIPTION
+     ddcutil is used to query and change monitor settings.   The  settings  that
+     can  be  controlled  by  ddcutil are, generally speaking, those that can be
+     changed using the buttons on a monitor and its on screen display.  The spe-
+     cific settings vary from monitor to monitor.
+
+     ddcutil communicates with monitors that implement the Monitor Control  Com-
+     mand  Set  (MCCS)  using  the DDC/CI protocol on an I2C bus.  Normally, the
+     video driver for the monitor exposes the I2C bus as devices named /dev/i2c-
+     n.  Alternatively, ddcutil can communicate with monitors that  use  USB  to
+     communicate  MMCS, provided the monitors meet the USB Monitor Control Class
+     Specification.
+
+     The Monitor Control Command Set describes a collection of  Virtual  Control
+     Panel (VCP) features that a monitor can implement.  Each feature is identi-
+     fied  using a single byte.  For example, feature x10 is the brightness con-
+     trol.
+
+     Common use cases include changing  monitor  brightness  and  color.   Using
+     scripts,  the  changes can be effected by keystrokes, or in response to the
+     time of day.  Another common use  case  is  to  switch  the  monitor  input
+     source.
+
+     A  more  complex   use case for ddcutil is as part of color profile manage-
+     ment.  Monitor calibration is relative to the monitor color  settings  cur-
+     rently  in effect, e.g. red gain.  ddcutil allows color related settings to
+     be saved at the time a monitor is calibrated, and then  restored  when  the
+     calibration is applied.
+
+
+     This  man page describes ddcutil commands and options most important to the
+     typical user.  For complete documentation, use the --help option or see the
+     web site http://www.ddcutil.com.  If option --verbose is specifeid in  con-
+     junction with --help, more extensive help on option arguments is shown.
+
+     Option  --hh  shows all options recognized by ddcutil. These include depre-
+     cated option names (which have been replaced by  more  descriptive  names),
+     experimental options, and options only of interest to developers.
+
+
+RESTRICTIONS
+     ddcutil does not support laptop monitors, which do not implement DDC/CI.
+
+
+
+COMMANDS
+   Primary Commands
+     These are the most used ddcutil commands.
+
+     detect
+            Find monitors that have a Virtual Control Panel.
+
+     vcpinfo [ feature-code | feature-group ]
+            Describe  VCP  feature  codes. as defined in the MCCS specification.
+            Use option --verbose to see values for Non-Continuous features.
+
+     capabilities
+            Query the monitor's capabilities string
+
+     getvcp [ feature-code | feature-group ] ...
+            Report a VCP feature value, or a group of feature values.  More than
+            one feature code can be specified. However feature codes and  groups
+            cannot be combined.
+
+     setvcp feature-code [+|-] new-value ...
+            Set  a  VCP  feature value.  If + or - is specified, it must be sur-
+            rounded by blanks, and indicates a relative value change of  a  con-
+            tinuous  VCP feature.  Multiple feature/value pairs (with or without
+            [+|1]) can be specified.
+
+   Secondary Commands
+     These commands address special situations.
+
+     dumpvcp filename
+            Save color profile related VCP feature values in a file.  If no file
+            name is specified, one  is  generated  and  the  file  is  saved  in
+            $HOME/.local/share/ddcutil,
+
+     loadvcp filename
+            Set VCP feature values from a file.  The monitor to which the values
+            will  be  applied is determined by the monitor identification stored
+            in the file. If a monitor is specified on the command line, it  must
+            identify the same monitor as determined from the values in the file.
+            If the monitor is not attached, nothing happens.
+
+     scs    Issue DDC/CI Save Current Settings request. Most monitors do not im-
+            plement this command.  A few require it for values changed by setvcp
+            to take effect.
+
+     chkusbmon
+            Tests  if a hiddev device may be a USB connected monitor, for use in
+            udev rules.
+
+     discard all|capabilities|dsa cache[s]
+            Discard cached files used for performance improvement.
+
+     traceable-functions
+            Lists functions that can be specifically traced using an option like
+            --trcfunc or --trcfrom
+
+     noop   Do not execute a command.  Just process options.
+
+   Diagnostic commands
+     These commands  diagnose issues in the system configuration that affect dd-
+     cutil operation, and that gather information for remote problem diagnosis.
+
+     environment
+            Probe the ddcutil installation environment.
+
+     usbenv
+            Probe USB aspects of the ddcutil installation environment.
+
+     probe  Explore the capabilities and features of a single monitor.
+
+     interrogate
+            Collect maximum information for problem diagnosis. Includes the out-
+            put of ddcutil environment --verbose for each detected monitor,  the
+            output  of  ddcutil  capabilities --verbose and ddcutil probe --ver-
+            bose.
+
+
+COMMAND ARGUMENTS
+     feature-code
+
+     A feature-code is specified by its 2 character hex feature number, with  or
+     without a leading "0x", e.g.  0x10, 10
+
+
+     feature-group
+
+
+     The  following  are  the  most useful feature groups.  For a complete list,
+     use the --help option.
+
+     ALL|KNOWN
+            All feature codes understood by ddcutil
+     COLOR  Scan color related feature codes
+     PROFILE
+            Subset of color related feature codes that are saved and restored by
+            dumpvcp and loadvcp
+     SCAN   Scan all possible feature codes 0x00..0xff, except those  known  the
+            be write-only
+
+     Feature  group names can be abbreviated to the first 3 characters.  Case is
+     ignored. e.g. "COL", "pro".
+
+     new-value
+
+     Normally, this is a decimal number in the range 0..255,  or  a  hexadecimal
+     number  in the range x00..xff.  More generally, this is actually a two byte
+     value, i.e. x00..xffff, and a few features on some monitors  use  this  ex-
+     tended range.
+
+
+
+
+
+OPTIONS
+     Options that control the amount and form of output.
+     -t, --terse, --brief
+            Show  brief  detail.   For  command getvcp, the output is in machine
+            readable form.
+     -v, --verbose
+            Show extended detail
+
+
+     Options for program information.
+     -V, --version
+            Show program version.
+     --settings
+            Report option settings in effect.
+     -h,--help
+            Show program help.
+     --hh   Show program help including hidden options. Hidden  options  include
+            alternative  option  names, experimental and deprecated options, and
+            ones for debugging.
+
+
+     Options for monitor selection.  If none are specified, the default  is  the
+     first  detected  monitor.  Options --mfg, --model and --sn can be specified
+     together.
+     -d , --dis , --display ,
+            display-number logical display number (starting from 1)
+     -b,--bus
+            bus-number I2C bus number
+     --hiddev
+            device number hiddev device number
+     -u,--usb busnum.devicenum
+            USB bus and device numbers
+     -g,--mfg
+            3 letter manufacturer code
+     -l,--model
+            model name
+     -n,--sn
+            serial number.  (This is the "serial ascii" field from the EDID, not
+            the binary serial number.)
+     -e,--edid
+            256 hex character representation of the 128 byte EDID.  Needless  to
+            say, this is intended for program use.
+
+
+     Feature selection filters
+     -U, --show-unsupported
+            Normally,  getvcp does not report unsupported features when querying
+            a feature-group.  This option forces output.
+     --show-table | --no-table
+            Normally, getvcp does not report Table type features when querying a
+            feature-group.  --show-table forces output.   --no-table is the  de-
+            fault.
+     --rw, --ro, --wo
+            Limit  getvcp  or  vcpinfo  output to read-write, read-only, or (for
+            vcpinfo) write-only features.
+
+
+
+
+     Options for diagnostic output
+     --ddcdata
+            Reports DDC protocol errors.  These may reflect I2C bus  errors,  or
+            deviations  by monitors from the MCCS specification.  Formerly named
+            --ddc,
+     --stats [all|errors|tries|calls|elapsed|time]
+            Report execution statistics.  I2C bus  communication  is  inherently
+            unreliable.   It is the responsibility of the program using the bus,
+            i.e. ddcutil, to manage retries in case of failure.  This option re-
+            ports retry counts and various performance statistics.  If no  argu-
+            ment is specified, or ALL is specified, then all statistics are out-
+            put.  ELAPSED is a synonym for TIME.  CALLS implies TIME.
+     --vstats [all|errors|tries|calls|elapsed|time]
+            Like --stats, but includes per-display statistics.
+     --istats [all|errors|tries|calls|elapsed|time]
+            Like --vstats, but includes additional internal information.
+     --syslog [debug|verbose|info|notice|warn|error|never ]
+            Write messages of the specified or more urgent severity level to the
+            system log.  The ddcutil default is WARN. The libddcutilP default is
+            NOTICE.
+
+
+
+     Options that tune execution
+     --enable-capabilities-cache, --disable-capabilities-cache
+            Enable or disable caching of capabilities strings, improving perfor-
+            mance.  The default is --enable-capabilities-cache
+     --enable-dynamic-sleep, --disable-dynamic-sleep
+            Dynamically  adjust the sleep-multiplier over multiple ddcutil invo-
+            cations, improving performance.  The  default  is  --enable-dynamic-
+            sleep
+     --min-dynamic-multiplier decimal number
+            Modify  the dynamic sleep algorithm to never adjust the sleep multi-
+            plier below this value.  This option can help dampen swings in sleep
+            multiplier values.
+     --sleep-multiplier decimal number
+            Adjust the length of waits listed in  the  DDC/CI  specification  by
+            this  number  to determine the actual wait time.  Well behaved moni-
+            tors work with sleep-multiplier values less than 1.0, while monitors
+            with poor DDC implementations may  require  sleep-multiplier  values
+            greater  than  1.0.  In general, newer option --enable-dynamic-sleep
+            will provide better performance.
+     --skip-ddc-checks
+            Assume DDC communication works and monitors properly use the invalid
+            feature flag in a DDC/CI Reply packet  to  indicate  an  unsupported
+            feature, improving display detection performance.
+     --discard-cache [capabilities|dsa|all
+            Discard cached display information and/or dynamic sleep data.
+
+
+     Options that modify behavior
+     --maxtries (max-read-tries, max-write-read-tries, max-multi-part-tries)
+            Adjust the number of retries.  A value of "." or "0" leaves the set-
+            ting for a retry type unchanged.
+     --verify | --noverify
+            Verify  or do not verify values set by setvcp or loadvcp. --noverify
+            is the default.
+     --mccs MCCS version
+            Tailor command input and output to a particular MCCS  version,  e.g.
+            2.1
+     --enable-udf, --disable-udf
+            Enable  or  disable  support  for user supplied feature definitions.
+            The default is --enable-udf
+     --enable-usb, --disable-usb
+            Enable or disable support for monitors that implement USB communica-
+            tion with the Virtual Control Panel.  (These options  are  available
+            only  if ddcutil was built with USB support.)  The default is --dis-
+            able-usb
+     --ignore-usb-vid-pid vid:pid
+            Force ddcutil to ignore a particular USB device, specified by its  4
+            hex digit vendor id and its 4 hex digit product id.
+     --ignore-hiddev hiddev-device-number
+            Force  ddcutil  to  ignore  a  particular  USB  device, specified by
+            /dev/usb/hiddev device number
+     --use-file-io | --use-ioctl-io
+            Cause ddcutil to use the write()/read() interface or the  ioctl  in-
+            terface  of  driver dev-i2c to send and receive I2C packets.  By de-
+            fault, ddcutil uses the ioctl interface. The Nvidia proprietary dri-
+            ver is built in a way such that the ioctl  interface  can  fail,  in
+            which case ddcutil switches to using the file io interface.
+     --force-slave-address
+            Take control of slave addresses on the I2C bus even they are in use.
+            Has use only with file-io, not with ioctl-io.
+     --enable-cross-instance-locks | --disable-cross-instance-locks
+            Coordinates /dev/i2c device access across multiple instance of ddcu-
+            til and libddcutil.  The default is --enable-cross-instance-locks
+     --edid-read-size 128|256
+            Force ddcutil to read the specified number of bytes when reading the
+            EDID.   This  option  is a work-around for certain driver bugs.  The
+            default is 256.
+     --i2c-source-addr hex-addr
+            Use this as the source address in DDC packet, instead of the  normal
+            value.   This  option  has  been found to enable access some control
+            functions when using some displays, particularly from LG.
+     --permit-unknown-feature
+            Allow setvcp of unknown features.
+
+
+     --ignore-mmid monitor-model-id
+            Ignore monitors with this monitor-model-id.  The  see  the  monitor-
+            model-id for a display, use command ddcutil --verbose.
+     --noconfig
+            Do not process the configuration file
+
+
+
+
+
+NVIDIA PROPRIETARY DRIVER
+     Some  Nvidia cards using the proprietary Nvidia driver require special set-
+     tings to properly enable I2C support.  See http://www.ddcutil.com/nvidia.
+
+
+
+VIRTUAL MACHINES
+     Virtualized video drivers in VMWare and VirtualBox do not provide I2C  emu-
+     lation.  Use of normal video drivers with PCI passthrough is possible.
+
+
+
+EXAMPLES
+     ddcutil detect
+     Identify all attached monitors.
+
+
+
+
+     ddcutil getvcp all
+
+     Show all settings that the default monitor supports and that ddcutil under-
+     stands.
+
+     ddcutil getvcp 10 --display 2
+     Query the luminosity value of the second monitor.
+
+     ddcutil setvcp 10 30 --bus 4
+     Set the luminosity value for the monitor on bus /dev/i2c-4.
+
+     ddcutil vcpinfo --verbose
+     Show detailed information about VCP features that ddcutil understands.
+
+     ddcutil interrogate > ~/ddcutil.out
+     Collect  maximum  information  about monitor capabilities and the execution
+     environment, and direct the output to a file.
+
+
+
+DIAGNOSTICS
+     Returns 0 on success, 1 on failure.
+
+     Requesting help is regarded as success.
+
+
+
+
+
+SEE ALSO
+     The project homepage: http://www.ddcutil.com
+
+
+
+
+
+
+
+
+AUTHOR
+     Sanford Rockowitz (rockowitz at minsoft dot com)
+     Copyright 2015-2023 Sanford Rockowitz
+
+
+
+                                   2024-01-11                         ddcutil(1)

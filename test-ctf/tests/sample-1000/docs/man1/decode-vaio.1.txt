@@ -1,0 +1,26 @@
+decode-vaio(1)                    User Commands                   decode-vaio(1)
+
+NAME
+     decode-vaio  - decode the information found in the Sony Vaio laptop identi-
+     fication EEPROMs
+
+SYNOPSIS
+     decode-vaio
+
+DESCRIPTION
+     The purpose of the decode-vaio tool is to decode the information  found  in
+     the  Sony Vaio laptop identification EEPROMs.  The tool requires the eeprom
+     kernel module to be loaded.
+
+BUGS
+     To report bugs or send fixes, please write to the Linux  I2C  mailing  list
+     <linux-i2c@vger.kernel.org> with Cc to the current maintainer: Jean Delvare
+     <jdelvare@suse.de>.
+
+SEE ALSO
+     decode-dimms(1)
+
+AUTHOR
+     Jean Delvare
+
+i2c-tools                           Oct 2013                      decode-vaio(1)

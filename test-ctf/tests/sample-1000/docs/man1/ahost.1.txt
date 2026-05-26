@@ -1,0 +1,44 @@
+AHOST(1)                     General Commands Manual                    AHOST(1)
+
+NAME
+     ahost - print the A or AAAA record associated with a hostname or IP address
+
+SYNOPSIS
+     ahost [OPTION]... HOST...
+
+DESCRIPTION
+     Look  up the DNS A or AAAA record associated with HOST (a hostname or an IP
+     address).
+
+     This utility comes with the c-ares asynchronous resolver library.
+
+OPTIONS
+     -d     Print some extra debugging output.
+
+     -h, -?
+            Display this help and exit.
+
+     -t type
+            If type is "a", print the A record.  If type is  "aaaa",  print  the
+            AAAA  record.  If type is "u", look for both AAAA and A records (de-
+            fault).
+
+     -s server
+            Set the server list to use for DNS lookups.
+
+     -D domain
+            Specify the domain to search instead of  using  the  default  values
+            from
+            /etc/resolv.conf.  This  option only has an effect on platforms that
+            use
+            /etc/resolv.conf for DNS configuration; it has no  effect  on  other
+            platforms (such as Win32 or Android).
+
+REPORTING BUGS
+     Report bugs to the c-ares mailing list:
+     https://lists.haxx.se/listinfo/c-ares
+
+SEE ALSO
+     adig(1)
+
+c-ares utilities                   April 2011                           AHOST(1)

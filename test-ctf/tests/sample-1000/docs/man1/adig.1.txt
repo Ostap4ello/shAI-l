@@ -1,0 +1,174 @@
+ADIG(1)                      General Commands Manual                     ADIG(1)
+
+NAME
+     adig - print information collected from Domain Name System (DNS) servers
+
+SYNOPSIS
+     adig  [@server]  [-c class] [-p port#] [-q name] [-t type] [-x addr] [name]
+     [type] [class] [queryopt...]
+
+
+DESCRIPTION
+     Send queries to DNS servers about  name  and  print  received  information,
+     where  name  is  a  valid  DNS  name  (e.g.  www.example.com,  1.2.3.10.in-
+     addr.arpa).
+
+     This utility comes with the c-ares asynchronous resolver library.
+
+     It is possible  to  specify  default  arguments  for  adig  via  ${XDG_CON-
+     FIG_HOME}/adigrc.
+
+ARGS
+     @server
+            Server  ip address.  May specify multiple in comma delimited format.
+            May be specified in URI format.
+
+     name   Name of the resource record that is to be looked up
+
+     type   What type of query is required.  e.g. - A, AAAA, MX, TXT,  etc.   If
+            not specified, A will be used.
+
+     class  Sets the query class, defaults to IN.  May also be HS or CH.
+
+
+FLAGS
+     -c class
+            Sets the query class, defaults to IN.  May also be HS or CH.
+
+     -h     Prints the help.
+
+     -p port
+            Sends  query  to a port other than 53.  Often recommended to set the
+            port using @server instead.
+
+     -q name
+            Specifies the domain name to query. Useful to distinguish name  from
+            other arguments
+
+     -r     Skip adigrc processing
+
+     -s     Server (alias for @server syntax), compatibility with old cmdline
+
+     -t type
+            Indicates  resource record type to query. Useful to distinguish type
+            from other arguments
+
+     -x addr
+            Simplified reverse lookups.  Sets the type to PTR and forms a  valid
+            in-arpa query string
+
+
+QUERY OPTIONS
+     +[no]aaonly
+            Sets the aa flag in the query. Default is off.
+
+     +[no]aaflag
+            Alias for +[no]aaonly
+
+     +[no]additional
+            Toggles printing the additional section. On by default.
+
+     +[no]adflag
+            Sets the ad (authentic data) bit in the query. Default is off.
+
+     +[no]aliases
+            Whether or not to honor the HOSTALIASES file. Default is on.
+
+     +[no]all
+            Toggles  all  of  +[no]cmd,  +[no]stats, +[no]question, +[no]answer,
+            +[no]authority, +[no]additional, +[no]comments
+
+     +[no]answer
+            Toggles printing the answer. On by default.
+
+     +[no]authority
+            Toggles printing the authority. On by default.
+
+     +bufsize=#
+            UDP EDNS 0 packet size allowed. Defaults to 1232.
+
+     +[no]cdflag
+            Sets the CD (checking disabled) bit in the query. Default is off.
+
+     +[no]class
+            Display the class when printing the record. On by default.
+
+     +[no]cmd
+            Toggles printing the command requested. On by default.
+
+     +[no]comments
+            Toggles printing the comments. On by default
+
+     +[no]defname
+            Alias for +[no]search
+
+     +domain=somename
+            Sets the search list to a single domain.
+
+     +[no]dns0x20
+            Whether or not to use  DNS  0x20  case  randomization  when  sending
+            queries.  Default is off.
+
+     +[no]edns[=#]
+            Enable  or disable EDNS.  Only allows a value of 0 if specified. De-
+            fault is to enable EDNS.
+
+     +[no]ignore
+            Ignore truncation on UDP, by default retried on TCP.
+
+     +[no]keepopen
+            Whether or not the server connection should be  persistent.  Default
+            is off.
+
+     +ndots=#
+            Sets the number of dots that must appear before being considered ab-
+            solute.  Defaults to 1.
+
+     +[no]primary
+            Whether  or  not to only use a single server if more than one server
+            is available.  Defaults to using all servers.
+
+     +[no]qr
+            Toggles printing the request query. Off by default.
+
+     +[no]question
+            Toggles printing the question. On by default.
+
+     +[no]recurse
+            Toggles the RD (Recursion Desired) bit. On by default.
+
+     +retry=#
+            Same as +tries but does not include the initial attempt.
+
+     +[no]search
+            To use or not use the search list. Search list is not  used  by  de-
+            fault.
+
+     +[no]stats
+            Toggles printing the statistics. On by default.
+
+     +[no]tcp
+            Whether to use TCP when querying name servers. Default is UDP.
+
+     +tries=#
+            Number of query tries. Defaults to 3.
+
+     +[no]ttlid
+            Display the TTL when printing the record. On by default.
+
+     +[no]vc
+            Alias for +[no]tcp
+
+
+FILES
+     ${XDG_CONFIG_HOME}/adigrc
+
+
+REPORTING BUGS
+     Report bugs to the c-ares github issues tracker
+     https://github.com/c-ares/c-ares/issues
+
+SEE ALSO
+     ahost(1).
+
+c-ares utilities                    Sept 2024                            ADIG(1)

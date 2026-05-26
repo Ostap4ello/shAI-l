@@ -1,0 +1,74 @@
+{
+    "argv": ["shai"],
+    "children": [
+        ["-h"],
+        ["--help"],
+        {
+            "argv": ["db"],
+            "children": [
+                ["-h"],
+                ["--help"],
+                ["check"],
+                {
+                    "argv": ["build"],
+                    "children": [["-h"], ["--help"]]
+                },
+                {
+                    "argv": ["build"],
+                    "children": [["--db-path", "$DB_PATH"]]
+                },
+                {
+                    "argv": ["search"],
+                    "children": [["-h"], ["--help"]]
+                }
+            ]
+        },
+        {
+            "argv": ["llm"],
+            "children": [
+                ["-h"],
+                ["--help"],
+                ["generate", "-h"],
+                ["embed", "-h"]
+            ]
+        },
+        {
+            "argv": ["utils"],
+            "children": [
+                ["-h"],
+                ["--help"],
+                ["is_ollama_running", "-h"],
+                ["ls_models", "-h"],
+                ["pull_model", "-h"],
+                ["rm_model", "-h"],
+                ["start_ollama", "-h"],
+                ["stop_ollama", "-h"],
+                ["convert_man_pages", "-h"],
+                ["fetch_man_db", "-h"]
+            ]
+        },
+        {
+            "argv": ["workflows"],
+            "children": [
+                ["-h"],
+                ["--help"],
+                ["find", "-h"]
+            ]
+        },
+        {
+            "argv": ["init"],
+            "children": [
+                ["-h"],
+                ["--help"]
+            ]
+        },
+        {
+            "argv": ["interpreter"],
+            "children": [
+                ["-h"],
+                ["--help"]
+            ]
+        },
+        ["--create-config", "-h"]
+    ]
+}

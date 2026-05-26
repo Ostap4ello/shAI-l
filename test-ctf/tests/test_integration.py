@@ -24,6 +24,7 @@ TEST_CONFIG_SCHEMA = {
     "test_cases_file": "",
     "results_file": "",
     "config_file": "",
+    "db_path": "",
 }
 
 
@@ -52,10 +53,12 @@ def shai(argv):
 
 def _recursive_run(test_case: dict | list | str, base_argv: list):
     if type(test_case) is list:
-        for c in test_case:
-            if type(c) is not str:
-                logger.error(f"Test case {c} in list is not a string")
+        for i in range(len(test_case)):
+            if type(test_case[i]) is not str:
+                logger.error(f"Test case {test_case[i]} in list is not a string")
                 return
+            if test_case[i] == "$DB_PATH":
+                test_case[i] = db_path
         argv = base_argv + test_case
         shai(argv)
     elif type(test_case) is dict:
@@ -86,6 +89,8 @@ def run_test(config: Dict[str, Any]) -> str:
 
     test_cases_file = Path(config["test_cases_file"])
     results_file = config.get("results_file")
+    global db_path
+    db_path = config.get("db_path", "./tests/regress/docs/")
 
     tc = _load_test_cases(test_cases_file)
     assert type(tc) is dict

@@ -44,6 +44,16 @@ def _cli_parser():
     find_cmd.add_argument(
         "query", type=str, help="The query to process with the RAG pipeline"
     )
+    find_cmd.add_argument(
+        "--db-path",
+        default=DEFAULT_DB_PATH,
+        help="Path to document directory",
+    )
+    find_cmd.add_argument(
+        "--index-path-within-db",
+        default=DEFAULT_INDEX_PATH_WITHIN_DB,
+        help="Index subdirectory name (must start with a dot to be hidden)",
+    )
     find_cmd.set_defaults(func=_cmd_rag)
 
     return parser
@@ -60,8 +70,8 @@ def _cmd_rag(args: argparse.Namespace) -> None:
             client=client,
             gen_model=DEFAULT_MODEL,
             query=args.query,
-            db_path=DEFAULT_DB_PATH,
-            index_path_within_db=DEFAULT_INDEX_PATH_WITHIN_DB,
+            db_path=args.db_path,
+            index_path_within_db=args.index_path_within_db,
             top_k=5,
         )
     except Exception as e:

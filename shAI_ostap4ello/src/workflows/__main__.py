@@ -60,7 +60,7 @@ def _cli_parser():
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     find_cmd.add_argument(
-        "--extended",
+        "--extended-search",
         "-e",
         action="store_true",
         default=DEFAULT_EXTENDED_SEARCH,

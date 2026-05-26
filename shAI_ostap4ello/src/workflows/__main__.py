@@ -85,7 +85,7 @@ def _get_client() -> OpenAI:
 def _cmd_rag(args: argparse.Namespace) -> None:
     client = _get_client()
     try:
-        if args.extended:
+        if args.extended_search:
             results = rag_extended(
                 client=client,
                 gen_model=DEFAULT_MODEL,

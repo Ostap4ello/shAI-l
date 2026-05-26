@@ -25,9 +25,9 @@ def classify_is_bash(client: OpenAI, model: str, query: str) -> bool:
 
         resp = resp.lower().strip()
 
-        if resp == "natural":
+        if resp == "natural language":
             return False
-        elif resp == "bash":
+        elif resp == "bash script":
             return True
 
         logger.info(f"Could not parse answer. Retrying ({i})")

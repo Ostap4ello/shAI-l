@@ -58,7 +58,7 @@ def load_related_documents(search_results: list[dict]) -> list[tuple[float, str,
     for path, ranges in ranges_by_path.items():
         lines = []
         try:
-            lines = open(path, "r", encoding="utf-8").read()
+            lines = open(path, "r", encoding="utf-8").readlines()
         except Exception as e:
             logger.error(f"Error loading document {path}: {e}")
             continue
@@ -72,7 +72,7 @@ def load_related_documents(search_results: list[dict]) -> list[tuple[float, str,
             for from_line, to_line in ranges:
                 if content != "":
                     content += "\n...\n"
-                    content += "".join(lines[from_line:to_line])
+                content += "".join(lines[from_line:to_line])
             loaded_documents.append((min_distances_by_path[path], path, content))
 
     loaded_documents = sorted(loaded_documents, key=lambda x: x[0])

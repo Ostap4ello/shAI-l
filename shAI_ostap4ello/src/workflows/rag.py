@@ -156,9 +156,46 @@ def rag_simple(
     top_k: int,
 ) -> str:
 
-    print(db_path, index_path_within_db)
     results = db.search(
         db_path, client, query, top_k, index_path_within_db=index_path_within_db
+    )
+
+    epilogue = "Retrieved documents (with distances):\n"
+    for entry in results:
+        epilogue += f"- {entry['metadata']['path']}, dist={entry['distance']:.4f}\n"
+        if "from" in entry["metadata"] and "to" in entry["metadata"]:
+            epilogue += f"  (section from line {entry['metadata']['from']} to {entry['metadata']['to']})\n"
+
+    logger.info(epilogue)
+
+    response = answer_on_db_results(results, query, client, gen_model)
+
+    response += "\n---\n"
+    response += epilogue
+
+    return response
+
+def rag_extended(
+    client: OpenAI,
+    gen_model: str,
+    query: str,
+    db_path: str,
+    index_path_within_db: str,
+    top_k: int,
+    top_k_extended: int,
+    section_size: int,
+) -> str:
+
+    results = db.search(
+        db_path, client, query, top_k, index_path_within_db=index_path_within_db
+    )
+    results = db.search_in_files_dynamic(
+        [entry["metadata"]["path"] for entry in results],
+        client=client,
+        query=query,
+        top_k=top_k_extended,
+        model=db.get_index_info(db_path, index_path_within_db)["model"],
+        section_rows=section_size,
     )
 
     epilogue = "Retrieved documents (with distances):\n"

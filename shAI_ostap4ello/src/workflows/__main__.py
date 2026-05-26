@@ -7,9 +7,14 @@ import logging
 import sys
 import signal
 
-from ..db.__main__ import DEFAULT_DB_PATH, DEFAULT_INDEX_PATH_WITHIN_DB
+from ..db.__main__ import (
+    DEFAULT_DB_PATH,
+    DEFAULT_INDEX_PATH_WITHIN_DB,
+    DEFAULT_TOP_K_EXTENDED,
+    DEFAULT_EXTENDED_SEARCH,
+)
 
-from .rag import rag_simple
+from . import rag_simple, rag_extended
 from ..llm import get_client
 
 logger = logging.getLogger(__name__)
@@ -54,6 +59,20 @@ def _cli_parser():
         default=DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
+    find_cmd.add_argument(
+        "--extended",
+        "-e",
+        action="store_true",
+        default=DEFAULT_EXTENDED_SEARCH,
+        help="If true, section-scoped find will be applied on retieved docs, then metadata with this will be returned",
+    )
+    find_cmd.add_argument(
+        "--top-k-extended",
+        type=int,
+        default=DEFAULT_TOP_K_EXTENDED,
+        help="Number of results to return",
+    )
+
     find_cmd.set_defaults(func=_cmd_rag)
 
     return parser
@@ -66,14 +85,26 @@ def _get_client() -> OpenAI:
 def _cmd_rag(args: argparse.Namespace) -> None:
     client = _get_client()
     try:
-        results = rag_simple(
-            client=client,
-            gen_model=DEFAULT_MODEL,
-            query=args.query,
-            db_path=args.db_path,
-            index_path_within_db=args.index_path_within_db,
-            top_k=5,
-        )
+        if args.extended:
+            results = rag_extended(
+                client=client,
+                gen_model=DEFAULT_MODEL,
+                query=args.query,
+                db_path=args.db_path,
+                index_path_within_db=args.index_path_within_db,
+                top_k=5,
+                top_k_extended=args.top_k_extended,
+                section_size=100,  # TODO: make this configurable
+            )
+        else:
+            results = rag_simple(
+                client=client,
+                gen_model=DEFAULT_MODEL,
+                query=args.query,
+                db_path=args.db_path,
+                index_path_within_db=args.index_path_within_db,
+                top_k=5,
+            )
     except Exception as e:
         logger.error(f"Error in RAG pipeline: {e}")
         raise SystemExit(1)

@@ -49,9 +49,15 @@ def init_shai():
     if not was_ollama_running:
         try:
             start_ollama(context_length=3200, gpus="none", name="tmp_shai", create=True)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            raise SystemExit(1)
+
+        try:
             wait_ollama_ready(url)
         except Exception as e:
             logger.error(f"Error: {e}")
+            stop_ollama(name="tmp_shai", remove=True)
             raise SystemExit(1)
 
     for model in models:

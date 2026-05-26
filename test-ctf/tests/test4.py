@@ -9,10 +9,9 @@ from typing import Any, Dict, List
 from openai import OpenAI
 from shAI_ostap4ello.src.__main__ import init_shai
 from shAI_ostap4ello.src.config import get_config_value, load_config
+from shAI_ostap4ello.src.workflows.classifier_bash import classify_is_bash
 
 import logging
-
-from shAI_ostap4ello.src.rag.classifier import classify_is_bash
 
 logger = logging.getLogger(__name__)
 

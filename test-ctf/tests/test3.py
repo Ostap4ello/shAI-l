@@ -50,6 +50,7 @@ def run_test(config: Dict[str, Any]) -> str:
     collection_dir = Path(config["collection_dir"])
     test_cases_file = Path(config["test_cases_file"])
     batch_size = int(config["batch_size"])
+    passage_size = int(config["passage_size"])
     top_k = int(config["top_k"])
     index_dir_name = config["index_dir_name"]
     results_file = config.get("results_file")
@@ -78,6 +79,7 @@ def run_test(config: Dict[str, Any]) -> str:
             model=embed_model,
             batch_size=batch_size,
             index_path_within_db=index_dir_name,
+            section_rows=passage_size
         )
     except Exception as e:
         logger.warning(f"Index creation warning: {e}")

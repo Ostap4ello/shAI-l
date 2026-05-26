@@ -1,0 +1,152 @@
+Clight(1)                    General Commands Manual                   Clight(1)
+
+NAME
+     Clight - a user daemon utility that aims to fully manage your display.
+
+
+SYNOPSIS
+     clight [-vw?] [-f, --frames INT] [-d, --device video0] [-b, --backlight in-
+     tel_backlight]
+     [--no-backlight-smooth]    [--no-gamma-smooth]   [--no-dimmer-smooth-enter]
+     [--no-dimmer-smooth-exit]
+     [--day-temp INT] [--night-temp INT] [--lat DOUBLE] [--lon  DOUBLE]  [--sun-
+     rise 07:00] [--sunset 19:00]
+     [--no-gamma]   [--no-dimmer]   [--no-dpms]  [--no-backlight]  [--no-screen]
+     [--no-kbd]
+     [--dimmer-pct   DOUBLE]    [--no-auto-calib]    [--shutter-thres    DOUBLE]
+     [--gamma-long-transition] [--ambient-gamma]
+     [-c,  --conf-file  STRING]  [-w, --wizard] [--verbose] [-v, --version] [-?,
+     --help] [--usage]
+
+
+DESCRIPTION
+     clight allows to match your backlight level to ambient brightness, computed
+     by capturing frames from webcam or Ambient Light Sensors.
+     It does also support adjusting external monitors and keyboards backlight.
+     Moreover, it can manage your screen temperature, dim your  screen  after  a
+     timeout and manage screen DPMS.
+
+
+OPTIONS
+     -c, --conf-file config-file
+       Parse an additonal config-file to override other configs.
+
+
+     -v, --version
+       Print program version.
+
+
+     -w, --wizard
+       Run a small wizard to calibrate sensor curve.
+
+
+     -f, --frames number
+       Customize frames taken for each capture, between 1 and 20.
+
+
+     -d, --device device
+       Specify sensor device. If empty, first matching device is used.
+
+
+     --no-backlight-smooth
+       Disable backlight smooth transitions.
+
+
+     --no-gamma-smooth
+       Disable gamma smooth transitions.
+
+
+     --no-dimmer-smooth-enter
+       Disable smooth transitions while entering dimmed state.
+
+
+     --no-dimmer-smooth-exit
+       Disable smooth transitions while leaving dimmed state.
+
+
+     --day-temp number
+       Customize daily screen temperature.
+
+
+     --night-temp number
+       Customize nightly screen temperature.
+
+
+     --gamma-long-transition
+       Enable a very long smooth transition for gamma (redshift-like).
+
+
+     --ambient-gamma
+       Enable  screen  temperature  matching ambient brightness instead of being
+     time based.
+
+
+     --lat double
+       Desired latitude.
+
+
+     --lon double
+       Desired longitude.
+
+
+     --sunrise time
+       Specify sunrise time for gamma correction.
+
+
+     --sunset time
+       Specify sunset time for gamma correction.
+
+
+     --no-gamma
+       Disable gamma correction tool.
+
+
+     --no-dimmer
+       Disable dimmer tool.
+
+
+     --no-dpms
+       Disable dpms tool.
+
+
+     --no-backlight
+       Disable backlight calibration tool.
+
+
+     --no-screen
+       Disable screen emitted brightness correction tool.
+
+
+     --no-kbd
+       Disable keyboard backlight calibration tool.
+
+
+     --dimmer-pct double
+       Backlight level used while screen is dimmed, in pergentage.
+
+
+     --verbose
+       Enable verbose mode.
+
+
+     --no-auto-calib
+       Disable screen backlight automatic calibration.
+
+
+     --shutter-thres double
+       Threshold to consider a capture as clogged.
+
+
+FILES
+     /etc/clight/clight.conf
+       The system wide configuration file.
+
+
+     $HOME/.config/clight.conf
+       Per user configuration file.
+
+
+AUTHOR
+     Federico Di Pierro nierro92@gmail.com <mailto:nierro92@gmail.com>
+
+User Manuals                          Linux                            Clight(1)

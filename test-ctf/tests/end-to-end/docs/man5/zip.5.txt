@@ -1,0 +1,7 @@
+libzip  (-lzip)  A represents an open zip archive and is used for
+all functions accessing and modifying archives.   It  is  created
+with  or  It  is  closed  with  (keeping  changes) or (discarding
+changes).  All objects representing parts of an archive (like are
+only valid while the archive remains open.  and
+
+

@@ -1,0 +1,74 @@
+The  format  is  a  textual format that describes a collection of
+filesystem objects.  Such files are typically used to  create  or
+verify  directory  hierarchies.   An file consists of a series of
+lines, each providing information about a single  filesystem  ob-
+ject.   Leading whitespace is always ignored.  When encoding file
+or pathnames, any backslash character or character outside of the
+95 printable ASCII characters must be encoded as a backslash fol-
+lowed by three octal digits.  When reading mtree files,  any  ap-
+pearance  of a backslash followed by three octal digits should be
+converted into the corresponding character.  Each line is  inter-
+preted  independently  as one of the following types: Blank lines
+are ignored.  Lines beginning with are ignored.  Lines  beginning
+with  are  special  commands that influence the interpretation of
+later lines.  If the first whitespace-delimited word has no char-
+acters, it is the name of a file in the current  directory.   Any
+relative entry that describes a directory changes the current di-
+rectory.   As  a special case, a relative entry with the filename
+changes the current directory to the parent  directory.   Options
+on  dot-dot entries are always ignored.  If the first whitespace-
+delimited word has a character after the first character,  it  is
+the pathname of a file relative to the starting directory.  There
+can  be  multiple  full  entries  describing the same file.  Some
+tools that process files may require that multiple lines describ-
+ing the same file occur consecutively.  It is not  permitted  for
+the  same  file  to be mentioned using both a relative and a full
+file specification.  Two special commands are currently  defined:
+This command defines default values for one or more keywords.  It
+is  followed on the same line by one or more whitespace-separated
+keyword definitions.  These definitions apply  to  all  following
+files that do not specify a value for that keyword.  This command
+removes  any default value set by a previous command.  It is fol-
+lowed on the same line by  one  or  more  keywords  separated  by
+whitespace.   After  the  filename, a full or relative entry con-
+sists of zero or more whitespace-separated  keyword  definitions.
+Each  such  definition  consists of a key from the following list
+immediately followed by an '=' sign and a value.   Software  pro-
+grams  reading  mtree  files  should warn about unrecognized key-
+words.  Currently supported keywords are as follows: The checksum
+of the file using the default algorithm specified by the utility.
+The device number for or file types.  The value must  be  one  of
+the  following  forms:  A device with and optional fields.  Their
+meaning is specified by the  operating's  system  See  below  for
+valid  formats.   Opaque  number  (as stored on the file system).
+The following values for are recognized: and  See  for  more  de-
+tails.   The  full  pathname of a file that holds the contents of
+this file.  The file flags as a symbolic name.  See for  informa-
+tion on these names.  If no flags are to be set the string may be
+used  to  override  the current default.  The file group as a nu-
+meric value.  The file group as a symbolic name.  Ignore any file
+hierarchy below this file.  The inode number.  The target of  the
+symbolic  link  when  type=link.   The  MD5 message digest of the
+file.  A synonym for The current file's permissions as a  numeric
+(octal)  or symbolic value.  The number of hard links the file is
+expected to have.  Make sure this file or  directory  exists  but
+otherwise  ignore  all  attributes.  The file is optional; do not
+complain about the file if it is not in the file hierarchy.   The
+device  number  of  the file, e.g. the ID of the device that con-
+tains the file.  Its format is the same as the one for  The  mes-
+sage  digest  of the file.  A synonym for A synonym for The 160-1
+message digest of the file.  A synonym for The 180-2 message  di-
+gest  of the file.  A synonym for The 180-2 message digest of the
+file.  A synonym for The 180-2 message digest  of  the  file.   A
+synonym  for The size, in bytes, of the file.  The last modifica-
+tion time of the file.  The type of the file; may be set  to  any
+one  of the following: block special device character special de-
+vice directory fifo regular file symbolic link  socket  The  file
+owner  as  a  numeric  value.  The file owner as a symbolic name.
+The utility appeared in The digest capability was added in in re-
+sponse to the widespread use of programs which can spoof The  and
+digests were added in as new attacks have demonstrated weaknesses
+in  The  digest  was added in Support for file flags was added in
+and mostly comes from The entry format was added by
+
+

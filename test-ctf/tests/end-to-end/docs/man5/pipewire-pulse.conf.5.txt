@@ -1,0 +1,197 @@
+pipewire-pulse.conf(5)         File Formats Manual        pipewire-pulse.conf(5)
+
+NAME
+     pipewire-pulse.conf - pipewire-pulse.conf
+
+DESCRIPTION
+     The PipeWire Pulseaudio server configuration file
+
+
+SYNOPSIS
+     $XDG_CONFIG_HOME/pipewire/pipewire-pulse.conf
+
+
+     /etc/pipewire/pipewire-pulse.conf
+
+
+     /usr/share/pipewire/pipewire-pulse.conf
+
+
+     /usr/share/pipewire/pipewire-pulse.conf.d/
+
+
+     /etc/pipewire/pipewire-pulse.conf.d/
+
+
+     $XDG_CONFIG_HOME/pipewire/pipewire-pulse.conf.d/
+
+
+DESCRIPTION
+     Configuration for PipeWire's PulseAudio-compatible daemon.
+
+
+     The  configuration  file  format  and  lookup  logic  is  the  same  as for
+     pipewire.conf(5).
+
+
+     Drop-in configuration files pipewire-pulse.conf.d/*.conf can be  used,  and
+     are recommended. See pipewire.conf(5).
+
+CONFIGURATION FILE SECTIONS
+     stream.properties
+         Dictionary.  These  properties configure the PipeWire Pulseaudio server
+         properties.
+
+     stream.rules
+         Dictionary. These properties configure the PipeWire  Pulseaudio  server
+         properties.
+
+     pulse.properties
+         Dictionary.  These  properties configure the PipeWire Pulseaudio server
+         properties.
+
+     pulse.cmd
+         Array of dictionaries. A set of commands to be executed on startup.
+
+     pulse.rules
+         Array of dictionaries. A set of match rules and  actions  to  apply  to
+         clients.
+
+     See libpipewire-module-protocol-pulse(7) for the detailed description.
+
+
+     In addition, the PipeWire context configuration sections may also be speci-
+     fied, see pipewire.conf(5).
+
+STREAM PROPERTIES
+     The  stream.properties  section  contains properties for streams created by
+     the pipewire-pulse server.
+
+
+     Available options are described in  pipewire-client.conf(5)  stream.proper-
+     ties.
+
+
+     Some of these properties map to the PulseAudio /etc/pulse/default.pa config
+     entries as follows:
+
+
+     PulseAudio  PipeWire  Notes  remixing-use-all-sink-channels  channelmix.up-
+     mix   remixing-produce-lfe   channelmix.lfe-cutoff   Set  to  > 0 to enable
+     remixing-consume-lfe    channelmix.mix-lfe     lfe-crossover-freq     chan-
+     nelmix.lfe-cutoff
+
+
+   Example
+     # ~/.config/pipewire/pipewire-pulse.conf.d/custom.conf
+
+     stream.properties = {
+         #node.latency = 1024/48000
+         #node.autoconnect = true
+         #resample.disable = false
+         #resample.quality = 4
+         #monitor.channel-volumes = false
+         #channelmix.disable = false
+         #channelmix.min-volume = 0.0
+         #channelmix.max-volume = 10.0
+         #channelmix.normalize = false
+         #channelmix.mix-lfe = true
+         #channelmix.upmix = true
+         #channelmix.upmix-method = psd  # none, simple
+         #channelmix.lfe-cutoff = 150.0
+         #channelmix.fc-cutoff = 12000.0
+         #channelmix.rear-delay = 12.0
+         #channelmix.stereo-widen = 0.0
+         #channelmix.hilbert-taps = 0
+         #dither.noise = 0
+         #dither.method = none # rectangular, triangular, triangular-hf, wannamaker3, shaped5
+         #debug.wav-path = ""
+     }
+
+STREAM RULES
+     The   stream.rules   section  works  the  same  as  pipewire-client.conf(5)
+     stream.rules.
+
+PULSEAUDIO PROPERTIES
+      For pulse.properties section, see libpipewire-module-protocol-pulse(7) for
+     available options.
+
+PULSEAUDIO RULES
+      For each client, a set of rules can be written in pulse.rules  section  to
+     configure  quirks of the client or to force some pulse specific stream con-
+     figuration.
+
+
+     The general look of this section is as follows and follows  the  layout  of
+     match rules, see pipewire(1).
+
+
+     See libpipewire-module-protocol-pulse(7) for available options.
+
+
+   Example
+     # ~/.config/pipewire/pipewire-pulse.conf.d/custom.conf
+
+     pulse.rules = [
+         {
+             # skype does not want to use devices that don't have an S16 sample format.
+             matches = [
+                  { application.process.binary = "teams" }
+                  { application.process.binary = "teams-insiders" }
+                  { application.process.binary = "skypeforlinux" }
+             ]
+             actions = { quirks = [ force-s16-info ] }
+         }
+         {
+             # speech dispatcher asks for too small latency and then underruns.
+             matches = [ { application.name = "~speech-dispatcher*" } ]
+             actions = {
+                 update-props = {
+                     pulse.min.req          = 1024/48000     # 21ms
+                     pulse.min.quantum      = 1024/48000     # 21ms
+                 }
+             }
+         }
+     ]
+
+PULSEAUDIO COMMANDS
+     As  part  of  the  server startup procedure you can execute some additional
+     commands with the pulse.cmd section in pipewire-pulse.conf.
+
+
+     # ~/.config/pipewire/pipewire-pulse.conf.d/custom.conf
+
+     pulse.cmd = [
+         { cmd = "load-module" args = "module-always-sink" flags = [ ] }
+         { cmd = "load-module" args = "module-switch-on-connect" }
+         { cmd = "load-module" args = "module-gsettings" flags = [ "nofail" ] }
+     ]
+     ...
+
+     Additional commands can also be  run  via  the  context.exec  section,  see
+     pipewire.conf(5).
+
+
+     Supported commands:
+
+
+     load-module
+         Load  the  specified Pulseaudio module on startup, as if using pactl(1)
+         to load the module.
+
+PULSEAUDIO MODULES
+     For contents of section pulse.modules, see pipewire-pulse-modules(7).
+
+
+AUTHORS
+     The         PipeWire          Developers          <https://gitlab.freedesk-
+     top.org/pipewire/pipewire/issues>;     PipeWire     is    available    from
+     <https://pipewire.org>
+
+
+SEE ALSO
+     libpipewire-module-protocol-pulse(7), pipewire.conf(5),  pipewire-pulse(1),
+     pipewire-pulse-modules(7)
+
+
+PipeWire                              1.6.5               pipewire-pulse.conf(5)

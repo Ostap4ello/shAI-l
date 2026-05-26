@@ -1,0 +1,79 @@
+ORG.FREED....TIMESYNC1(5)   org.freedesktop.timesync1  ORG.FREED....TIMESYNC1(5)
+
+NAME
+     org.freedesktop.timesync1 - The D-Bus interface of systemd-timesyncd
+
+INTRODUCTION
+     systemd-timesyncd.service(8)  is  a system service that may be used to syn-
+     chronize the local system clock with a remote Network Time  Protocol  (NTP)
+     server. This page describes the D-Bus interface.
+
+THE MANAGER OBJECT
+     The  service  exposes the following interfaces on the Manager object on the
+     bus:
+
+         node /org/freedesktop/timesync1 {
+           interface org.freedesktop.timesync1.Manager {
+             methods:
+               SetRuntimeNTPServers(in  as runtime_servers);
+             properties:
+               readonly as LinkNTPServers = ['...', ...];
+               readonly as SystemNTPServers = ['...', ...];
+               readonly as RuntimeNTPServers = ['...', ...];
+               readonly as FallbackNTPServers = ['...', ...];
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+               readonly s ServerName = '...';
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+               readonly (iay) ServerAddress = ...;
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly t RootDistanceMaxUSec = ...;
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly t PollIntervalMinUSec = ...;
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly t PollIntervalMaxUSec = ...;
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+               readonly t PollIntervalUSec = ...;
+               readonly (uuuuittayttttbtt) NTPMessage = ...;
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+               readonly x Frequency = ...;
+           };
+           interface org.freedesktop.DBus.Peer { ... };
+           interface org.freedesktop.DBus.Introspectable { ... };
+           interface org.freedesktop.DBus.Properties { ... };
+         };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Provides information about the manager.
+
+EXAMPLES
+     Example 1. Introspect org.freedesktop.timesync1.Manager on the bus
+
+         $ gdbus introspect --system \
+           --dest org.freedesktop.timesync1 \
+           --object-path /org/freedesktop/timesync1
+
+VERSIONING
+     These D-Bus interfaces follow the usual interface versioning guidelines[1].
+
+SEE ALSO
+     systemd(1), systemd-timesyncd.service(8)
+
+NOTES
+      1. the usual interface versioning guidelines
+         https://0pointer.de/blog/projects/versioning-dbus.html
+
+systemd 260.1                                          ORG.FREED....TIMESYNC1(5)

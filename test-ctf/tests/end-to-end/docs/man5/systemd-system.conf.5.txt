@@ -1,0 +1,580 @@
+SYSTEMD-SYSTEM.CONF(5)         systemd-system.conf        SYSTEMD-SYSTEM.CONF(5)
+
+NAME
+     systemd-system.conf, system.conf.d, systemd-user.conf, user.conf.d - System
+     and session service manager configuration files
+
+SYNOPSIS
+     /etc/systemd/system.conf,  /run/systemd/system.conf,  /usr/lib/systemd/sys-
+     tem.conf,       /etc/systemd/system.conf.d/*.conf,        /run/systemd/sys-
+     tem.conf.d/*.conf, /usr/lib/systemd/system.conf.d/*.conf
+
+     ~/.config/systemd/user.conf,        /etc/systemd/user.conf,       /run/sys-
+     temd/user.conf,            /usr/lib/systemd/user.conf,            /etc/sys-
+     temd/user.conf.d/*.conf,   /run/systemd/user.conf.d/*.conf,   /usr/lib/sys-
+     temd/user.conf.d/*.conf
+
+DESCRIPTION
+     When run as a system instance, systemd interprets  the  configuration  file
+     system.conf  and the files in system.conf.d directories; when run as a user
+     instance, it interprets the configuration file user.conf (in order of  pri-
+     ority, in the home directory of the user and under /etc/systemd/, /run/sys-
+     temd/,  and  /usr/lib/systemd/)  and  the files in user.conf.d directories.
+     These configuration files contain a few settings controlling basic  manager
+     operations.
+
+     See systemd.syntax(7) for a general description of the syntax.
+
+CONFIGURATION DIRECTORIES AND PRECEDENCE
+     The  default  configuration  is set during compilation, so configuration is
+     only needed when it is necessary to deviate from those defaults.  The  main
+     configuration file is loaded from one of the listed directories in order of
+     priority,  only the first file found is used: /etc/systemd/, /run/systemd/,
+     /usr/local/lib/systemd/ [1], /usr/lib/systemd/. The vendor version  of  the
+     file  contains commented out entries showing the defaults as a guide to the
+     administrator. Local overrides can also be created by creating drop-ins, as
+     described below. The main configuration file can also be  edited  for  this
+     purpose  (or  a  copy in /etc/ if it is shipped under /usr/), however using
+     drop-ins for local configuration is recommended over modifications  to  the
+     main configuration file.
+
+     In  addition to the main configuration file, drop-in configuration snippets
+     are read from /usr/lib/systemd/*.conf.d/, /usr/local/lib/systemd/*.conf.d/,
+     and /etc/systemd/*.conf.d/. Those drop-ins have higher precedence and over-
+     ride the main configuration file. Files in the *.conf.d/ configuration sub-
+     directories are sorted by their filename in lexicographic order, regardless
+     of in which of the subdirectories they reside. When multiple files  specify
+     the same option, for options which accept just a single value, the entry in
+     the  file sorted last takes precedence, and for options which accept a list
+     of values, entries are collected as they occur in the sorted files.
+
+     When packages  need  to  customize  the  configuration,  they  can  install
+     drop-ins under /usr/. Files in /etc/ are reserved for the local administra-
+     tor,  who  may use this logic to override the configuration files installed
+     by vendor packages. Drop-ins have to be used to override package  drop-ins,
+     since  the  main configuration file has lower precedence. It is recommended
+     to prefix all filenames in those subdirectories with a two-digit number and
+     a dash, to simplify the ordering. This also defines a  concept  of  drop-in
+     priorities  to  allow  OS  vendors to ship drop-ins within a specific range
+     lower than the range used by users. This should lower the risk  of  package
+     drop-ins  overriding  accidentally  drop-ins defined by users. It is recom-
+     mended to use the range 10-40 for drop-ins in /usr/ and the range 60-90 for
+     drop-ins in /etc/ and /run/, to make sure that local and transient drop-ins
+     take priority over drop-ins shipped by the OS vendor.
+
+     To disable a configuration file supplied by the vendor, the recommended way
+     is to place a symlink to /dev/null in the configuration directory in /etc/,
+     with the same filename as the vendor configuration file.
+
+OPTIONS
+     All options are configured in the [Manager] section:
+
+     LogColor=, LogLevel=,  LogLocation=,  LogTarget=,  LogTime=,  DumpCore=yes,
+     CrashChangeVT=no,  CrashShell=no,  CrashAction=freeze,  ShowStatus=yes, De-
+     faultStandardOutput=journal, DefaultStandardError=inherit
+         Configures various parameters of basic manager operation. These options
+         may be overridden by the respective process and kernel command line ar-
+         guments. See systemd(1) for details.
+
+         Added in version 198.
+
+     CtrlAltDelBurstAction=
+         Defines what action will be performed if user  presses  Ctrl-Alt-Delete
+         more   than   7   times   in   2s.   Can   be  set  to  "reboot-force",
+         "poweroff-force", "reboot-immediate", "poweroff-immediate" or  disabled
+         with "none". Defaults to "reboot-force".
+
+         Added in version 232.
+
+     StatusUnitFormat=
+         Takes  name,  description or combined as the value. If name, the system
+         manager will use unit names in status  messages  (e.g.   "systemd-jour-
+         nald.service"), instead of the longer and more informative descriptions
+         set  with  Description= (e.g.  "Journal Logging Service"). If combined,
+         the system manager will use both unit names and descriptions in  status
+         messages (e.g.  "systemd-journald.service - Journal Logging Service").
+
+         See systemd.unit(5) for details about unit names and Description=.
+
+         Added in version 243.
+
+     DefaultTimerAccuracySec=
+         Sets  the default accuracy of timer units. This controls the global de-
+         fault for the AccuracySec= setting of timer units, see systemd.timer(5)
+         for details.  AccuracySec= set in individual units override the  global
+         default for the specific unit. Defaults to 1min. Note that the accuracy
+         of  timer  units is also affected by the configured timer slack for PID
+         1, see TimerSlackNSec= above.
+
+         Added in version 212.
+
+RESOURCE MANAGEMENT
+     TimerSlackNSec=
+         Sets the timer slack in nanoseconds for PID 1, which  is  inherited  by
+         all  executed  processes,  unless  overridden individually, for example
+         with the TimerSlackNSec= setting in service units (for details see sys-
+         temd.exec(5)). The timer slack controls the accuracy of wake-ups  trig-
+         gered by system timers. See prctl(2) for more information. Note that in
+         contrast  to  most  other time span definitions this parameter takes an
+         integer value in nano-seconds if no unit is specified. The  usual  time
+         units are understood too.
+
+         Added in version 198.
+
+     CPUAffinity=
+         Configures  the CPU affinity for the service manager as well as the de-
+         fault CPU affinity for all forked off processes. Takes a  list  of  CPU
+         indices  or ranges separated by either whitespace or commas. CPU ranges
+         are specified by the lower and upper CPU indices separated by  a  dash.
+         This  option  may be specified more than once, in which case the speci-
+         fied CPU affinity masks are merged. If the empty  string  is  assigned,
+         the  mask  is reset, all assignments prior to this will have no effect.
+         Individual services may override the CPU affinity for  their  processes
+         with the CPUAffinity= setting in unit files, see systemd.exec(5).
+
+         Added in version 198.
+
+     NUMAPolicy=
+         Configures  the  NUMA memory policy for the service manager and the de-
+         fault NUMA memory policy for all forked off processes. Individual  ser-
+         vices  may  override the default policy with the NUMAPolicy= setting in
+         unit files, see systemd.exec(5).
+
+         Added in version 243.
+
+     NUMAMask=
+         Configures the NUMA node mask that will be associated with the selected
+         NUMA policy. Note that default and local NUMA policies do  not  require
+         explicit NUMA node mask and value of the option can be empty. Similarly
+         to  NUMAPolicy=, value can be overridden by individual services in unit
+         files, see systemd.exec(5).
+
+         Added in version 243.
+
+     DefaultMemoryAccounting=,  DefaultTasksAccounting=,   DefaultIOAccounting=,
+     DefaultIPAccounting=
+         Configure  the  default  resource  accounting  settings,  as configured
+         per-unit by  MemoryAccounting=,  TasksAccounting=,  IOAccounting=,  and
+         IPAccounting=.  See  systemd.resource-control(5)  for  details  on  the
+         per-unit settings.
+
+         DefaultMemoryAccounting= defaults to yes.  DefaultTasksAccounting=  de-
+         faults to yes. The other settings default to no.
+
+         Added in version 211.
+
+     DefaultTasksMax=
+         Configure  the  default  value  for the per-unit TasksMax= setting. See
+         systemd.resource-control(5) for details. This setting  applies  to  all
+         unit  types  that support resource control settings, with the exception
+         of slice units. Defaults to 15% of the minimum of kernel.pid_max=, ker-
+         nel.threads-max= and root cgroup pids.max. Kernel has a  default  value
+         for  kernel.pid_max=  and an algorithm of counting in case of more than
+         32 cores. For example, with the default kernel.pid_max=,  DefaultTasks-
+         Max= defaults to 4915, but might be greater in other systems or smaller
+         in OS containers.
+
+         Added in version 228.
+
+     DefaultLimitCPU=,   DefaultLimitFSIZE=,   DefaultLimitDATA=,  DefaultLimit-
+     STACK=, DefaultLimitCORE=, DefaultLimitRSS=, DefaultLimitNOFILE=,  Default-
+     LimitAS=, DefaultLimitNPROC=, DefaultLimitMEMLOCK=, DefaultLimitLOCKS=, De-
+     faultLimitSIGPENDING=,  DefaultLimitMSGQUEUE=,  DefaultLimitNICE=, Default-
+     LimitRTPRIO=, DefaultLimitRTTIME=
+         These settings control various default resource  limits  for  processes
+         executed  by units. See setrlimit(2) for details. These settings may be
+         overridden in individual units using the corresponding LimitXXX= direc-
+         tives and they accept the same parameter  syntax,  see  systemd.exec(5)
+         for  details.  Note  that  these  resource limits are only defaults for
+         units, they are not applied to the service manager process (i.e. PID 1)
+         itself.
+
+         Most of these settings are unset, which means the resource  limits  are
+         inherited  from the kernel or, if invoked in a container, from the con-
+         tainer manager. However, the following have defaults:
+
+         *   DefaultLimitNOFILE= defaults to 1024:524288.
+
+         *   DefaultLimitMEMLOCK= defaults to 8M.
+
+         *   DefaultLimitCORE= does not have a default but it is worth  mention-
+             ing  that RLIMIT_CORE is set to "infinity" by PID 1 which is inher-
+             ited by its children.
+
+         Note that the service manager internally in PID 1  bumps  RLIMIT_NOFILE
+         and  RLIMIT_MEMLOCK  to higher values, however the limit is reverted to
+         the mentioned defaults for all child processes forked off.
+
+         Added in version 198.
+
+     DefaultOOMPolicy=
+         Configure the default policy for reacting to processes being killed  by
+         the  Linux Out-Of-Memory (OOM) killer or systemd-oomd. This may be used
+         to pick a global default for the per-unit OOMPolicy= setting. See  sys-
+         temd.service(5)  for  details.  Note  that this default is not used for
+         services that have Delegate= turned on.
+
+         Added in version 243.
+
+     DefaultOOMScoreAdjust=
+         Configures the default OOM score adjustments of processes  run  by  the
+         service  manager.  This  defaults  to  unset  (meaning  the  forked off
+         processes inherit the service manager's OOM  score  adjustment  value),
+         except if the service manager is run for an unprivileged user, in which
+         case  this  defaults to the service manager's OOM adjustment value plus
+         100 (this makes service processes slightly more likely to be killed un-
+         der memory pressure than the manager itself). This may be used to  pick
+         a  global  default  for  the per-unit OOMScoreAdjust= setting. See sys-
+         temd.exec(5) for details. Note that this setting has no effect  on  the
+         OOM  score  adjustment  value of the service manager process itself, it
+         retains the original value set during its invocation.
+
+         Added in version 250.
+
+     DefaultMemoryPressureWatch=, DefaultMemoryPressureThresholdSec=
+         Configures the default settings for the  per-unit  MemoryPressureWatch=
+         and  MemoryPressureThresholdSec=  settings.  See  systemd.resource-con-
+         trol(5) for details. Defaults to "auto" and "200ms", respectively. This
+         also sets the memory pressure monitoring threshold for the service man-
+         ager itself.
+
+         Added in version 254.
+
+HARDWARE WATCHDOG
+     RuntimeWatchdogSec=, RebootWatchdogSec=, KExecWatchdogSec=
+         Configure the hardware watchdog at runtime and at reboot. Takes a time-
+         out value in seconds (or in other time units  if  suffixed  with  "ms",
+         "min",  "h",  "d",  "w"), or the special strings "off" or "default". If
+         set to "off" (alternatively: "0") the watchdog logic  is  disabled:  no
+         watchdog device is opened, configured, or pinged. If set to the special
+         string  "default"  the  watchdog is opened and pinged in regular inter-
+         vals, but the timeout is not changed from the default. If  set  to  any
+         other  time  value  the watchdog timeout is configured to the specified
+         value (or a value close to it, depending on hardware capabilities).
+
+         If RuntimeWatchdogSec= is set to a non-zero value, the  watchdog  hard-
+         ware  (/dev/watchdog0 or the path specified with WatchdogDevice= or the
+         kernel option systemd.watchdog_device=) will be programmed to automati-
+         cally reboot the system if it is not  contacted  within  the  specified
+         timeout interval. The system manager will ensure to contact it at least
+         once  in  half  the specified timeout interval. This feature requires a
+         hardware watchdog device to be present, as it is commonly the  case  in
+         embedded  and server systems. Not all hardware watchdogs allow configu-
+         ration of all possible reboot timeout values, in which case the closest
+         available timeout is picked.
+
+         RebootWatchdogSec= may be used to configure the hardware watchdog  when
+         the  system is asked to reboot. It works as a safety net to ensure that
+         the reboot takes place even if a clean reboot attempt times  out.  Note
+         that the RebootWatchdogSec= timeout applies only to the second phase of
+         the reboot, i.e. after all regular services are already terminated, and
+         after  the  system  and service manager process (PID 1) got replaced by
+         the systemd-shutdown binary, see system bootup(7) for  details.  During
+         the  first  phase of the shutdown operation the system and service man-
+         ager remains running and hence RuntimeWatchdogSec= is  still  honoured.
+         In  order  to  define a timeout on this first phase of system shutdown,
+         configure JobTimeoutSec= and JobTimeoutAction= in the [Unit] section of
+         the shutdown.target unit. By default, RuntimeWatchdogSec= defaults to 0
+         (off), and RebootWatchdogSec= to 10min.
+
+         KExecWatchdogSec= may be used to additionally enable the watchdog  when
+         kexec  is  being  executed rather than when rebooting. Note that if the
+         kernel does not reset the watchdog on kexec (depending on the  specific
+         hardware  and/or  driver), in this case the watchdog might not get dis-
+         abled after kexec succeeds and thus the system might get rebooted,  un-
+         less  RuntimeWatchdogSec=  is  also  enabled at the same time. For this
+         reason it is recommended to enable KExecWatchdogSec= only  if  Runtime-
+         WatchdogSec= is also enabled.
+
+         These settings have no effect if a hardware watchdog is not available.
+
+         Added in version 198.
+
+     RuntimeWatchdogPreSec=
+         Configure the hardware watchdog device pre-timeout value. Takes a time-
+         out  value  in seconds (or in other time units similar to RuntimeWatch-
+         dogSec=). A watchdog pre-timeout is a  notification  generated  by  the
+         watchdog  before the watchdog reset might occur in the event the watch-
+         dog has not been serviced. This notification is handled by  the  kernel
+         and  can be configured to take an action (i.e. generate a kernel panic)
+         using RuntimeWatchdogPreGovernor=. Not all watchdog hardware or drivers
+         support generating a pre-timeout and depending on the state of the sys-
+         tem, the kernel may be unable to take the configured action before  the
+         watchdog  reboot.  The  watchdog  will  be  configured  to generate the
+         pre-timeout event at the amount of time specified by  RuntimeWatchdogP-
+         reSec=  before  the  runtime  watchdog  timeout  (set  by RuntimeWatch-
+         dogSec=). For example, if the we have  RuntimeWatchdogSec=30  and  Run-
+         timeWatchdogPreSec=10,  then  the  pre-timeout  event will occur if the
+         watchdog has not pinged for 20s (10s before the watchdog  would  fire).
+         By  default,  RuntimeWatchdogPreSec= defaults to 0 (off). The value set
+         for RuntimeWatchdogPreSec= must be smaller than the timeout  value  for
+         RuntimeWatchdogSec=.  This setting has no effect if a hardware watchdog
+         is not available or the hardware watchdog does not support a  pre-time-
+         out  and  will  be ignored by the kernel if the setting is greater than
+         the actual watchdog timeout.
+
+         Added in version 251.
+
+     RuntimeWatchdogPreGovernor=
+         Configure the action taken by the hardware  watchdog  device  when  the
+         pre-timeout  expires.  The default action for the pre-timeout event de-
+         pends on the kernel configuration, but it is usually to  log  a  kernel
+         message. For a list of valid actions available for a given watchdog de-
+         vice,  check  the content of the /sys/class/watchdog/watchdogX/pretime-
+         out_available_governors file. Typically, available governor  types  are
+         noop  and  panic.  Availability, names and functionality might vary de-
+         pending on the specific device driver in use. If the  pretimeout_avail-
+         able_governors  sysfs  file  is empty, the governor might be built as a
+         kernel module and might need to  be  manually  loaded  (e.g.   pretime-
+         out_noop.ko), or the watchdog device might not support pre-timeouts.
+
+         Added in version 251.
+
+     WatchdogDevice=
+         Configure  the  hardware  watchdog device that the runtime and shutdown
+         watchdog timers will open and use.  Defaults  to  /dev/watchdog0.  This
+         setting has no effect if a hardware watchdog is not available.
+
+         Added in version 236.
+
+SECURITY
+     CapabilityBoundingSet=
+         Controls  which  capabilities to include in the capability bounding set
+         for PID 1 and its children. See capabilities(7) for  details.  Takes  a
+         whitespace-separated    list   of   capability   names   as   read   by
+         cap_from_name(3). Capabilities listed will be included in the  bounding
+         set,  all  others  are removed. If the list of capabilities is prefixed
+         with ~, all but the listed capabilities will be included, the effect of
+         the assignment inverted. Note that this option also affects the respec-
+         tive capabilities in the effective, permitted and inheritable  capabil-
+         ity  sets. The capability bounding set may also be individually config-
+         ured for units using the CapabilityBoundingSet=  directive  for  units,
+         but  note that capabilities dropped for PID 1 cannot be regained in in-
+         dividual units, they are lost for good.
+
+         Added in version 198.
+
+     NoNewPrivileges=
+         Takes a boolean argument. If true, ensures that PID 1 and all its chil-
+         dren can never gain new privileges through execve(2) (e.g.  via  setuid
+         or setgid bits, or filesystem capabilities). Defaults to false. General
+         purpose  distributions commonly rely on executables with setuid or set-
+         gid bits and will thus not function properly with this option  enabled.
+         Individual units cannot disable this option. Also see No New Privileges
+         Flag[2].
+
+         Added in version 239.
+
+     ProtectSystem=
+         Takes a boolean argument or the string "auto". If set to true this will
+         remount  /usr/ read-only. If set to "auto" (the default) and running in
+         an initrd equivalent to true, otherwise false. This  implements  a  re-
+         stricted  subset  of  the  per-unit  setting of the same name, see sys-
+         temd.exec(5) for details: currently, the "full" or "strict" values  are
+         not supported.
+
+         Added in version 256.
+
+     SystemCallArchitectures=
+         Takes  a space-separated list of architecture identifiers. Selects from
+         which architectures system calls may be invoked on  this  system.  This
+         may be used as an effective way to disable invocation of non-native bi-
+         naries system-wide, for example to prohibit execution of 32-bit x86 bi-
+         naries  on 64-bit x86-64 systems. This option operates system-wide, and
+         acts similar to the SystemCallArchitectures= setting of unit files, see
+         systemd.exec(5) for details. This setting defaults to the  empty  list,
+         in which case no filtering of system calls based on architecture is ap-
+         plied. Known architecture identifiers are "x86", "x86-64", "x32", "arm"
+         and  the special identifier "native". The latter implicitly maps to the
+         native architecture of the system (or more specifically, the  architec-
+         ture the system manager was compiled for). Set this setting to "native"
+         to  prohibit  execution  of any non-native binaries. When a binary exe-
+         cutes a system call of an architecture that is not listed in this  set-
+         ting, it will be immediately terminated with the SIGSYS signal.
+
+         Added in version 209.
+
+     DefaultSmackProcessLabel=
+         Takes a SMACK64 security label as the argument. The process executed by
+         a  unit  will  be started under this label if SmackProcessLabel= is not
+         set in the unit. See systemd.exec(5) for the details.
+
+         If the value is "/", only labels specified with SmackProcessLabel=  are
+         assigned and the compile-time default is ignored.
+
+         Added in version 252.
+
+     DefaultRestrictSUIDSGID=
+         Takes  a  boolean  argument.  This is used as a default for units which
+         lack an explicit definition for RestrictSUIDSGID=. See  systemd.exec(5)
+         for the details.
+
+         Added in version 258.
+
+TIMEOUTS AND RATE LIMITS
+     DefaultTimeoutStartSec=,  DefaultTimeoutStopSec=,  DefaultTimeoutAbortSec=,
+     DefaultRestartSec=
+         Configures the default timeouts for starting, stopping and aborting  of
+         units,  as well as the default time to sleep between automatic restarts
+         of units, as configured per-unit in TimeoutStartSec=,  TimeoutStopSec=,
+         TimeoutAbortSec=  and RestartSec= (for services, see systemd.service(5)
+         for details on the per-unit settings). For non-service units,  Default-
+         TimeoutStartSec= sets the default TimeoutSec= value.
+
+         DefaultTimeoutStartSec=  and  DefaultTimeoutStopSec= default to 90 s in
+         the system manager and 90 s in the user manager.   DefaultTimeoutAbort-
+         Sec=  is  not  set  by  default so that all units fall back to Timeout-
+         StopSec=.  DefaultRestartSec= defaults to 100 ms.
+
+         Added in version 209.
+
+     DefaultDeviceTimeoutSec=
+         Configures the default timeout for  waiting  for  devices.  It  can  be
+         changed   per   device  via  the  x-systemd.device-timeout=  option  in
+         /etc/fstab and /etc/crypttab (see systemd.mount(5),  crypttab(5)).  De-
+         faults to 90 s in the system manager and 90 s in the user manager.
+
+         Added in version 252.
+
+     DefaultStartLimitIntervalSec=, DefaultStartLimitBurst=
+         Configure  the default unit start rate limiting, as configured per-ser-
+         vice by StartLimitIntervalSec= and StartLimitBurst=.  See  systemd.ser-
+         vice(5)  for details on the per-service settings.  DefaultStartLimitIn-
+         tervalSec= defaults to 10s.  DefaultStartLimitBurst= defaults to 5.
+
+         Added in version 209.
+
+     ReloadLimitIntervalSec=, ReloadLimitBurst=
+         Rate limiting for daemon-reload  and  (since  v256)  daemon-reexec  re-
+         quests. The setting applies to both operations, but the rate limits are
+         tracked separately. Defaults to unset, and any number of operations can
+         be  requested  at  any  time.  ReloadLimitIntervalSec= takes a value in
+         seconds to configure the rate limit window, and ReloadLimitBurst= takes
+         a positive integer to configure the maximum allowed  number  of  opera-
+         tions within the configured time window.
+
+         Added in version 253.
+
+ENVIRONMENT
+     DefaultEnvironment=
+         Configures  environment  variables  passed  to  all executed processes.
+         Takes a space-separated list of variable  assignments.  See  environ(7)
+         for  details about environment variables. This environment block is in-
+         ternal, and changes are not reflected in the manager's  /proc/PID/envi-
+         ron.
+
+         Simple  "%"-specifier  expansion  is supported, see below for a list of
+         supported specifiers.
+
+         Example:
+
+             DefaultEnvironment="VAR1=word1 word2" VAR2=word3 "VAR3=word 5 6"
+
+         Sets three variables "VAR1", "VAR2", "VAR3".
+
+         Added in version 205.
+
+     ManagerEnvironment=
+         Sets environment variables for the  manager  process  itself.  Takes  a
+         space-separated  list  of variable assignment in the same format as De-
+         faultEnvironment=, see above. These variables are merged into  the  ex-
+         isting environment block of the manager process. In particular, in case
+         of  the system manager, this block includes variables set by the kernel
+         based on the kernel command line, and in case of the user manager,  the
+         variables passed by the system manager. After those variables have been
+         merged,  they will persist until overridden, even if the manager is re-
+         loaded or reexecuted. In case of the user manager, these variables  are
+         also  inherited  by  processes spawned by the manager. As with Default-
+         Environment=, this environment block is internal, and changes  are  not
+         reflected in the manager's /proc/PID/environ.
+
+         Setting  environment variables for the manager process may be useful to
+         modify its behaviour. See Known Environment Variables[3] for a descrip-
+         tion of some variables understood by systemd.
+
+         Simple "%"-specifier expansion is supported, see below for  a  list  of
+         supported specifiers.
+
+         Added in version 248.
+
+SPECIFIERS
+     Specifiers  may  be used in the DefaultEnvironment= and ManagerEnvironment=
+     settings. The following expansions are understood:
+
+     Table 1. Specifiers available allbox tab(:); lB lB lB.  T{ Specifier  T}:T{
+     Meaning  T}:T{ Details T} l l l l l l l l l l l l l l l l l l l l l l l l l
+     l l l l l l l l l l l l l l l l l l l l l l l l l l l l l l l l l l l  l  l
+     l.   T{ "%a" T}:T{ Architecture T}:T{ A short string identifying the archi-
+     tecture of the local system. A string such as x86, x86-64 or arm64. See the
+     architectures defined for ConditionArchitecture= in systemd.unit(5)  for  a
+     full list.  T} T{ "%A" T}:T{ Operating system image version T}:T{ The oper-
+     ating  system  image version identifier of the running system, as read from
+     the IMAGE_VERSION= field of /etc/os-release. If not  set,  resolves  to  an
+     empty  string.  See  os-release(5)  for more information.  T} T{ "%b" T}:T{
+     Boot ID T}:T{ The boot ID of the running system, formatted as  string.  See
+     random(4) for more information.  T} T{ "%B" T}:T{ Operating system build ID
+     T}:T{  The operating system build identifier of the running system, as read
+     from the BUILD_ID= field of /etc/os-release. If not  set,  resolves  to  an
+     empty  string.  See  os-release(5)  for more information.  T} T{ "%H" T}:T{
+     Host name T}:T{ The hostname of the running system.  T} T{ "%l" T}:T{ Short
+     host name T}:T{ The hostname of the running system, truncated at the  first
+     dot  to remove any domain component.  T} T{ "%m" T}:T{ Machine ID T}:T{ The
+     machine ID of the running system, formatted as  string.  See  machine-id(5)
+     for  more  information.  T} T{ "%M" T}:T{ Operating system image identifier
+     T}:T{ The operating system image identifier of the running system, as  read
+     from  the  IMAGE_ID=  field  of /etc/os-release. If not set, resolves to an
+     empty string. See os-release(5) for more information.  T} T{ "%o" T}:T{ Op-
+     erating system ID T}:T{ The operating system identifier of the running sys-
+     tem, as read from the ID= field of /etc/os-release. See  os-release(5)  for
+     more information.  T} T{ "%v" T}:T{ Kernel release T}:T{ Identical to uname
+     -r  output.  T} T{ "%w" T}:T{ Operating system version ID T}:T{ The operat-
+     ing system version identifier of the running system, as read from the  VER-
+     SION_ID= field of /etc/os-release. If not set, resolves to an empty string.
+     See  os-release(5) for more information.  T} T{ "%W" T}:T{ Operating system
+     variant ID T}:T{ The operating system variant  identifier  of  the  running
+     system,  as read from the VARIANT_ID= field of /etc/os-release. If not set,
+     resolves to an empty string. See os-release(5) for more information.  T} T{
+     "%T" T}:T{ Directory for temporary files T}:T{ This is either /tmp  or  the
+     path  "$TMPDIR", "$TEMP" or "$TMP" are set to. (Note that the directory may
+     be specified without a trailing slash.)  T} T{  "%V"  T}:T{  Directory  for
+     larger  and persistent temporary files T}:T{ This is either /var/tmp or the
+     path "$TMPDIR", "$TEMP" or "$TMP" are set to. (Note that the directory  may
+     be  specified without a trailing slash.)  T} T{ "%h" T}:T{ User home direc-
+     tory T}:T{ This is the home directory of the user running the service  man-
+     ager instance.  T} T{ "%u" T}:T{ Username T}:T{ This is the username of the
+     user  running the service manager instance.  T} T{ "%U" T}:T{ User id T}:T{
+     This is the user id of the user running the service manager  instance.   T}
+     T{  "%g"  T}:T{  Primary  group T}:T{ This is the primary group of the user
+     running the service manager instance.  T} T{ "%G" T}:T{  Primary  group  id
+     T}:T{  This is the primary group id of the user running the service manager
+     instance.  T} T{ "%s" T}:T{ User shell T}:T{ This is the shell of the  user
+     running the service manager instance.  T} T{ "%%" T}:T{ Single percent sign
+     T}:T{ Use "%%" in place of "%" to specify a single percent sign.  T}
+
+
+HISTORY
+     systemd 252
+         Option  DefaultBlockIOAccounting=  was deprecated. Please switch to the
+         unified cgroup hierarchy.
+
+     systemd 258
+         DefaultCPUAccounting= setting is deprecated, because CPU accounting  is
+         always  available  on the unified cgroup hierarchy and such setting has
+         no effect.
+
+SEE ALSO
+     systemd(1), systemd.directives(7), systemd.exec(5), systemd.service(5), en-
+     viron(7), capabilities(7)
+
+NOTES
+      1. " Please note that those configuration files must be available  at  all
+         times.  If /usr/local/ is a separate partition, it may not be available
+         during early boot, and must not be used for configuration.
+
+      2. No New Privileges Flag
+         https://docs.kernel.org/userspace-api/no_new_privs.html
+
+      3. Known Environment Variables
+         https://systemd.io/ENVIRONMENT
+
+systemd 260.1                                             SYSTEMD-SYSTEM.CONF(5)

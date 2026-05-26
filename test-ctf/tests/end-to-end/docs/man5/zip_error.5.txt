@@ -1,0 +1,7 @@
+libzip  (-lzip)  A  represents information about an error.  It is
+usually allocated directly on the stack or as member  of  another
+structure, not via a pointer.  It is initialized with or The type
+of  error can be accessed with and It can be converted to a human
+readable string with After use, it should be cleaned up with and
+
+

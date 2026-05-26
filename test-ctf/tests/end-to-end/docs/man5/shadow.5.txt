@@ -1,0 +1,112 @@
+SHADOW(5)                File Formats and Configuration                SHADOW(5)
+
+NAME
+     shadow - shadowed password file
+
+DESCRIPTION
+     shadow  is  a file which contains the password information for the system's
+     accounts and optional aging information.
+
+     This file must not be readable by regular users if password security is  to
+     be maintained.
+
+     Each line of this file contains 9 fields, separated by colons (":"), in the
+     following order:
+
+     login name
+         It must be a valid account name, which exists on the system.
+
+     encrypted password
+         If the password field is empty, the user can log in without a password.
+         However,  some  applications that read the /etc/shadow file might block
+         access if the password field is empty.
+
+         If the password field begins with an exclamation mark !,  the  password
+         is  locked. The remaining characters on the line represent the password
+         field before the password was locked.
+
+         Refer to crypt(3) for details on how this string is interpreted.
+
+         If the password field contains a string that is not a valid  result  of
+         crypt(3),  for  instance ! or *, the user cannot use a UNIX password to
+         log in. However, the user may log in the system by other means.
+
+     date of last password change
+         The date of the last password change, expressed as the number  of  days
+         since 1970-01-01 00:00:00 UTC.
+
+         The value 0 indicates that the user must change their password the next
+         time they log in to the system.
+
+         An empty field means that password aging features are disabled.
+
+     minimum password age
+         The  minimum  password age is the number of days the user must wait be-
+         fore they can change their password again.
+
+         An empty field and value 0 mean that there is no minimum password age.
+
+     maximum password age
+         The maximum password age is the number of days  after  which  the  user
+         must change their password.
+
+         After this number of days has elapsed, the password may still be valid.
+         The user is prompted to change their password at the next login.
+
+         An  empty  field means that there are no maximum password age, no pass-
+         word warning period, and no password inactivity period (see below).
+
+         If the maximum password age is lower than the minimum password age, the
+         user cannot change her password.
+
+     password warning period
+         The number of days before a password expires (see the maximum  password
+         age above) during which the user is warned.
+
+         An  empty  field and value 0 mean that there is no password warning pe-
+         riod.
+
+     password inactivity period
+         The number of days after a password expires (see the  maximum  password
+         age  above)  during  which the password is still accepted, and the user
+         must update their password at the next login.
+
+         After the password expires and the password inactivity period  elapses,
+         the user cannot log in and must contact their administrator.
+
+         An empty string means that no inactivity period is enforced.
+
+     account expiration date
+         The  date  when  the  account  expires, expressed as the number of days
+         since 1970-01-01.
+
+         Note that account expiration differs from password expiration.  Account
+         expiration  prevents the user from logging in, whereas password expira-
+         tion only prevents users from logging in with their password.
+
+         An empty field means that the account never expires.
+
+         The value 0 should not be used, as it is interpreted either as  an  ac-
+         count with no expiration or as an expiration date of 1970-01-01.
+
+     reserved field
+         This field is reserved for future use.
+
+FILES
+     /etc/passwd
+         User account information.
+
+     /etc/shadow
+         Secure user account information.
+
+     /etc/shadow-
+         Backup file for /etc/shadow.
+
+         Note  that  this file is used by the tools of the shadow toolsuite, but
+         not by all user and password management tools.
+
+SEE ALSO
+     chage(1), login(1), passwd(1), passwd(5), pwck(8), pwconv(8),  pwunconv(8),
+     su(1), sulogin(8).
+
+shadow-utils 4.18.0                06/27/2025                          SHADOW(5)

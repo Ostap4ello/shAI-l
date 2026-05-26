@@ -1,0 +1,44 @@
+{
+  "queries": [
+    {
+      "id": 1,
+      "query": "how to list devices avaliable to brightnessctl"
+    },
+    {
+      "id": 2,
+      "query": "what flag suppresses output in brightnessctl?"
+    },
+    {
+      "id": 3,
+      "query": "how to execute brightnessctl without actually changing device settings"
+    },
+    {
+      "id": 4,
+      "query": "how to set minimum brightness value?"
+    },
+    {
+      "id": 5,
+      "query": "what is default exponent for brightness curve?"
+    },
+    {
+      "id": 6,
+      "query": "auto display brighntess util on my computer"
+    },
+    {
+      "id": 7,
+      "query": "what does clight do"
+    },
+    {
+      "id": 8,
+      "query": "where are clight configs saved?"
+    },
+    {
+      "id": 9,
+      "query": "disable gamma tool for clight"
+    },
+    {
+      "id": 10,
+      "query": "how to set temperature for daytime?"
+    }
+  ]
+}

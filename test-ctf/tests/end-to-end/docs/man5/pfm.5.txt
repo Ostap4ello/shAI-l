@@ -1,0 +1,83 @@
+PFM Format Description(5)      File Formats Manual     PFM Format Description(5)
+
+NAME
+     PFM - PFM graphic image file format
+
+
+DESCRIPTION
+     This  document describes the PFM graphic image file format as understood by
+     the Netpbm converters pamtopfm(1) and pfmtopam(1).
+
+     There are multiple similar formats known as PFM in the world, none of  them
+     authoritatively  documented.   The  format described here is one that Bryan
+     Henderson deduced from a program he found somewhere that dealt with a 'PFM'
+     format.
+
+     The PFM format is inspired by the Netpbm formats, and you will see lots  of
+     similarity.   It  is  not, however, an official Netpbm format.  Its goal is
+     not consistent with those of Netpbm formats.
+
+
+The format
+     A PFM image is a stream of bytes.  The stream consists of a header followed
+     immediately by a raster.  These two components are described below.   There
+     are no delimeters before or after the sections as described.
+
+
+   PFM header
+     The  PFM header is 3 consecutive 'lines' of ASCII text.  After each line is
+     a white space character.  That character is typically a newline  character,
+     hence the term 'line,' but doesn't have to be.
+
+     pamtopfm uses a newline in the PFM it generates.
+
+     Identifier Line
+
+     The  identifier line contains the characters 'PF' or 'Pf'.  PF means it's a
+     color PFM.  Pf means it's a grayscale PFM.
+
+     Dimensions Line
+
+     The dimensions line contains two positive decimal integers, separated by  a
+     blank.   The  first  is  the  width of the image; the second is the height.
+     Both are in pixels.
+
+     Scale Factor / Endianness
+
+     The Scale Factor / Endianness line is a queer line that jams endianness in-
+     formation into an otherwise sane description of a scale.  The line consists
+     of a nonzero decimal number, not necessarily an integer.  If the number  is
+     negative, that means the PFM raster is little endian.  Otherwise, it is big
+     endian.   The  absolute value of the number is the scale factor for the im-
+     age.
+
+     The scale factor tells the units of the samples in  the  raster.   You  use
+     somehow it along with some separately understood unit information to turn a
+     sample value into something meaningful, such as watts per square meter.
+
+
+
+   PFM raster
+     The  raster  is a sequence of pixels, packed one after another, with no de-
+     limiters of any kind.  They are grouped by row, with the pixels in each row
+     ordered left to right and the rows ordered bottom to top.
+
+     Each pixel consists of 1 or 3 samples, packed one after  another,  with  no
+     delimiters of any kind.  1 sample for a grayscale PFM and 3 for a color PFM
+     (see the Identifier Line of the PFM header).
+
+     Each  sample consists of 4 consecutive bytes.  The bytes represent a 32 bit
+     string, in either big endian or little endian format, as determined by  the
+     Scale  Factor  / Endianness line of the PFM header.  That string is an IEEE
+     32 bit floating point number code.  Since that's the same format that  most
+     CPUs  and  compiler  use, you can usually just make a program use the bytes
+     directly as a floating point number, after taking care  of  the  endianness
+     variation.
+
+DOCUMENT SOURCE
+     This  manual  page  was  generated  by  the Netpbm tool 'makeman' from HTML
+     source.  The master documentation is at
+
+            http://netpbm.sourceforge.net/doc/pfm.html
+
+netpbm documentation              19 April 2012        PFM Format Description(5)

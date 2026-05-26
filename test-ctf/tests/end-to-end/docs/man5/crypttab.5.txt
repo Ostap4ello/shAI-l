@@ -1,0 +1,986 @@
+CRYPTTAB(5)                         crypttab                         CRYPTTAB(5)
+
+NAME
+     crypttab - Configuration for encrypted block devices
+
+SYNOPSIS
+     /etc/crypttab
+
+DESCRIPTION
+     The  /etc/crypttab  file  describes encrypted block devices that are set up
+     during system boot.
+
+     Empty lines and lines starting with the "#" character are ignored. Each  of
+     the remaining lines describes one encrypted block device. Fields are delim-
+     ited by white space.
+
+     Each line is in the form
+
+         volume-name encrypted-device key-file options
+
+     The first two fields are mandatory, the remaining two are optional.
+
+     Setting up encrypted block devices using this file supports four encryption
+     modes: LUKS, TrueCrypt, BitLocker and plain. See cryptsetup(8) for more in-
+     formation  about  each mode. When no mode is specified in the options field
+     and the block device contains a LUKS signature, it is opened as a LUKS  de-
+     vice; otherwise, it is assumed to be in raw dm-crypt (plain mode) format.
+
+     The four fields of /etc/crypttab are defined as follows:
+
+       1. The  first  field  contains  the name of the resulting volume with de-
+         crypted data; its block device is set up below /dev/mapper/.
+
+      2. The second field contains a path to  the  underlying  block  device  or
+         file,  or a specification of a block device via "UUID=" followed by the
+         UUID.
+
+      3. The third field specifies an absolute path to a file with  the  encryp-
+         tion key. Optionally, the path may be followed by ":" and an /etc/fstab
+         style device specification (e.g. starting with "LABEL=" or similar); in
+         which  case  the  path is taken relative to the specified device's file
+         system root. If the field is not present or is "none"  or  "-",  a  key
+         file  named  after  the  volume to unlock (i.e. the first column of the
+         line), suffixed with .key is automatically loaded from the  /etc/crypt-
+         setup-keys.d/ and /run/cryptsetup-keys.d/ directories, if present. Oth-
+         erwise, the password has to be manually entered during system boot. For
+         swap  encryption,  /dev/urandom may be used as key file, resulting in a
+         randomized key.
+
+         If the specified key file path refers to an AF_UNIX  stream  socket  in
+         the  file  system,  the key is acquired by connecting to the socket and
+         reading it from the connection. This allows  the  implementation  of  a
+         service  to  provide key information dynamically, at the moment when it
+         is needed. For details see below.
+
+      4. The fourth field, if present, is a comma-delimited list of options. The
+         supported options are listed below.
+
+KEY ACQUISITION
+     Six different mechanisms for acquiring the decryption key or passphrase un-
+     locking the encrypted volume are supported. Specifically:
+
+      1. Most prominently, the user may be queried interactively  during  volume
+         activation  (i.e. typically at boot), asking them to type in the neces-
+         sary passphrases.
+
+      2. The (unencrypted) key may be read from a file on disk, possibly on  re-
+         movable  media.  The third field of each line encodes the location, for
+         details see above.
+
+      3. The (unencrypted) key may be requested from another service, by  speci-
+         fying an AF_UNIX file system socket in place of a key file in the third
+         field. For details see above and below.
+
+       4. The key may be acquired via a PKCS#11 compatible hardware security to-
+         ken or smartcard. In this case, a saved key used in unlock  process  is
+         stored  on disk/removable media, acquired via AF_UNIX, or stored in the
+         LUKS2 JSON token metadata header. For RSA, the  saved  key  is  an  en-
+         crypted  volume  key. The encrypted volume key is then decrypted by the
+         PKCS#11 token with an RSA private key stored on it, and used to  unlock
+         the  encrypted  volume. For elliptic-curve (EC) cryptography, the saved
+         key is the public key generated in enrollment process. The  public  key
+         is then used to derive a shared secret with a private key stored in the
+         PKCS#11  token.  The  derived  shared secret is then used to unlock the
+         volume. Use the pkcs11-uri= option described below to use  this  mecha-
+         nism.
+
+       5. Similarly, the key may be acquired via a FIDO2 compatible hardware se-
+         curity token (which must implement  the  "hmac-secret"  extension).  In
+         this  case,  a  key  generated  randomly during enrollment is stored on
+         disk/removable media, acquired via AF_UNIX, or stored in the LUKS2 JSON
+         token metadata header. The random key is hashed via a keyed hash  func-
+         tion  (HMAC) on the FIDO2 token, using a secret key stored on the token
+         that never leaves it. The resulting hash value is then used as  key  to
+         unlock the encrypted volume. Use the fido2-device= option described be-
+         low to use this mechanism.
+
+       6. Similarly,  the  key may be acquired via a TPM2 security chip. In this
+         case, a (during enrollment) randomly generated key -- encrypted  by  an
+         asymmetric  key  derived  from the TPM2 chip's seed key -- is stored on
+         disk/removable media, acquired via AF_UNIX, or stored in the LUKS2 JSON
+         token metadata header. Use the tpm2-device= option described  below  to
+         use this mechanism.
+
+     For the latter five mechanisms the source for the key material used for un-
+     locking  the  volume  is  primarily  configured  in the third field of each
+     /etc/crypttab line, but may also be configured  in  /etc/cryptsetup-keys.d/
+     and  /run/cryptsetup-keys.d/  (see above) or in the LUKS2 JSON token header
+     (in case of the latter three). Use the systemd-cryptenroll(1) tool  to  en-
+     roll PKCS#11, FIDO2 and TPM2 devices in LUKS2 volumes.
+
+SUPPORTED OPTIONS
+     The following options may be used in the fourth field of each line:
+
+     cipher=
+         Specifies  the cipher to use. See cryptsetup(8) for possible values and
+         the default value of this option. A cipher with unpredictable  IV  val-
+         ues, such as "aes-cbc-essiv:sha256", is recommended. Embedded commas in
+         the  cipher  specification  need to be escaped by preceding them with a
+         backslash, see example below.
+
+         Added in version 186.
+
+     discard
+         Allow discard requests to be passed through the encrypted block device.
+         This improves performance on SSD storage but has security implications.
+
+         Added in version 207.
+
+     hash=
+         Specifies the hash to use for password hashing. See  cryptsetup(8)  for
+         possible values and the default value of this option.
+
+         Added in version 186.
+
+     header=
+         Use  a  detached  (separated)  metadata device or file where the header
+         containing the master key(s) is stored. This option  is  only  relevant
+         for  LUKS and TrueCrypt/VeraCrypt devices. See cryptsetup(8) for possi-
+         ble values and the default value of this option.
+
+         Optionally, the path may be followed by ":" and  an  /etc/fstab  device
+         specification  (e.g.  starting with "UUID=" or similar); in which case,
+         the path is relative to the device file system root.  The  device  gets
+         mounted automatically for LUKS device activation duration only.
+
+         Added in version 219.
+
+     keyfile-offset=
+         Specifies the number of bytes to skip at the start of the key file. See
+         cryptsetup(8) for possible values and the default value of this option.
+
+         Added in version 187.
+
+     keyfile-size=
+         Specifies  the  maximum  number of bytes to read from the key file. See
+         cryptsetup(8) for possible values and the default value of this option.
+         This option is ignored in plain encryption mode,  where  the  key  file
+         size  is  determined  by  the key size. It is also ignored when the key
+         file is used as a salt file for a FIDO2 token, as the salt size in that
+         case is defined by the FIDO2 specification to be exactly 32 bytes.
+
+         Added in version 188.
+
+     keyfile-erase
+         If enabled, the specified key file is erased after the volume is  acti-
+         vated  or  when activation fails. This is in particular useful when the
+         key file is only acquired transiently before  activation  (e.g.  via  a
+         file  in  /run/, generated by a service running before activation), and
+         shall be removed after use. Defaults to off.
+
+         Added in version 246.
+
+     key-slot=
+         Specifies the key slot to compare the passphrase or key against. If the
+         key slot does not match the given passphrase or key, but another would,
+         the setup of the device will fail regardless. This option implies luks.
+         See cryptsetup(8) for possible values. The default is to  try  all  key
+         slots in sequential order.
+
+         Added in version 209.
+
+     keyfile-timeout=
+         Specifies  the  timeout for the device on which the key file resides or
+         the device used as the key file, and falls back to  a  password  if  it
+         could  not  be  accessed.  See  systemd-cryptsetup-generator(8) for key
+         files on external devices.
+
+         Added in version 243.
+
+     link-volume-key=
+         Specifies the kernel keyring  and  key  description  (see  keyrings(7))
+         where LUKS2 volume key gets linked during device activation. The kernel
+         keyring description and key description must be separated by "::".
+
+         The  kernel  keyring  part  can be a string description or a predefined
+         kernel keyring prefixed with "@" (e.g.: to use  "@s"  session  or  "@u"
+         user  keyring directly). The type prefix text in the kernel keyring de-
+         scription is not required. The specified kernel  keyring  must  already
+         exist at the time of device activation.
+
+         The  key  part  is  a  string  description  optionally  prefixed  by  a
+         "%key_type:". If no type is specified, the "user" type key is linked by
+         default. See keyctl(1) for more information on  key  descriptions  (KEY
+         IDENTIFIERS section).
+
+         Note  that  the  linked volume key is not cleaned up automatically when
+         the device is detached.
+
+         Added in version 256.
+
+     luks
+         Force LUKS mode. When this mode is used, the following options are  ig-
+         nored  since  they  are  provided by the LUKS header on the device: ci-
+         pher=, hash=, size=.
+
+         Added in version 186.
+
+     bitlk
+         Decrypt BitLocker drive. Encryption parameters are  deduced  by  crypt-
+         setup from BitLocker header.
+
+         Added in version 246.
+
+     _netdev
+         Marks  this  cryptsetup device as requiring network. It will be started
+         after the network is available,  similarly  to  systemd.mount(5)  units
+         marked with _netdev. The service unit to set up this device will be or-
+         dered  between  remote-fs-pre.target  and remote-cryptsetup.target, in-
+         stead of cryptsetup-pre.target and cryptsetup.target.
+
+         Hint: if this device is used for a mount point  that  is  specified  in
+         fstab(5),  the  _netdev option should also be used for the mount point.
+         Otherwise, a dependency loop might be created  where  the  mount  point
+         will  be  pulled  in by local-fs.target, while the service to configure
+         the network is usually only started after the  local  file  system  has
+         been mounted.
+
+         Added in version 235.
+
+     noauto
+         This  device will not be added to cryptsetup.target. This means that it
+         will not be automatically unlocked on boot, unless something else pulls
+         it in. In particular, if the device is used for a mount point, it'll be
+         unlocked automatically during boot, unless the mount  point  itself  is
+         also disabled with noauto.
+
+         Added in version 186.
+
+     nofail
+         This  device  will not be a hard dependency of cryptsetup.target. It'll
+         still be pulled in and started, but the system will not  wait  for  the
+         device  to  show  up and be unlocked, and boot will not fail if this is
+         unsuccessful. Note that other units that depend on the unlocked  device
+         may still fail. In particular, if the device is used for a mount point,
+         the  mount  point  itself  also needs to have the nofail option, or the
+         boot will fail if the device is not unlocked successfully. If a keyfile
+         and/or a header are specified, the dependencies on their respective di-
+         rectories will also not be fatal, so that unmounting  said  directories
+         will not cause the generated cryptset unit to be deactivated.
+
+         Added in version 186.
+
+     offset=
+         Start offset in the backend device, in 512-byte sectors. This option is
+         only relevant for plain devices.
+
+         Added in version 220.
+
+     plain
+         Force plain encryption mode.
+
+         Added in version 186.
+
+     read-only, readonly
+         Set up the encrypted block device in read-only mode.
+
+         Added in version 186.
+
+     same-cpu-crypt
+         Perform encryption using the same CPU that IO was submitted on. The de-
+         fault  is  to use an unbound workqueue so that encryption work is auto-
+         matically balanced between available CPUs.
+
+         This requires kernel 4.0 or newer.
+
+         Added in version 242.
+
+     submit-from-crypt-cpus
+         Disable offloading writes to a separate thread after encryption.  There
+         are some situations where offloading write requests from the encryption
+         threads  to  a dedicated thread degrades performance significantly. The
+         default is to offload write requests to a dedicated thread  because  it
+         benefits the CFQ scheduler to have writes submitted using the same con-
+         text.
+
+         This requires kernel 4.0 or newer.
+
+         Added in version 242.
+
+     no-read-workqueue
+         Bypass  dm-crypt  internal workqueue and process read requests synchro-
+         nously. The default is to queue these requests and process  them  asyn-
+         chronously.
+
+         This requires kernel 5.9 or newer.
+
+         Added in version 248.
+
+     no-write-workqueue
+         Bypass  dm-crypt internal workqueue and process write requests synchro-
+         nously. The default is to queue these requests and process  them  asyn-
+         chronously.
+
+         This requires kernel 5.9 or newer.
+
+         Added in version 248.
+
+     skip=
+         How  many  512-byte sectors of the encrypted data to skip at the begin-
+         ning. This is different from the offset= option  with  respect  to  the
+         sector  numbers  used  in initialization vector (IV) calculation. Using
+         offset= will shift the IV calculation  by  the  same  negative  amount.
+         Hence, if offset=n is given, sector n will get a sector number of 0 for
+         the  IV  calculation.  Using skip= causes sector n to also be the first
+         sector of the mapped device, but with its number for IV generation  be-
+         ing n.
+
+         This option is only relevant for plain devices.
+
+         Added in version 220.
+
+     size=
+         Specifies  the  key size in bits. See cryptsetup(8) for possible values
+         and the default value of this option.
+
+         Added in version 186.
+
+     sector-size=
+         Specifies the sector size in bytes. See cryptsetup(8) for possible val-
+         ues and the default value of this option.
+
+         Added in version 240.
+
+     swap
+         The encrypted block device will be used as a swap device, and  will  be
+         formatted accordingly after setting up the encrypted block device, with
+         mkswap(8). This option implies plain.
+
+             Warning
+             Using the swap option will destroy the contents of the named parti-
+             tion during every boot, so make sure the underlying block device is
+             specified correctly.
+         Added in version 186.
+
+     tcrypt
+         Use  TrueCrypt  encryption  mode. When this mode is used, the following
+         options are ignored since they are provided by the TrueCrypt header  on
+         the  device  or  do  not  apply:  cipher=, hash=, keyfile-offset=, key-
+         file-size=, size=.
+
+         When this mode is used, the passphrase is read from the key file  given
+         in the third field. Only the first line of this file is read, excluding
+         the new line character.
+
+         Note  that  the  TrueCrypt format uses both passphrase and key files to
+         derive a password for the volume. Therefore, the passphrase and all key
+         files need to be provided. Use tcrypt-keyfile= to provide the  absolute
+         path  to  all  key files. When using an empty passphrase in combination
+         with one or more key files, use "/dev/null" as the password file in the
+         third field.
+
+         Added in version 206.
+
+     tcrypt-hidden
+         Use the hidden TrueCrypt volume. This option implies tcrypt.
+
+         This will map the hidden volume that is inside of the  volume  provided
+         in  the  second  field. Please note that there is no protection for the
+         hidden volume if the outer volume is mounted instead. See cryptsetup(8)
+         for more information on this limitation.
+
+         Added in version 206.
+
+     tcrypt-keyfile=
+         Specifies the absolute path to a key file to use for a  TrueCrypt  vol-
+         ume. This implies tcrypt and can be used more than once to provide sev-
+         eral key files.
+
+         See  the  entry  for  tcrypt  on the behavior of the passphrase and key
+         files when using TrueCrypt encryption mode.
+
+         Added in version 206.
+
+     tcrypt-system
+         Use TrueCrypt in system encryption mode. This option implies tcrypt.
+
+         Added in version 206.
+
+     tcrypt-veracrypt
+         Check for a VeraCrypt volume. VeraCrypt is a fork of TrueCrypt that  is
+         mostly  compatible,  but  uses different, stronger key derivation algo-
+         rithms that cannot be detected without this flag. Enabling this  option
+         could  substantially  slow  down unlocking, because VeraCrypt's key de-
+         rivation takes  much  longer  than  TrueCrypt's.  This  option  implies
+         tcrypt.
+
+         Added in version 232.
+
+     veracrypt-pim=
+         Specifies a custom Personal Iteration Multiplier (PIM) value, which can
+         range  from  0..2147468 for standard veracrypt volumes and 0..65535 for
+         veracrypt system volumes. A value of 0 will  imply  the  VeraCrypt  de-
+         fault. This option is only effective when tcrypt-veracrypt is set.
+
+         Note  that  VeraCrypt enforces a minimal allowed PIM value depending on
+         the password strength and the hash algorithm used for  key  derivation,
+         however  veracrypt-pim=  is  not checked against these bounds. See Ver-
+         acrypt Personal Iterations Multiplier[1] documentation for more  infor-
+         mation.
+
+         Added in version 254.
+
+     timeout=
+         Specifies the timeout for querying for a password. If no unit is speci-
+         fied,  seconds  is  used.  Supported  units are s, ms, us, min, h, d. A
+         timeout of 0 waits indefinitely (which is the default).
+
+         Added in version 186.
+
+     tmp=
+         The encrypted block device will be prepared for using it as  /tmp/;  it
+         will  be formatted using mkfs(8). Takes a file system type as argument,
+         such as "ext4", "xfs" or "btrfs". If no argument is specified  defaults
+         to "ext4". This option implies plain.
+
+             Warning
+             Using  the tmp option will destroy the contents of the named parti-
+             tion during every boot, so make sure the underlying block device is
+             specified correctly.
+         Added in version 186.
+
+     tries=
+         Specifies the maximum number of times the user is queried for  a  pass-
+         word. The default is 3. If set to 0, the user is queried for a password
+         indefinitely.
+
+         Added in version 186.
+
+     headless=
+         Takes  a  boolean argument, defaults to false. If true, never query in-
+         teractively for the password/PIN. Useful for headless systems.
+
+         Added in version 249.
+
+     verify
+         If the encryption password is read from console, it has to  be  entered
+         twice to prevent typos.
+
+         Added in version 186.
+
+     password-echo=yes|no|masked
+         Controls whether to echo passwords or security token PINs that are read
+         from  console.  Takes a boolean or the special string "masked". The de-
+         fault is password-echo=masked.
+
+         If enabled, the typed characters are echoed literally. If disabled, the
+         typed characters are not echoed in any form,  the  user  will  not  get
+         feedback  on  their  input.  If  set  to "masked", an asterisk ("*") is
+         echoed for each character typed. Regardless of which mode is chosen, if
+         the user hits the tabulator key ("^a") at any time, or the backspace key
+         ("^a") before any other data has been entered, then echo is turned off.
+
+         Added in version 249.
+
+     password-cache=yes|no|read-only
+         Controls whether to use cache for passwords  or  security  token  PINs.
+         Takes a boolean or the special string "read-only". Defaults to "yes".
+
+         If set to "read-only", the kernel keyring is checked for a password/PIN
+         before  requesting  one  interactively. If set to "yes", in addition to
+         checking the keyring, any password/PIN entered interactively is  cached
+         in the keyring with a 2.5-minute timeout before being purged.
+
+         Note that this option is not permitted for PKCS#11 security tokens. The
+         reasoning  behind this is that PKCS#11 security tokens are usually con-
+         figured to lock after being supplied an invalid PIN multiple times,  so
+         using the cache might inadvertently lock the token.
+
+         Added in version 257.
+
+     pkcs11-uri=
+         Takes  either  the  special  value  "auto" or an RFC7512 PKCS#11 URI[2]
+         pointing to a private key which is used to decrypt  the  encrypted  key
+         specified in the third column of the line. This is useful for unlocking
+         encrypted  volumes through PKCS#11 compatible security tokens or smart-
+         cards. See below for an example how to set up this  mechanism  for  un-
+         locking a LUKS2 volume with a YubiKey security token.
+
+         If  specified as "auto" the volume must be of type LUKS2 and must carry
+         PKCS#11 security token metadata in its LUKS2  JSON  token  section.  In
+         this mode the URI and the encrypted key are automatically read from the
+         LUKS2  JSON  token  header. Use systemd-cryptenroll(1) as a simple tool
+         for enrolling PKCS#11 security tokens or smartcards in a way compatible
+         with "auto". In this mode the third column of the  line  should  remain
+         empty (that is, specified as "-").
+
+         The specified URI can refer directly to a private key stored on a token
+         or  alternatively just to a slot or token, in which case a search for a
+         suitable private key will be performed. In this case, if multiple suit-
+         able objects are found, the token is refused. The keyfile configured in
+         the third column of the line is used as is (i.e. in  binary  form,  un-
+         processed). The resulting decrypted key (for RSA) or derived shared se-
+         cret  (for  ECC) is then Base64 encoded before it is used to unlock the
+         LUKS volume.
+
+         Use systemd-cryptenroll --pkcs11-token-uri=list to  list  all  suitable
+         PKCS#11 security tokens currently plugged in, along with their URIs.
+
+         Note  that many newer security tokens that may be used as PKCS#11 secu-
+         rity token typically also implement the newer and simpler  FIDO2  stan-
+         dard.  Consider  using fido2-device= (described below) to enroll it via
+         FIDO2 instead. Note that a security token enrolled via  PKCS#11  cannot
+         be used to unlock the volume via FIDO2, unless also enrolled via FIDO2,
+         and vice versa.
+
+         Added in version 245.
+
+     fido2-device=
+         Takes  either the special value "auto" or the path to a "hidraw" device
+         node (e.g.  /dev/hidraw1) referring to a FIDO2 security token that  im-
+         plements  the  "hmac-secret"  extension (most current hardware security
+         tokens do). See below for an example how to set up this  mechanism  for
+         unlocking an encrypted volume with a FIDO2 security token.
+
+         If  specified as "auto" the FIDO2 token device is automatically discov-
+         ered, as it is plugged in.
+
+         FIDO2 volume unlocking requires a client ID hash (CID) to be configured
+         via fido2-cid= (see below) and a key to pass to  the  security  token's
+         HMAC  functionality (configured in the line's third column) to operate.
+         If not configured and the volume is of type LUKS2, the CID and the  key
+         are  read  from LUKS2 JSON token metadata instead. Use systemd-crypten-
+         roll(1) as simple tool for enrolling FIDO2 security  tokens  for  LUKS2
+         volumes.
+
+         Use  systemd-cryptenroll --fido2-device=list to list all suitable FIDO2
+         security tokens currently plugged in, along with their device nodes.
+
+         This option implements the following mechanism: the configured  key  is
+         hashed  via  they HMAC keyed hash function the FIDO2 device implements,
+         keyed by a secret key embedded on the device. The resulting hash  value
+         is Base64 encoded and used to unlock the LUKS2 volume. As it should not
+         be  possible  to  extract the secret from the hardware token, it should
+         not be possible to retrieve the hashed key given the configured key  --
+         without possessing the hardware token.
+
+         Note  that  many  security  tokens  that implement FIDO2 also implement
+         PKCS#11, suitable for unlocking volumes via the pkcs11-uri= option  de-
+         scribed  above.  Typically the newer, simpler FIDO2 standard is prefer-
+         able.
+
+         Added in version 248.
+
+     fido2-cid=
+         Takes a Base64 encoded FIDO2 client ID to use for the FIDO2 unlock  op-
+         eration.  If  specified, but fido2-device= is not, fido2-device=auto is
+         implied. If fido2-device= is used but fido2-cid=  is  not,  the  volume
+         must  be  of  LUKS2 type, and the CID is read from the LUKS2 JSON token
+         header. Use systemd-cryptenroll(1) for enrolling a FIDO2 token  in  the
+         LUKS2 header compatible with this automatic mode.
+
+         Added in version 248.
+
+     fido2-rp=
+         Takes  a string, configuring the FIDO2 Relying Party (rp) for the FIDO2
+         unlock operation. If not specified,  "io.systemd.cryptsetup"  is  used,
+         except  if  the  LUKS2 JSON token header contains a different value. It
+         should normally not be necessary to override this.
+
+         Added in version 248.
+
+     fido2-pin=
+         Controls whether to require the user to enter a PIN when unlocking  the
+         volume  (the  FIDO2 "clientPin" feature). This option only applies when
+         in manual mode, i.e. when fido2-cid= option is set. Defaults to neither
+         true or false, but rather to v248 behavior, that is: try  with  no  PIN
+         first,  but if token reports that PIN is required, try again asking for
+         PIN.
+
+         Added in version 257.
+
+     fido2-up=
+         Controls whether to require the user to verify presence (tap the token,
+         the FIDO2 "up" feature) when unlocking the volume. This option only ap-
+         plies when in manual mode, i.e. when fido2-cid= option is set. Defaults
+         to neither true or false, but rather to v248  behavior,  that  is:  try
+         with  no  UP first, but if token reports that UP is required, try again
+         with UP enabled.
+
+         Added in version 257.
+
+     fido2-uv=
+         Controls whether to require user verification (the FIDO2 "uv"  feature)
+         when  unlocking  the  volume.  This  option only applies when in manual
+         mode, i.e. when fido2-cid= option is set. Defaults to neither  true  or
+         false,  but rather to v248 behavior, that is: omit configuring UV what-
+         soever.
+
+         Added in version 257.
+
+     tpm2-device=
+         Takes either the special value "auto" or the  path  to  a  device  node
+         (e.g.  /dev/tpmrm0) referring to a TPM2 security chip. See below for an
+         example  how to set up this mechanism for unlocking an encrypted volume
+         with a TPM2 chip.
+
+         Use tpm2-pcrs= (see below) to configure the set of TPM2  PCRs  to  bind
+         the  volume unlocking to. Use systemd-cryptenroll(1) as simple tool for
+         enrolling TPM2 security chips in LUKS2 volumes.
+
+         If specified as "auto" the TPM2 device is automatically discovered. Use
+         systemd-cryptenroll --tpm2-device=list to list all  suitable  TPM2  de-
+         vices currently available, along with their device nodes.
+
+         This  option  implements the following mechanism: when enrolling a TPM2
+         device via systemd-cryptenroll on a LUKS2 volume, a randomized key  un-
+         locking  the  volume  is generated on the host and loaded into the TPM2
+         chip where it is encrypted with an asymmetric "primary"  key  pair  de-
+         rived from the TPM2's internal "seed" key. Neither the seed key nor the
+         primary  key  are permitted to ever leave the TPM2 chip -- however, the
+         now encrypted randomized key may. It is saved in the LUKS2 volume  JSON
+         token header. When unlocking the encrypted volume, the primary key pair
+         is  generated on the TPM2 chip again (which works as long as the chip's
+         seed key is correctly maintained by the TPM2 chip), which is then  used
+         to  decrypt  (on the TPM2 chip) the encrypted key from the LUKS2 volume
+         JSON token header saved there  during  enrollment.  The  resulting  de-
+         crypted  key is then used to unlock the volume. When the randomized key
+         is encrypted the current values of the selected PCRs  (see  below)  are
+         included  in the operation, so that different PCR state results in dif-
+         ferent encrypted keys and the decrypted key can only  be  recovered  if
+         the same PCR state is reproduced.
+
+         Added in version 248.
+
+     tpm2-pcrs=
+         Takes a "+" separated list of numeric TPM2 PCR (i.e. "Platform Configu-
+         ration  Register")  indexes  to bind the TPM2 volume unlocking to. This
+         option is only useful when TPM2 enrollment metadata is not available in
+         the LUKS2 JSON token header already, the way systemd-cryptenroll writes
+         it there. If not used (and no metadata in the LUKS2 JSON  token  header
+         defines  it),  defaults  to  a list of a single entry: PCR 7. Assign an
+         empty string to encode a policy that binds the key to no  PCRs,  making
+         the  key  accessible  to  local  programs regardless of the current PCR
+         state.
+
+         Added in version 248.
+
+     tpm2-pin=
+         Takes a boolean argument, defaults to "false".  Controls  whether  TPM2
+         volume unlocking is bound to a PIN in addition to PCRs. Similarly, this
+         option is only useful when TPM2 enrollment metadata is not available.
+
+         Added in version 251.
+
+     tpm2-signature=
+         Takes  an  absolute path to a TPM2 PCR JSON signature file, as produced
+         by the systemd-measure(1) tool. This permits locking LUKS2  volumes  to
+         any PCR values for which a valid signature matching a public key speci-
+         fied at key enrollment time can be provided. See systemd-cryptenroll(1)
+         for  details  on  enrolling TPM2 PCR public keys. If this option is not
+         specified but it is attempted to unlock a LUKS2 volume  with  a  signed
+         TPM2  PCR enrollment, a suitable signature file tpm2-pcr-signature.json
+         is searched for in /etc/systemd/, /run/systemd/, /usr/lib/systemd/  (in
+         this order).
+
+         Added in version 252.
+
+     tpm2-pcrlock=
+         Takes  an  absolute  path to a TPM2 pcrlock policy file, as produced by
+         the systemd-pcrlock(8) tool. This permits locking LUKS2  volumes  to  a
+         local  policy of allowed PCR values with variants. See systemd-crypten-
+         roll(1) for details on enrolling TPM2 pcrlock policies. If this  option
+         is  not  specified  but it is attempted to unlock a LUKS2 volume with a
+         TPM2 pcrlock enrollment, a  suitable  signature  file  pcrlock.json  is
+         searched for in /run/systemd/ and /var/lib/systemd/ (in this order).
+
+         Added in version 255.
+
+     tpm2-measure-pcr=
+         Controls whether to measure the volume key of the encrypted volume to a
+         TPM2  PCR.  If  set  to "no" (which is the default) no PCR extension is
+         done. If set to "yes" the volume key is measured into PCR 15. If set to
+         a decimal integer in the range 0...23 the volume key is  measured  into
+         the  specified PCR. The volume key is measured along with the activated
+         volume name and its UUID. This functionality is particularly useful for
+         the encrypted volume backing the root file system, as  it  then  allows
+         later  TPM  objects  to  be  securely bound to the root file system and
+         hence the specific installation.
+
+         Added in version 253.
+
+     tpm2-measure-bank=
+         Selects one or more TPM2 PCR banks to measure the volume key  into,  as
+         configured  with  tpm2-measure-pcr= above. Multiple banks may be speci-
+         fied, separated by a colon character. If not  specified,  automatically
+         determines  available  and  used  banks.  Expects a message digest name
+         (e.g.  "sha1", "sha256", ...) as argument, to identify the bank.
+
+         Added in version 253.
+
+     tpm2-measure-keyslot-nvpcr=
+         Controls whether to measure information  about  the  used  LUKS  unlock
+         keyslot  to  a  TPM2  non-volatile index (nvindex in PCR mode). Takes a
+         boolean argument, or an NvPCR name. If set to false or an empty  string
+         (which  is  the  default)  no TPM2 nvindex extension is done, otherwise
+         keyslot information is measured to an nvindex of  the  specified  name,
+         which is allocated if needed. If set to true the recommended default of
+         "cryptsetup"  is  selected as NvPCR. The slot index and the used unlock
+         mechanism (i.e.  "tpm2", "fido2", "pkcs11") are measured along with the
+         activated volume name and its UUID.
+
+         Added in version 259.
+
+     token-timeout=
+         Specifies how long to wait at  most  for  configured  security  devices
+         (i.e.  FIDO2,  PKCS#11, TPM2) to show up. Takes a time value in seconds
+         (but other time units may be specified  too,  see  systemd.time(7)  for
+         supported formats). Defaults to 30s. Once the specified timeout elapsed
+         authentication  via  password  is attempted. Note that this timeout ap-
+         plies to waiting for the security device to show up -- it does not  ap-
+         ply to the PIN prompt for the device (should one be needed) or similar.
+         Pass 0 to turn off the timeout and wait forever.
+
+         Added in version 250.
+
+     try-empty-password=
+         Takes  a boolean argument. If enabled, right before asking the user for
+         a password it is first attempted to unlock the  volume  with  an  empty
+         password.  This  is useful for systems that are initialized with an en-
+         crypted volume with only an empty password set, which shall be replaced
+         with a suitable password during first boot, but after activation.
+
+         Added in version 246.
+
+     x-systemd.device-timeout=
+         Specifies how long systemd should wait for a block device  to  show  up
+         before giving up on the entry. The argument is a time in seconds or ex-
+         plicitly specified units of "s", "min", "h", "ms".
+
+         Added in version 216.
+
+     x-initrd.attach
+         Setup  this  encrypted  block  device  in the initrd, similarly to sys-
+         temd.mount(5) units marked with x-initrd.mount.
+
+         Although it is not necessary to mark the mount entry for the root  file
+         system  with  x-initrd.mount, x-initrd.attach is still recommended with
+         the encrypted block device containing the root file system as otherwise
+         systemd will attempt to detach the device  during  the  regular  system
+         shutdown  while  it  is  still in use. With this option the device will
+         still be detached but later after the root file system is unmounted.
+
+         All other encrypted block devices that contain file systems mounted  in
+         the initrd should use this option.
+
+         Added in version 245.
+
+     fixate-volume-key=
+         Pin the expected hash of the volume key.
+
+         In  certain cases, e.g. for LUKS volumes where the key is sealed to the
+         TPM2, this may be required to provide a guarantee that the volume being
+         attached is the  volume  which  was  previously  created.   fixate-vol-
+         ume-key=  can be used to set the expected volume key hash and refuse to
+         attach the volume if it has a different one. The expected hash  matches
+         the  digest  which  is measured to the sha256 PCR bank of the TPM2 when
+         tpm2-measure-pcr= is used.
+
+         For newly created LUKS volumes, the expected hash can be  generated  by
+         systemd-repart(8). For additional details, see the EncryptedVolume= de-
+         scription at repart.d(5).
+
+         Added in version 260.
+
+     At  early  boot and when the system manager configuration is reloaded, this
+     file is translated into native systemd units by  systemd-cryptsetup-genera-
+     tor(8).
+
+AF_UNIX KEY FILES
+     If the key file path (as specified in the third column of /etc/crypttab en-
+     tries,  see  above)  refers to an AF_UNIX stream socket in the file system,
+     the key is acquired by connecting to the socket and reading  the  key  from
+     the  connection.  The connection is made from an AF_UNIX socket name in the
+     abstract namespace, see unix(7) for details. The source socket name is cho-
+     sen according to the following format:
+
+         NUL RANDOM /cryptsetup/ VOLUME
+
+     In other words: a NUL byte (as required for  abstract  namespace  sockets),
+     followed  by  a random string (consisting of alphanumeric characters only),
+     followed by the literal string "/cryptsetup/", followed by the name of  the
+     volume to acquire they key for. For example, for the volume "myvol":
+
+         \0d7067f78d9827418/cryptsetup/myvol
+
+     Services listening on the AF_UNIX stream socket may query the source socket
+     name  with getpeername(2), and use this to determine which key to send, al-
+     lowing a single listening socket to serve keys for multiple volumes. If the
+     PKCS#11 logic is used (see above), the socket source name is picked in sim-
+     ilar fashion, except that the literal string "/cryptsetup-pkcs11/" is used.
+     And similarly for  FIDO2  ("/cryptsetup-fido2-salt/")  and  TPM2  ("/crypt-
+     setup-tpm2/").  A different path component is used so that services provid-
+     ing key material know that the secret key was not requested  directly,  but
+     instead  an encrypted key that will be decrypted via the PKCS#11/FIDO2/TPM2
+     logic to acquire the final secret key.
+
+EXAMPLES
+     Example 1. /etc/crypttab example
+
+     Set up four encrypted block devices. One using LUKS for normal storage, an-
+     other one for usage as a swap device and two  TrueCrypt  volumes.  For  the
+     fourth  device,  the  option  string  is  interpreted  as  two options "ci-
+     pher=xchacha12,aes-adiantum-plain64", "keyfile-timeout=10s".
+
+         luks       UUID=2505567a-9e27-4efe-a4d5-15ad146c258b
+         swap       /dev/sda7       /dev/urandom       swap
+         truecrypt  /dev/sda2       /etc/container_password  tcrypt
+         hidden     /mnt/tc_hidden  /dev/null    tcrypt-hidden,tcrypt-keyfile=/etc/keyfile
+         external   /dev/sda3       keyfile:LABEL=keydev keyfile-timeout=10s,cipher=xchacha12\,aes-adiantum-plain64
+
+     Example 2. Yubikey-based PKCS#11 Volume Unlocking Example
+
+     The PKCS#11 logic allows hooking up any compatible security token  that  is
+     capable  of storing RSA or EC cryptographic keys for unlocking an encrypted
+     volume. Here's an example how to set up a Yubikey security token  for  this
+     purpose  on a LUKS2 volume, using ykmap(1) from the yubikey-manager project
+     to initialize the token and systemd-cryptenroll(1) to add it in  the  LUKS2
+     volume:
+
+         # SPDX-License-Identifier: MIT-0
+
+         # Destroy any old key on the Yubikey (careful!)
+         ykman piv reset
+
+         # Generate a new private/public key pair on the device, store the public key in
+         # 'pubkey.pem'.
+         ykman piv generate-key -a RSA2048 9d pubkey.pem
+
+         # Create a self-signed certificate from this public key, and store it on the
+         # device. The "subject" should be an arbitrary user-chosen string to identify
+         # the token with.
+         ykman piv generate-certificate --subject "Knobelei" 9d pubkey.pem
+
+         # We do not need the public key anymore, let's remove it. Since it is not
+         # security sensitive we just do a regular "rm" here.
+         rm pubkey.pem
+
+         # Enroll the freshly initialized security token in the LUKS2 volume. Replace
+         # /dev/sdXn by the partition to use (e.g. /dev/sda1).
+         sudo systemd-cryptenroll --pkcs11-token-uri=auto /dev/sdXn
+
+         # Test: Let's run systemd-cryptsetup to test if this all worked.
+         sudo systemd-cryptsetup attach mytest /dev/sdXn none pkcs11-uri=auto
+
+         # If that worked, let's now add the same line persistently to /etc/crypttab,
+         # for the future. We do not want to use the (unstable) /dev/sdX name, so let's
+         # figure out a stable link:
+         udevadm info -q symlink -r /dev/sdXn
+
+         # Now add the line using the by-uuid symlink to /etc/crypttab:
+         sudo bash -c 'echo "mytest /dev/disk/by-uuid/... none pkcs11-uri=auto" >>/etc/crypttab'
+
+         # Depending on your distribution and encryption setup, you may need to manually
+         # regenerate your initramfs to be able to use a Yubikey / PKCS#11 token to
+         # unlock the partition during early boot.
+         # More information at https://unix.stackexchange.com/a/705809.
+         # On Fedora based systems:
+         sudo dracut --force
+         # On Debian based systems:
+         sudo update-initramfs -u
+
+     A few notes on the above:
+
+     *   We use RSA2048, which is the longest key size current Yubikeys support
+
+     *   We  use Yubikey key slot 9d, since that's apparently the keyslot to use
+         for decryption purposes, see Yubico PIV certificate slots[3].
+
+     Example 3. FIDO2 Volume Unlocking Example
+
+     The FIDO2 logic allows using any compatible FIDO2 security token  that  im-
+     plements  the  "hmac-secret"  extension  for unlocking an encrypted volume.
+     Here's an example how to set up a FIDO2 security token for this purpose for
+     a LUKS2 volume, using systemd-cryptenroll(1):
+
+         # SPDX-License-Identifier: MIT-0
+
+         # Enroll the security token in the LUKS2 volume. Replace /dev/sdXn by the
+         # partition to use (e.g. /dev/sda1).
+         sudo systemd-cryptenroll --fido2-device=auto /dev/sdXn
+
+         # Test: Let's run systemd-cryptsetup to test if this worked.
+         sudo systemd-cryptsetup attach mytest /dev/sdXn none fido2-device=auto
+
+         # If that worked, let's now add the same line persistently to /etc/crypttab,
+         # for the future. We do not want to use the (unstable) /dev/sdX name, so let's
+         # figure out a stable link:
+         udevadm info -q symlink -r /dev/sdXn
+
+         # Now add the line using the by-uuid symlink to /etc/crypttab:
+         sudo bash -c 'echo "mytest /dev/disk/by-uuid/... none fido2-device=auto" >>/etc/crypttab'
+
+         # Depending on your distribution and encryption setup, you may need to manually
+         # regenerate your initramfs to be able to use a FIDO2 device to unlock the
+         # partition during early boot.
+         # More information at https://unix.stackexchange.com/a/705809.
+         # On Fedora based systems:
+         sudo dracut --force
+         # On Debian based systems:
+         sudo update-initramfs -u
+
+     Example 4. TPM2 Volume Unlocking Example
+
+     The TPM2 logic allows using any TPM2 chip supported by the Linux kernel for
+     unlocking an encrypted volume. Here's an example how to set up a TPM2  chip
+     for this purpose for a LUKS2 volume, using systemd-cryptenroll(1):
+
+         # SPDX-License-Identifier: MIT-0
+
+         # Enroll the TPM2 security chip in the LUKS2 volume, and bind it to PCR 7
+         # only. Replace /dev/sdXn by the partition to use (e.g. /dev/sda1).
+         sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/sdXn
+
+         # Test: Let's run systemd-cryptsetup to test if this worked.
+         sudo systemd-cryptsetup attach mytest /dev/sdXn none tpm2-device=auto
+
+         # If that worked, let's now add the same line persistently to /etc/crypttab,
+         # for the future. We do not want to use the (unstable) /dev/sdX name, so let's
+         # figure out a stable link:
+         udevadm info -q symlink -r /dev/sdXn
+
+         # Now add the line using the by-uuid symlink to /etc/crypttab:
+         sudo bash -c 'echo "mytest /dev/disk/by-uuid/... none tpm2-device=auto" >>/etc/crypttab'
+
+         # And now let's check that automatic unlocking works:
+         sudo systemd-cryptsetup detach mytest
+         sudo systemctl daemon-reload
+         sudo systemctl start cryptsetup.target
+         systemctl is-active systemd-cryptsetup@mytest.service
+
+         # Once we have the device which will be unlocked automatically, we can use it.
+         # Usually we would create a file system and add it to /etc/fstab:
+         sudo mkfs.ext4 /dev/mapper/mytest
+         # This prints a 'Filesystem UUID', which we can use as a stable name:
+         sudo bash -c 'echo "/dev/disk/by-uuid/... /var/mytest ext4 defaults,x-systemd.mkdir 0 2" >>/etc/fstab'
+         # And now let's check that the mounting works:
+         sudo systemctl daemon-reload
+         sudo systemctl start /var/mytest
+         systemctl status /var/mytest
+
+         # Depending on your distribution and encryption setup, you may need to manually
+         # regenerate your initramfs to be able to use a TPM2 security chip to unlock
+         # the partition during early boot.
+         # More information at https://unix.stackexchange.com/a/705809.
+         # On Fedora based systems:
+         sudo dracut --force
+         # On Debian based systems:
+         sudo update-initramfs -u
+
+SEE ALSO
+     systemd(1),    systemd-cryptsetup@.service(8),   systemd-cryptsetup-genera-
+     tor(8), systemd-cryptenroll(1), systemd-repart(8),  repart.d(5),  fstab(5),
+     cryptsetup(8), mkswap(8), mke2fs(8)
+
+NOTES
+      1. Veracrypt Personal Iterations Multiplier
+         https://www.veracrypt.fr/en/Personal%20Iterations%20Multiplier%20%28PIM%29.html
+
+      2. RFC7512 PKCS#11 URI
+         https://tools.ietf.org/html/rfc7512
+
+      3. Yubico PIV certificate slots
+         https://developers.yubico.com/PIV/Introduction/Certificate_slots.html
+
+systemd 260.1                                                        CRYPTTAB(5)

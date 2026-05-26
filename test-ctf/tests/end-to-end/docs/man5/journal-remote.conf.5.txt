@@ -1,0 +1,136 @@
+JOURNAL-REMOTE.CONF(5)         journal-remote.conf        JOURNAL-REMOTE.CONF(5)
+
+NAME
+     journal-remote.conf,  journal-remote.conf.d  -  Configuration files for the
+     service accepting remote journal uploads
+
+SYNOPSIS
+         /etc/systemd/journal-remote.conf
+         /run/systemd/journal-remote.conf
+         /usr/local/lib/systemd/journal-remote.conf
+         /usr/lib/systemd/journal-remote.conf
+         /etc/systemd/journal-remote.conf.d/*.conf
+         /run/systemd/journal-remote.conf.d/*.conf
+         /usr/local/lib/systemd/journal-remote.conf.d/*.conf
+         /usr/lib/systemd/journal-remote.conf.d/*.conf
+
+DESCRIPTION
+     These files configure  various  parameters  of  systemd-journal-remote.ser-
+     vice(8). See systemd.syntax(7) for a general description of the syntax.
+
+CONFIGURATION DIRECTORIES AND PRECEDENCE
+     The  default  configuration  is set during compilation, so configuration is
+     only needed when it is necessary to deviate from those defaults.  The  main
+     configuration file is loaded from one of the listed directories in order of
+     priority,  only the first file found is used: /etc/systemd/, /run/systemd/,
+     /usr/local/lib/systemd/ [1], /usr/lib/systemd/. The vendor version  of  the
+     file  contains commented out entries showing the defaults as a guide to the
+     administrator. Local overrides can also be created by creating drop-ins, as
+     described below. The main configuration file can also be  edited  for  this
+     purpose  (or  a  copy in /etc/ if it is shipped under /usr/), however using
+     drop-ins for local configuration is recommended over modifications  to  the
+     main configuration file.
+
+     In  addition to the main configuration file, drop-in configuration snippets
+     are read from /usr/lib/systemd/*.conf.d/, /usr/local/lib/systemd/*.conf.d/,
+     and /etc/systemd/*.conf.d/. Those drop-ins have higher precedence and over-
+     ride the main configuration file. Files in the *.conf.d/ configuration sub-
+     directories are sorted by their filename in lexicographic order, regardless
+     of in which of the subdirectories they reside. When multiple files  specify
+     the same option, for options which accept just a single value, the entry in
+     the  file sorted last takes precedence, and for options which accept a list
+     of values, entries are collected as they occur in the sorted files.
+
+     When packages  need  to  customize  the  configuration,  they  can  install
+     drop-ins under /usr/. Files in /etc/ are reserved for the local administra-
+     tor,  who  may use this logic to override the configuration files installed
+     by vendor packages. Drop-ins have to be used to override package  drop-ins,
+     since  the  main configuration file has lower precedence. It is recommended
+     to prefix all filenames in those subdirectories with a two-digit number and
+     a dash, to simplify the ordering. This also defines a  concept  of  drop-in
+     priorities  to  allow  OS  vendors to ship drop-ins within a specific range
+     lower than the range used by users. This should lower the risk  of  package
+     drop-ins  overriding  accidentally  drop-ins defined by users. It is recom-
+     mended to use the range 10-40 for drop-ins in /usr/ and the range 60-90 for
+     drop-ins in /etc/ and /run/, to make sure that local and transient drop-ins
+     take priority over drop-ins shipped by the OS vendor.
+
+     To disable a configuration file supplied by the vendor, the recommended way
+     is to place a symlink to /dev/null in the configuration directory in /etc/,
+     with the same filename as the vendor configuration file.
+
+OPTIONS
+     All options are configured in the [Remote] section:
+
+     Seal=
+         Periodically sign the data in the journal using Forward Secure Sealing.
+
+         Added in version 229.
+
+     SplitMode=
+         One of "host" or "none".
+
+         Added in version 220.
+
+     ServerKeyFile=
+         SSL key in PEM format.
+
+         Added in version 220.
+
+     ServerCertificateFile=
+         SSL certificate in PEM format.
+
+         Added in version 220.
+
+     TrustedCertificateFile=
+         SSL CA certificate.
+
+         Added in version 220.
+
+     MaxUse=, KeepFree=, MaxFileSize=, MaxFiles=
+         These are analogous to SystemMaxUse=,  SystemKeepFree=,  SystemMaxFile-
+         Size= and SystemMaxFiles= in journald.conf(5).
+
+         MaxUse= controls how much disk space the systemd-journal-remote may use
+         up at most.  KeepFree= controls how much disk space systemd-journal-re-
+         mote  shall leave free for other uses.  systemd-journal-remote will re-
+         spect both limits and use the smaller of the two values.
+
+         MaxFiles= controls how many individual journal files to keep  at  most.
+         Note that only archived files are deleted to reduce the number of files
+         until  this limit is reached; active files will stay around. This means
+         that, in effect, there might still be more journal files around in  to-
+         tal than this limit after a vacuuming operation is complete.
+
+         Added in version 253.
+
+     Compression=
+         Configurs  acceptable  compression  algorithms  to be announced through
+         "Accept-Encoding" HTTP header. The header suggests  systemd-journal-up-
+         load  to compress data to be sent. Takes a space separated list of com-
+         pression algorithms, or "no". Supported algorithms are "zstd", "xz", or
+         "lz4". When a list of algorithms is specified, "Accept-Encoding" header
+         will be constructed with priorities based on the  order  of  the  algo-
+         rithms  in  the  list.  When "no", "Accept-Encoding" header will not be
+         sent. This option can be specified multiple times. If an  empty  string
+         is assigned, then all the previous assignments are cleared. Defaults to
+         unset  and  all  supported compression algorithms will be listed in the
+         header.
+
+         Example:
+
+             Compression=zstd lz4
+
+         Added in version 258.
+
+SEE ALSO
+     journald.conf(5), systemd(1),  systemd-journal-remote.service(8),  systemd-
+     journald.service(8)
+
+NOTES
+      1. "  Please  note that those configuration files must be available at all
+         times. If /usr/local/ is a separate partition, it may not be  available
+         during early boot, and must not be used for configuration.
+
+
+systemd 260.1                                             JOURNAL-REMOTE.CONF(5)

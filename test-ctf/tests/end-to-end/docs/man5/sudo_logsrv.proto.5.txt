@@ -1,0 +1,366 @@
+Starting  with version 1.9.0, supports sending event and I/O logs
+to a log server.  The protocol used is written in Google's Proto-
+col Buffers domain specific language.   The  section  includes  a
+complete  description of the protocol in Protocol Buffers format.
+Because there is no way to determine message boundaries when  us-
+ing Protocol Buffers, the wire size of each message is sent imme-
+diately preceding the message itself as a 32-bit unsigned integer
+in  network byte order.  This is referred to as and is how Google
+suggests handling the lack of message delimiters.   The  protocol
+is  made  up  of  two  basic  messages, and described below.  The
+server must accept messages up to two  megabytes  in  size.   The
+server  may return an error if the client tries to send a message
+larger than two megabytes.  A is a container used to  encapsulate
+all  the  possible message types a client may send to the server.
+message ClientMessage {
+  oneof type {
+    AcceptMessage accept_msg = 1;
+    RejectMessage reject_msg = 2;
+    ExitMessage exit_msg = 3;
+    RestartMessage restart_msg = 4;
+    AlertMessage alert_msg = 5;
+    IoBuffer ttyin_buf = 6;
+    IoBuffer ttyout_buf = 7;
+    IoBuffer stdin_buf = 8;
+    IoBuffer stdout_buf = 9;
+    IoBuffer stderr_buf = 10;
+    ChangeWindowSize winsize_event = 11;
+    CommandSuspend suspend_event = 12;
+    ClientHello hello_msg = 13;
+  } } The different sub-messages  the  client  may  sent  to  the
+server are described below.  message TimeSpec {
+    int64 tv_sec = 1;
+    int32  tv_nsec = 2; } A is the equivalent of a POSIX contain-
+ing seconds and nanoseconds members.  The member is a 64-bit  in-
+teger  to support dates after the year 2038.  message InfoMessage
+{
+  message StringList {
+    repeated string strings = 1;
+  }
+  message NumberList {
+    repeated int64 numbers = 1;
+  }
+  string key = 1;
+  oneof value {
+    int64 numval = 2;
+    string strval = 3;
+    StringList strlistval = 4;
+    NumberList numlistval = 5;
+  } } An is used to represent information about the invoking user
+as well as the execution environment the command runs in the form
+of key-value pairs.  The key is always a string but the value may
+be a 64-bit integer, a string, an array of strings, or  an  array
+of  64-bit  integers.  The event log data is composed of entries.
+See the section for more information.  message ClientHello {
+  string client_id = 1; } A message consists of  client  informa-
+tion  that  may  be sent to the server when the client first con-
+nects.  A free-form client description.   This  usually  includes
+the  name  and version of the client implementation.  message Ac-
+ceptMessage {
+  TimeSpec submit_time = 1;
+  repeated InfoMessage info_msgs = 2;
+  bool expect_iobufs = 3; } An is sent by the client when a  com-
+mand  is allowed by the security policy.  It contains the follow-
+ing members: The wall clock time when the command  was  submitted
+to the security policy.  An array of describing the user who sub-
+mitted  the  command  as well as the execution environment of the
+command.  This information is used to generate an event log entry
+and may also be used by server to determine where and how the I/O
+log is stored.  Set to true if the server should expect  messages
+to  follow  (for  I/O logging) or false if the server should only
+store the event log.  If an is sent, the client must not  send  a
+or message RejectMessage {
+  TimeSpec submit_time = 1;
+  string reason = 2;
+  repeated  InfoMessage  info_msgs = 3; } A is sent by the client
+when a command is denied by the security policy.  It contains the
+following members: The wall clock time when the command was  sub-
+mitted  to  the  security policy.  The reason the security policy
+gave for denying the command.  An array of  describing  the  user
+who submitted the command as well as the execution environment of
+the  command.   This information is used to generate an event log
+entry.  If a is sent, the client must not send an or message  Ex-
+itMessage {
+  TimeSpec run_time = 1;
+  int32 exit_value = 2;
+  bool dumped_core = 3;
+  string signal = 4;
+  string  error = 5; } An is sent by the client after the command
+has exited or has been terminated by a signal.  It  contains  the
+following  members:  The  total  amount of elapsed time since the
+command started, calculated using a monotonic clock where  possi-
+ble.   This is not the wall clock time.  The command's exit value
+in the range 0-255.  True if the command was terminated by a sig-
+nal and dumped core.  If the command was terminated by a  signal,
+this is set to the name of the signal without the leading For ex-
+ample,  A message from the client indicating that the command was
+terminated unexpectedly due to an  error.   When  performing  I/O
+logging,  the client should wait for a corresponding to the final
+before closing the connection unless the final has  already  been
+received.  message RestartMessage {
+  string log_id = 1;
+  TimeSpec  resume_point = 2; } A is sent by the client to resume
+sending an existing I/O log that was previously interrupted.   It
+contains  the  following members: The server-side name for an I/O
+log that was previously sent to the client by the  server.   This
+may  be  a  path name on the server or some other kind of server-
+side identifier.  The point in time after which to resume the I/O
+log.  This is in the form of a representing the  amount  of  time
+since  the  command started, not the wall clock time.  The should
+correspond to a previously sent to the client by the server.   If
+the server receives a containing a it has not previously seen, an
+error  will  be returned to the client and the connection will be
+dropped.  If a is sent, the client must not send  an  or  message
+AlertMessage {
+  TimeSpec alert_time = 1;
+  string reason = 2;
+  repeated  InfoMessage info_msgs = 3; } An is sent by the client
+to indicate a problem detected by the security policy  while  the
+command  is  running  that should be stored in the event log.  It
+contains the following members: The  wall  clock  time  when  the
+alert  occurred.  The reason for the alert.  An optional array of
+describing the user who submitted the command as well as the exe-
+cution environment of the command.  This information is  used  to
+generate an event log entry.  message IoBuffer {
+  TimeSpec delay = 1;
+  bytes  data  =  2; } An is used to represent data from terminal
+input, terminal output, standard input, standard output, or stan-
+dard error.  It contains the following members: The elapsed  time
+since  the  last record in the form of a The should be calculated
+using a monotonic clock where possible.  The binary I/O log  data
+from  terminal  input,  terminal output, standard input, standard
+output, or standard error.  message ChangeWindowSize {
+  TimeSpec delay = 1;
+  int32 rows = 2;
+  int32 cols = 3; } A message is sent by the client when the ter-
+minal running the command changes size.  It contains the  follow-
+ing  members:  The elapsed time since the last record in the form
+of a The should be calculated using a monotonic clock where  pos-
+sible.   The new number of terminal rows.  The new number of ter-
+minal columns.  message CommandSuspend {
+  TimeSpec delay = 1;
+  string signal = 2; } A message is sent by the client  when  the
+command  is either suspended or resumed.  It contains the follow-
+ing members: The elapsed time since the last record in  the  form
+of  a The should be calculated using a monotonic clock where pos-
+sible.  The signal name without the leading For example, A  is  a
+container  used to encapsulate all the possible message types the
+server may send to a client.  message ServerMessage {
+  oneof type {
+    ServerHello hello = 1;
+    TimeSpec commit_point = 2;
+    string log_id = 3;
+    string error = 4;
+    string abort = 5;
+  } } The different sub-messages  the  server  may  sent  to  the
+client are described below.  message ServerHello {
+  string server_id = 1;
+  string redirect = 2;
+  repeated string servers = 3;
+  bool subcommands = 4; } The message consists of server informa-
+tion  sent  when the client first connects.  It contains the fol-
+lowing members: A free-form server description.  Usually this in-
+cludes the name and version of the implementation running on  the
+log server.  This member is always present.  A host and port sep-
+arated by a colon that the client should connect to instead.  The
+host  may  be a host name, an IPv4 address, or an IPv6 address in
+square brackets.  This may be used  for  server  load  balancing.
+The server will disconnect after sending the when it includes a A
+list  of  other known log servers.  This can be used to implement
+log server redundancy and allows the client to discover all other
+log servers simply by connecting to one known server.  This  mem-
+ber  may  be  omitted when there is only a single log server.  If
+set, the server supports logging  additional  commands  during  a
+session.   The client may send an or when is running in mode.  In
+this mode, commands spawned from the initial  command  authorized
+by  are  subject to policy restrictions and/or are logged.  If is
+false, the client must not attempt to log additional commands.  A
+periodic time stamp sent by the server to indicate when  I/O  log
+buffers have been committed to storage.  This message is not sent
+after  every  but rather at a server-configurable interval.  When
+the server receives an it will respond with  a  corresponding  to
+the last received before closing the connection.  The server-side
+ID  of  the I/O log being stored, sent in response to an where is
+true.  A fatal server-side error.  The server will close the con-
+nection after sending the message.  An message  from  the  server
+indicates  that  the client should kill the command and terminate
+the session.  It may be used to implement simple server-side pol-
+icy.  The server will close the connection after sending the mes-
+sage.  The expected protocol flow is as follows: Client  connects
+to  the  first  available server.  If the client is configured to
+use TLS, a TLS handshake will be attempted.  Client sends This is
+currently optional but allows the server to detect a non-TLS con-
+nection on the TLS port.  Server sends Client responds  with  ei-
+ther  or  If client sent a with set, server creates a new I/O log
+and responds with a Client sends zero or more  messages.   Server
+periodically responds to messages with a Client sends an when the
+command  exits  or  is  killed.  Server sends the final if one is
+pending.  Server closes the connection.  After receiving the  fi-
+nal  the  client shuts down its side of the TLS connection if TLS
+is in use, and closes the connection.  Server shuts down its side
+of the TLS connection if TLS is in use, and  closes  the  connec-
+tion.   At  any  point,  the server may send an or message to the
+client at which point the server will close the  connection.   If
+an  message  is received, the client should terminate the running
+command.  and classes contain an array of that should contain in-
+formation about the user who submitted the command as well as in-
+formation about the execution environment of the  command  if  it
+was  accepted.   Some variables have a or prefix.  These prefixes
+are used to eliminate ambiguity for variables that could apply to
+the client program, the user submitting the command, or the  com-
+mand  being  run.  Variables with a prefix pertain to the program
+performing the connection to the log server,  for  example  Vari-
+ables  with  a  prefix  pertain  to the command that the user re-
+quested be run.  Variables with a prefix pertain to the user sub-
+mitting the request The following entries are required: The  fol-
+lowing  entries are recognized, but not required: The server must
+accept other variables not listed above but may ignore them.  The
+Protocol Buffers description of the log  server  protocol,  using
+syntax, is included in full below.  syntax = "proto3";
+
+/*
+ * Client message to the server.  Messages on the wire are
+ * prefixed with a 32-bit size in network byte order.
+ */ message ClientMessage {
+  oneof type {
+    AcceptMessage accept_msg = 1;
+    RejectMessage reject_msg = 2;
+    ExitMessage exit_msg = 3;
+    RestartMessage restart_msg = 4;
+    AlertMessage alert_msg = 5;
+    IoBuffer ttyin_buf = 6;
+    IoBuffer ttyout_buf = 7;
+    IoBuffer stdin_buf = 8;
+    IoBuffer stdout_buf = 9;
+    IoBuffer stderr_buf = 10;
+    ChangeWindowSize winsize_event = 11;
+    CommandSuspend suspend_event = 12;
+  } }
+
+/* Equivalent of POSIX struct timespec */ message TimeSpec {
+    int64 tv_sec = 1;           /* seconds */
+    int32 tv_nsec = 2;          /* nanoseconds */ }
+
+/* I/O buffer with keystroke data */ message IoBuffer {
+  TimeSpec delay = 1;           /* elapsed time since last record
+*/
+  bytes data = 2;               /* keystroke data */ }
+
+/*
+ * Key/value pairs, like Privilege Manager struct info.
+ * The value may be a number, a string, or a list of strings.
+ */ message InfoMessage {
+  message StringList {
+    repeated string strings = 1;
+  }
+  message NumberList {
+    repeated int64 numbers = 1;
+  }
+  string key = 1;
+  oneof value {
+    int64 numval = 2;
+    string strval = 3;
+    StringList strlistval = 4;
+    NumberList numlistval = 5;
+  } }
+
+/*
+ * Event log data for command accepted by the policy.
+ */ message AcceptMessage {
+  TimeSpec  submit_time = 1;             /* when command was sub-
+mitted */
+  repeated InfoMessage info_msgs = 2;   /*  key,value  event  log
+data */
+  bool  expect_iobufs  =  3;               /* true if I/O logging
+enabled */ }
+
+/*
+ * Event log data for command rejected by the policy.
+ */ message RejectMessage {
+  TimeSpec submit_time = 1;             /* when command was  sub-
+mitted */
+  string reason = 2;                    /* reason command was re-
+jected */
+  repeated  InfoMessage  info_msgs  = 3;   /* key,value event log
+data */ }
+
+/* Message sent by client when command exits. */ /* Might revisit
+runtime and use end_time instead */ message ExitMessage {
+  TimeSpec run_time = 1;        /* total elapsed run time */
+  int32 exit_value = 2;         /* 0-255 */
+  bool dumped_core = 3;         /* true if command dumped core */
+  string signal = 4;            /* signal name if killed by  sig-
+nal */
+  string  error  = 5;             /* if killed due to other error
+*/ }
+
+/* Alert message, policy module-specific. */ message AlertMessage
+{
+  TimeSpec alert_time = 1;              /* time alert message oc-
+curred */
+  string reason =  2;                    /*  policy  alert  error
+string */
+  repeated  InfoMessage  info_msgs  = 3;   /* key,value event log
+data */ }
+
+/* Used to restart an existing I/O log on the server. */  message
+RestartMessage {
+  string log_id = 1;            /* ID of log being restarted */
+  TimeSpec resume_point = 2;    /* resume point (elapsed time) */
+}
+
+/* Window size change event. */ message ChangeWindowSize {
+  TimeSpec delay = 1;           /* elapsed time since last record
+*/
+  int32 rows = 2;               /* new number of rows */
+  int32 cols = 3;               /* new number of columns */ }
+
+/* Command suspend/resume event. */ message CommandSuspend {
+  TimeSpec delay = 1;           /* elapsed time since last record
+*/
+  string signal = 2;            /* signal that caused suspend/re-
+sume */ }
+
+/*
+ * Server messages to the client.  Messages on the wire are
+ * prefixed with a 32-bit size in network byte order.
+ */ message ServerMessage {
+  oneof type {
+    ServerHello hello = 1;      /* server hello message */
+    TimeSpec  commit_point  =  2;  /*  cumulative time of records
+stored */
+    string log_id = 3;          /* ID of server-side I/O log */
+    string error = 4;           /* error message from server */
+    string abort = 5;           /* abort message, kill command */
+  } }
+
+/* Hello message from server when  client  connects.  */  message
+ServerHello {
+  string  server_id  = 1;         /* free-form server description
+*/
+  string redirect = 2;          /* optional redirect if busy */
+  repeated string servers = 3;  /* optional list of known servers
+*/ } Many people have worked on over the years; this version con-
+sists of code written primarily by: See the CONTRIBUTORS.md  file
+in the distribution (https://www.sudo.ws/about/contributors/) for
+an  exhaustive  list of people who have contributed to If you be-
+lieve you have found a bug in you can either file a bug report in
+the sudo bug database, https://bugzilla.sudo.ws/, or open an  is-
+sue at https://github.com/sudo-project/sudo/issues.  If you would
+prefer  to  use  email,  messages may be sent to the sudo-workers
+mailing  list,  https://www.sudo.ws/mailman/listinfo/sudo-workers
+(public) or <sudo@sudo.ws> (private).  Please do not report secu-
+rity  vulnerabilities  through  public GitHub issues, Bugzilla or
+mailing   lists.    Instead,   report   them   via    email    to
+<Todd.Miller@sudo.ws>.   You may encrypt your message with PGP if
+you    would     like,     using     the     key     found     at
+https://www.sudo.ws/dist/PGPKEYS.  Limited free support is avail-
+able     via     the     sudo-users     mailing     list,     see
+https://www.sudo.ws/mailman/listinfo/sudo-users to  subscribe  or
+search the archives.  is provided and any express or implied war-
+ranties, including, but not limited to, the implied warranties of
+merchantability  and  fitness  for  a particular purpose are dis-
+claimed.   See  the   LICENSE.md   file   distributed   with   or
+https://www.sudo.ws/about/license/ for complete details.
+
+

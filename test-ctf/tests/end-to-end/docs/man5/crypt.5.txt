@@ -1,0 +1,173 @@
+The  hashing  methods implemented by are designed only to process
+user passphrases for storage and  authentication;  they  are  not
+suitable   for   use  as  general-purpose  cryptographic  hashes.
+Passphrase hashing is not a replacement for  strong  passphrases.
+It  is  always possible for an attacker with access to the hashed
+passphrases to guess and check  possible  cleartext  passphrases.
+However,  with a strong hashing method, guessing will be too slow
+for the attacker to discover a strong passphrase.   Most  of  the
+hashing  methods  use a to perturb the hash function, so that the
+same passphrase may produce many possible hashes.  Newer  methods
+accept  longer salt strings.  The salt should be chosen at random
+for each user.  Salt defeats a number of attacks: It is not  pos-
+sible to hash a passphrase once and then test it against each ac-
+count's  stored  hash;  the hash calculation must be repeated for
+each account.  It is not possible to tell  whether  two  accounts
+use  the same passphrase without successfully guessing one of the
+phrases.   Tables  of  precalculated  hashes  of  commonly   used
+passphrases  must  have  an  entry  for each possible salt, which
+makes them impractically large.  Most of the hashing methods  are
+also deliberately engineered to be slow; they use many iterations
+of  an underlying cryptographic primitive to increase the cost of
+each guess.  The newer hashing methods allow the number of itera-
+tions to be adjusted, using  the  parameter  to  For  memory-hard
+hashing methods such as yescrypt, this parameter also adjusts the
+amount  of  memory needed to compute a hash.  Having this config-
+urable makes  it  possible  to  keep  password  guessing  attacks
+against  the hashes slow and costly as hardware improves.  All of
+the hashing methods supported  by  produce  a  hashed  passphrase
+which  consists of four components: and The prefix controls which
+hashing method is to be used, and is the  appropriate  string  to
+pass to to select that method.  The contents of and are up to the
+method.   Depending  on  the  method,  the  and components may be
+empty.  The argument to must begin with the  first  three  compo-
+nents  of  a  valid hashed passphrase, but anything after that is
+ignored.   This  makes  authentication  simple:  hash  the  input
+passphrase using the stored hashed passphrase as the setting, and
+then  compare the result to the stored hashed passphrase.  Hashed
+passphrases are always entirely printable ASCII, and do not  con-
+tain  any  whitespace  or the characters or (These characters are
+used as delimiters and special markers in the  and  files.)   The
+syntax  of  each  component  of  a hashed passphrase is up to the
+hashing method.  characters usually delimit components,  and  the
+salt  and  hash  are usually encoded as numerals in base 64.  The
+details of this base-64 encoding vary among hashing methods.  The
+common encoding specified by RFC 4648 is usually used.  This is a
+list of the hashing methods supported by  roughly  in  decreasing
+order  of strength.  Many of the older methods are now considered
+too weak to use for new passphrases.  The hashed passphrase  for-
+mat  is expressed with extended regular expressions (see and does
+not show the division  into  prefix,  options,  salt,  and  hash.
+yescrypt  is a scalable passphrase hashing scheme designed by So-
+lar Designer, which is based on Colin Percival's  scrypt.   While
+yescrypt's  strength against password guessing attacks comes from
+its algorithm design, its cryptographic security is guaranteed by
+its use of SHA-256 on the outer layer.  The SHA-256 hash function
+has been published by NIST in FIPS PUB 180-2 (and its  subsequent
+revisions  such  as  FIPS  PUB 180-4) and by the IETF as RFC 4634
+(and subsequently RFC 6234).  Recommended for new hashes.   "$y$"
+\$y\$[./A-Za-z0-9]+\$[./A-Za-z0-9]{,86}\$[./A-Za-z0-9]{43} unlim-
+ited  256  bits  up to 512 (128+ recommended) bits 1 to 11 (loga-
+rithmic, also affects memory usage) gost-yescrypt uses the output
+from yescrypt as an  input  message  to  HMAC  with  the  GOST  R
+34.11-2012 (Streebog) hash function with a 256-bit digest.  Thus,
+yescrypt's  cryptographic  properties  are superseded by those of
+the GOST hash function.  This hashing method is useful in  appli-
+cations  that need modern passphrase hashing, but have to rely on
+GOST algorithms.  The GOST R 34.11-2012 (Streebog) hash  function
+has  been  published by the IETF as RFC 6986.  Acceptable for new
+hashes  where  required.   "$gy$"  \$gy\$[./A-Za-z0-9]+\$[./A-Za-
+z0-9]{,86}\$[./A-Za-z0-9]{43}  unlimited 256 bits up to 512 (128+
+recommended) bits 1 to 11 (logarithmic, also affects  memory  us-
+age)  sm3-yescrypt uses the output from yescrypt as an input mes-
+sage to HMAC with the ShangMi 3 hash function with a 256-bit  di-
+gest.   Thus,  yescrypt's cryptographic properties are superseded
+by those of the ShangMi 3 hash function.  This hashing method  is
+useful  in  applications that need modern passphrase hashing, but
+have to rely on algorithms approved  by  the  Chinese  Office  of
+State   Commercial   Cryptography  Administration  (OSCCA).   The
+ShangMi 3 hash function has been published in Part 3:  "Dedicated
+hash-functions"  of the ISO/IEC 10118-3:2018.  Acceptable for new
+hashes where required.  "$sm3y$" \$sm3y\$[./A-Za-z0-9]+\$[./A-Za-
+z0-9]{,86}\$[./A-Za-z0-9]{43} unlimited 256 bits up to 512  (128+
+recommended)  bits  1 to 11 (logarithmic, also affects memory us-
+age) scrypt is a password-based key derivation  function  created
+by  Colin Percival, originally for the Tarsnap online backup ser-
+vice.  The algorithm was specifically designed to make it  costly
+to perform large-scale custom hardware attacks by requiring large
+amounts  of  memory.  In 2016, the scrypt algorithm was published
+by IETF as RFC 7914.   "$7$"  \$7\$[./A-Za-z0-9]{11,97}\$[./A-Za-
+z0-9]{43}  unlimited 256 bits up to 512 (128+ recommended) bits 6
+to 11 (logarithmic, also affects memory usage) A  hash  based  on
+the  Blowfish  block  cipher, modified to have an extra-expensive
+key schedule.  Originally developed by  Niels  Provos  and  David
+Mazieres  for  OpenBSD  and  also supported on recent versions of
+FreeBSD and NetBSD, on Solaris  10  and  newer,  and  on  several
+GNU/*/Linux  distributions.  "$2b$" \$2[abxy]\$[0-9]{2}\$[./A-Za-
+z0-9]{53} 72 characters 184 bits 128 bits 4 to  31  (logarithmic)
+The alternative prefix "$2y$" is equivalent to "$2b$".  It exists
+for historical reasons only.  The alternative prefixes "$2a$" and
+"$2x$"  provide  bug-compatibility  with crypt_blowfish 1.0.4 and
+earlier, which incorrectly processed characters with the 8th  bit
+set.   A  hash based on SHA-2 with 512-bit output, originally de-
+veloped by Ulrich Drepper for GNU libc.  Supported on  Linux  but
+not  common  elsewhere.   Acceptable for new hashes.  The default
+processing cost parameter is 5000, which is too  low  for  modern
+hardware.                                                   "$6$"
+\$6\$(rounds=[1-9][0-9]+\$)?[^$:\n]{1,16}\$[./0-9A-Za-z]{86}  un-
+limited 512 bits 6 to 96 bits 1000 to 999,999,999 A hash based on
+SHA-2 with 256-bit output, originally developed by Ulrich Drepper
+for  GNU libc.  Supported on Linux but not common elsewhere.  Ac-
+ceptable for new hashes.  The default processing  cost  parameter
+is   5000,   which   is  too  low  for  modern  hardware.   "$5$"
+\$5\$(rounds=[1-9][0-9]+\$)?[^$:\n]{1,16}\$[./0-9A-Za-z]{43}  un-
+limited 256 bits 6 to 96 bits 1000 to 999,999,999 A hash based on
+the  ShangMi  3  hash function with 256-bit output, that uses the
+same design as  sha256crypt  and/or  sha512crypt.   Supported  on
+EulerOS,  Kylin,  openEuler,  and openKylin, but not common else-
+where.  Acceptable for new hashes where  required.   The  default
+processing  cost  parameter  is 5000, which is too low for modern
+hardware.                                                 "$sm3$"
+\$sm3\$(rounds=[1-9][0-9]+\$)?[^$:\n]{1,16}\$[./0-9A-Za-z]{86}
+unlimited  256 bits 6 to 96 bits 1000 to 999,999,999 A hash based
+on HMAC-SHA1.  Originally developed by Simon Gerraty for  NetBSD.
+Not  as weak as the DES-based hashes below, but SHA-1 is so cheap
+on modern hardware that it should not be  used  for  new  hashes.
+"$sha1"     \$sha1\$[1-9][0-9]+\$[./0-9A-Za-z]{1,64}\$[./0-9A-Za-
+z]{8,64}[./0-9A-Za-z]{32} unlimited 160 bits 6 to 384 bits  4  to
+4,294,967,295  A  hash based on the MD5 algorithm, originally de-
+veloped by Alec David Muffett for  Solaris.   Not  adopted  else-
+where, to our knowledge.  Not as weak as the DES-based hashes be-
+low, but MD5 is so cheap on modern hardware that it should not be
+used           for          new          hashes.           "$md5"
+\$md5(,rounds=[1-9][0-9]+)?\$[./0-9A-Za-z]{8}\${1,2}[./0-9A-Za-
+z]{22} unlimited 128 bits 48 bits 4096 to  4,294,963,199  A  hash
+based  on the MD5 algorithm, originally developed by Poul-Henning
+Kamp for FreeBSD.  Supported on most free Unixes and  newer  ver-
+sions of Solaris.  Not as weak as the DES-based hashes below, but
+MD5 is so cheap on modern hardware that it should not be used for
+new   hashes.    Processing   cost   is  not  adjustable.   "$1$"
+\$1\$[^$:\n]{1,8}\$[./0-9A-Za-z]{22} unlimited 128 bits 6  to  48
+bits  1000  An extension of traditional DES, which eliminates the
+length limit, increases the salt size, and makes  the  time  cost
+tunable.  It originates with BSDI BSD/OS and is also available on
+at  least  NetBSD,  OpenBSD,  and FreeBSD due to the use of David
+Burren's FreeSec library.  It is much better than traditional DES
+and bigcrypt, but still should not be used for new  hashes.   "_"
+_[./0-9A-Za-z]{19}  unlimited  (ignores 8th bit) 64 bits up to 56
+bits 24 bits 1 to 16,777,215 (must be odd) The  original  hashing
+method  from Unix V7, based on the DES block cipher.  Because DES
+is cheap on modern hardware, because there are only 4096 possible
+salts and 2**56 distinct passphrases, which  it  truncates  to  8
+characters,  it  is  feasible  to discover passphrase hashed with
+this method.  It should only be used if you  absolutely  have  to
+generate  hashes  that  will work on an old operating system that
+supports nothing else.  ""  (empty  string)  [./0-9A-Za-z]{13}  8
+characters  (ignores  8th bit) 64 bits up to 56 bits 12 bits 25 A
+weak extension of traditional DES, available on  some  commercial
+Unixes.   All  it  does  is  raise the length limit from 8 to 128
+characters, and it does this in a crude way that allows attackers
+to guess chunks of a long passphrase separately and in  parallel,
+which  may  make  guessing  even  easier than for traditional DES
+above.  It should not be used for new hashes.  "" (empty  string)
+[./0-9A-Za-z]{13,178} 128 characters (ignores 8th bit) up to 1024
+bits up to 56 bits 12 bits 25 The hashing method used for network
+authentication in some versions of the SMB/CIFS protocol.  Avail-
+able,  for cross-compatibility's sake, on FreeBSD.  Based on MD4.
+Has no salt or tunable cost parameter.  It is so weak that almost
+human-chosen passphrase hashed with this method is guessable.  It
+should only be used if you absolutely  have  to  generate  hashes
+that  will  work on an old operating system that supports nothing
+else.  "$3$" \$3\$\$[0-9a-f]{32} unlimited 256 bits 0 bits 1
+
+

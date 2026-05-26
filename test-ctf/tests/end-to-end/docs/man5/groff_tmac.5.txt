@@ -1,0 +1,456 @@
+groff_tmac(5)                  File Formats Manual                 groff_tmac(5)
+
+Name
+     groff_tmac - macro files in the GNU roff typesetting system
+
+Description
+     Definitions of macros, strings, and registers for use in a roff(7) document
+     can  be collected into macro files, roff input files designed to produce no
+     output themselves but instead ease the preparation of other roff documents.
+     There is no syntactical difference between a macro file and any other  roff
+     document;  only  its  purpose  distinguishes  it.  When a macro file is in-
+     stalled at a standard location, named according to  a  certain  convention,
+     and  suitable  for use by a general audience, it is termed a macro package.
+     The "tmac" name originated in early Unix  culture  as  an  abbreviation  of
+     "troff macros".
+
+     Macro  packages  can  be loaded by supplying the -m option to troff(1) or a
+     groff front end.  A macro file's name must  have  the  form  name.tmac  (or
+     tmac.name)  and be placed in a "tmac directory" to be loadable with the "-m
+     name" option.  Section "Environment" of troff(1) lists  these  directories.
+     Alternatively, a groff document requiring a macro file can load it with the
+     mso ("macro source") request.
+
+     Macro  files  are  named for their most noteworthy application, but a macro
+     file need not define any macros.  It can restrict itself to defining regis-
+     ters and strings or invoking other groff requests.  It can even be empty.
+
+     Encode macro files in ISO 646:1991 IRV (US-ASCII) or ISO Latin-1  (8859-1).
+     To  prepare  for  a  future  groff release supporting UTF-8 input, restrict
+     files to ISO 646 codes.  soelim(1) by design does  not  interpret  mso  re-
+     quests,  and  the  encodings  used  by documents employing a macro file can
+     vary.
+
+Macro packages
+     Some macro packages ("major" or "full-service") assume  responsibility  for
+     page layout and other critical functions; others ("supplemental" or "auxil-
+     iary")  do  not.  GNU roff provides most major macro packages found in AT&T
+     and BSD Unix systems, an additional full-service package, and many  supple-
+     mental  packages.   Multiple  full-service macro packages cannot be used by
+     the same document.  Auxiliary packages can, in general, be freely combined,
+     though attention to their use of the groff language name spaces for identi-
+     fiers (particularly registers, macros, strings, and diversions)  should  be
+     paid.   Name space management challenged AT&T troff users; GNU troff's sup-
+     port for arbitrarily long identifiers affords few excuses for  name  colli-
+     sions,  apart from attempts at compatibility with the demands of historical
+     documents.
+
+   Man pages
+     Two full-service macro packages are specialized for formatting Unix  refer-
+     ence  manuals;  they  do  not  support  features like footnotes or multiple
+     columnation.
+
+     an       constructs man pages in a format  introduced  by  Seventh  Edition
+              Unix (1979).  Its macro interface is small, and the package widely
+              used; see groff_man(7).
+
+     doc      constructs man pages in a format introduced by 4.3BSD-Reno (1990).
+              It  provides  many more features than an, but is also larger, more
+              complex, and not as widely adopted; see groff_mdoc(7).
+
+     Because readers of man pages often do not know in advance which macros  are
+     used to format a given document, a wrapper is available.
+
+     andoc    recognizes a document's use of an or doc and loads the correspond-
+              ing  macro  package.  Multiple man pages, in either format, can be
+              handled; andoc reloads each macro package as necessary.
+
+   General full-service packages
+     The following packages each support composition of documents of  any  kind,
+     from  single-page  memos  to lengthy monographs.  They are similar in func-
+     tionality; select one that suits your taste.
+
+     me     originates in 2BSD (1978); see groff_me(7).
+
+     mm     originates in Programmer's Workbench  (PWB)  Unix  1.0  (1977);  see
+            groff_mm(7).
+
+     mom    was  contributed to groff in 2002, and freely exercises its many ex-
+            tended features.  See groff_mom(7).
+
+     ms     originates in Sixth Edition Unix (1975); see groff_ms(7).
+
+   Localization packages
+     For Western languages, an auxiliary package for localization sets  the  hy-
+     phenation mode and loads hyphenation patterns and exceptions.  Localization
+     files  can  also adjust the date format and provide translations of strings
+     used by some of the full-service macro packages; alter the  input  encoding
+     (see  the  next  section); and change the amount of supplemental inter-sen-
+     tence space.  For Eastern languages, the localization file defines  charac-
+     ter  classes  and sets flags on them.  By default, troffrc loads the local-
+     ization file for English.
+
+     trans  loads localized strings used by various macro packages  after  their
+            localized forms have been prepared by a localization macro file.
+
+     groff provides the following localization files.
+
+     cs     Czech;  localizes man, me, mm, mom, and ms.  Sets the input encoding
+            to Latin-2 by loading latin2.tmac.
+
+     de
+     den    German; localizes man, me, mm, mom, and ms.  Sets the input encoding
+            to Latin-1 by loading latin1.tmac.
+
+            de.tmac selects hyphenation patterns  for  traditional  orthography,
+            and  den.tmac  does the same for the new orthography ("Rechtschreib-
+            reform").
+
+     en     English.  Sets the input encoding to Latin-1 by loading latin1.tmac.
+
+     es     Spanish; localizes man, me, mm, mom, and ms.  Sets the input  encod-
+            ing to Latin-9 by loading latin9.tmac.
+
+     fr     French; localizes man, me, mm, mom, and ms.  Sets the input encoding
+            to Latin-9 by loading latin9.tmac.
+
+     it     Italian;  localizes man, me, mm, mom, and ms.  Sets the input encod-
+            ing to Latin-1 by loading latin1.tmac.
+
+     ja     Japanese.
+
+     pl     Polish; localizes man, me, mm, mom, and ms.  Sets the input encoding
+            to Latin-2 by loading latin2.tmac.
+
+     ru     Russian; localizes man, me, mm, mom, and ms.  Sets the input  encod-
+            ing to KOI8-R by loading koi8-r.tmac.
+
+     sv     Swedish;  localizes man, me, mm, mom, and ms.  Sets the input encod-
+            ing to Latin-1 by loading latin1.tmac.  Some of the localization  of
+            the mm package is handled separately; see groff_mmse(7).
+
+     zh     Chinese.
+
+   Input encodings
+     Localization  influences  automatic hyphenation in two distinct but related
+     respects.  A macro file specific to a  character  coding  identifies  which
+     character  codes  correspond  to letters expected in the language's hyphen-
+     ation pattern files and sets up case equivalences  for  those  letters.   A
+     language's  macro  file determines which of these letters are equivalent to
+     other letters for hyphenation purposes.
+
+     For example, in  English,  the  letter  "~n"  occurs  in  loan  words.   The
+     latin1.tmac  and  latin9.tmac macro files define a hyphenation code for "~n"
+     and make "~N" equivalent to it.  The English localization file en.tmac  fur-
+     thermore  makes  "~n" equivalent to "n".  In Spanish (es.tmac), however, "~n"
+     and "n" are not equivalent.  The language localization file loads an appro-
+     priate encoding localization file; a document need not do so directly.
+
+     latin1
+     latin2
+     latin5
+     latin9  support the ISO Latin-1, Latin-2, Latin-5,  and  Latin-9  encodings
+             (8859-1, 8859-2, 8859-9, and 8859-15, respectively).
+
+     koi8-r  supports  the  KOI8-R  encoding.   KOI8-R  code points in the range
+             0x80-0x9F are not valid input to GNU troff;  see  section  "Identi-
+             fiers" in groff(7).  This should be no impediment to practical doc-
+             uments, as these KOI8-R code points do not encode letters, but box-
+             drawing symbols and characters that are better obtained via special
+             character escape sequences; see groff_char(7).
+
+   General auxiliary packages
+     The  macro  packages  in this section are not intended for stand-alone use,
+     but can add functionality to any other macro package or  to  plain  ("raw")
+     groff documents.
+
+     62bit      provides  macros  for  addition, multiplication, and division of
+                62-bit integers (allowing safe multiplication of  signed  31-bit
+                integers, for example).
+
+     hdtbl      allows  the  generation  of tables using a syntax similar to the
+                HTML table model.  This Heidelberger table macro package is  not
+                a preprocessor, which can be useful if the contents of table en-
+                tries  are  determined  by macro calls or string interpolations.
+                Compare to tbl(1).  It works only with the ps and pdf output de-
+                vices.  See groff_hdtbl(7).
+
+     papersize  enables the paper format to be set on the command line with  the
+                "-d  paper=fmt" option to troff.  Valid fmts are the ISO and DIN
+                formats "A0-A6", "B0-B6", "C0-C6", and "D0-D6"; the U.S. formats
+                "letter",  "legal",  "tabloid",   "ledger",   "statement",   and
+                "executive";  and  the  envelope formats "com10", "monarch", and
+                "DL".  All formats, even those for envelopes,  are  in  portrait
+                orientation:  the longer measurement is vertical.  Appending "l"
+                (ell) to any of these  denotes  landscape  orientation  instead.
+                This  macro  file  assumes one-inch horizontal margins, and sets
+                registers recognized by the groff man, mdoc,  mm,  mom,  and  ms
+                packages  to  configure them accordingly.  If you want different
+                margins, you will need to use  those  packages'  facilities,  or
+                troff  ll  and/or po requests, to adjust them.  An output device
+                typically requires command-line options -p and  -l  to  override
+                the  paper  dimensions and orientation, respectively, defined in
+                its DESC file; see subsection "Paper format" of groff(1).   This
+                macro  file  is  normally  loaded at startup by the troffrc file
+                when formatting for a typesetter (but not a terminal).
+
+     pdfpic     provides a single macro, PDFPIC, that operates in two modes.  If
+                it is not used with gropdf, the given file must be a PDF; PDFPIC
+                then relies on the external program pdftops(1)  to  convert  the
+                PDF to an encapsulated PostScript (EPS) file and calls the PSPIC
+                macro  with which it shares an interface.  If output is to a PDF
+                document, PDFPIC uses the "pdf: pdfpic" device extension command
+                (see gropdf(1)); the given file can then be a PDF or any graphic
+                file format supported by gropdf.
+
+                Since PDFPIC needs to discover the width and height of the image
+                (to check if sufficient room exists to place it on the page), it
+                has dependencies on external programs as shown below.
+
+                allbox   center;    Cb    Ci    Ci    Ci    Li    C     C     C.
+                     pdfinfo(1)     file(1)   identify(1)       .pdf /    /    /
+                .jpg X    /    / .jp2 X    X    / other     X    X    /
+
+                To include image formats such as PNG, PAM, and GIF,  gropdf  re-
+                lies upon PerlMagick modules to embed the graphic.  They are not
+                needed for the types listed in the table above.
+
+                If the required programs are not available, file is treated as a
+                PDF; failure is likely if it is not one.
+
+     pic        supplies definitions of the macros PS, PE, PF, and PY, used with
+                the  pic(1)  preprocessor.  They center each picture.  Use it if
+                your document does not use a full-service macro package, or that
+                package does not supply working pic macro  definitions.   Except
+                for  man  and mdoc, those provided with groff already do so (ex-
+                ception: mm employs the name PF for a different purpose).
+
+     pspic      provides a macro, PSPIC, that includes a PostScript graphic in a
+                document.  The ps, dvi, html, and xhtml output  devices  support
+                such  inclusions;  for  all other drivers, the image is replaced
+                with a rectangular border  of  the  same  size.   pspic.tmac  is
+                loaded at startup by the troffrc file.
+
+                Its syntax is as follows.
+
+                       .PSPIC [-L|-R|-C|-I n] file [width [height]]
+
+                file  is  the name of the PostScript file; width and height give
+                the desired width and height of the image.  If neither  a  width
+                nor  a  height  argument is specified, the image's natural width
+                (as given in the file's bounding box) or the current line length
+                is used as the width, whatever is smaller.  The width and height
+                arguments may have scaling units attached; the  default  scaling
+                unit is i.  PSPIC scales the graphic uniformly in the horizontal
+                and  vertical  directions  so that it is no more than width wide
+                and height high.  Option -C centers  the  graphic  horizontally;
+                this  is  the  default.   -L  and  -R  left- and right-align the
+                graphic, respectively.  -I indents the graphic by n (with a  de-
+                fault scaling unit of m).
+
+                To  use PSPIC within a diversion, we recommend extending it with
+                the following code, assuring that  the  diversion's  width  com-
+                pletely covers the image's width.
+
+                       .am PSPIC
+                       .  vpt 0
+                       \h'(\\n[ps-offset]u + \\n[ps-deswid]u)'
+                       .  sp -1
+                       .  vpt 1
+                       ..
+
+                Failure  to  load  PSPIC's image argument is not an error.  (The
+                psbb request does issue an error diagnostic.)  To  make  such  a
+                failure fatal, append to the pspic*error-hook macro.
+
+                       .am pspic*error-hook
+                       .  ab
+                       ..
+
+     ptx        provides  a  macro, xx, to format permuted index entries as pro-
+                duced by the GNU ptx(1) program.  If your formatting needs  dif-
+                fer, copy the macro into your document and adapt it.
+
+     rfc1345    defines  special  character escape sequences named for the glyph
+                mnemonics specified in RFC 1345 and the digraph table of the Vim
+                text editor.  See groff_rfc1345(7).
+
+     sboxes     offers an interface to the "pdf:  background"  device  extension
+                command  supported  by  gropdf(1).  Using this package, groff ms
+                documents can draw colored rectangles beneath any output.
+
+                .BOXSTART SHADED color OUTLINED color INDENT size WEIGHT size
+                       begins a box, where the argument after SHADED  gives  the
+                       fill  color  and  that  after  OUTLINED the border color.
+                       Omit the former to get a borderless filled  box  and  the
+                       latter  for  a border with no fill.  The specified WEIGHT
+                       is used if the box is OUTLINED.
+
+                       INDENT precedes a value that leaves  a  gap  between  the
+                       border and the contents inside the box.
+
+                       Each  color  must be a defined groff color name, and each
+                       size a valid groff numeric expression.  The keyword/value
+                       pairs can be specified in any order.
+
+                Boxes can be stacked, so you can start a box within another box;
+                usually the later boxes would be  smaller  than  the  containing
+                box,  but  this  is not enforced.  When using BOXSTART, the left
+                position is the current indent minus the INDENT in the  command,
+                and  the  right position is the left position (calculated above)
+                plus the current line length and twice the indent.
+
+                .BOXSTOP
+                       takes no parameters.  It closes the most recently started
+                       box at the current vertical  position  after  adding  its
+                       INDENT spacing.
+
+                Your  groff  documents  can  conditionally  exercise  the sboxes
+                macros.  The register GSBOX is defined if the package is loaded,
+                and interpolates a true value if the pdf  output  device  is  in
+                use.
+
+                sboxes furthermore hooks into the groff_ms(7) package to receive
+                notifications  when  footnotes are growing, so that it can close
+                boxes on a page before footnotes are printed.  When that  condi-
+                tion  obtains, sboxes will close open boxes two points above the
+                footnote separator and re-open them on  the  next  page.   (This
+                amount probably will not match the box's INDENT.)
+
+                See  "Using PDF boxes with groff and the ms macros" for a demon-
+                stration.
+
+     trace      aids the debugging of groff documents by  tracing  macro  calls.
+                See groff_trace(7).
+
+     www        defines    macros   corresponding   to   HTML   elements.    See
+                groff_www(7).
+
+Naming
+     AT&T nroff and troff were implemented before the conventions of the  modern
+     C  getopt(3) call evolved, and used a naming scheme for macro packages that
+     looks oddly terse to modern eyes.  The formatter's -m option was  the  main
+     means  of  loading  a macro package, and its argument had to follow immedi-
+     ately without intervening space.  This looked like a long option name  pre-
+     ceded  by  a  single  minus--a  sensation in the computer stone age.  Macro
+     packages therefore came to be known by names that started with  the  letter
+     "m",  which  was omitted from the name of the macro file as stored on disk.
+     For example, the manuscript macro package was stored as tmac.s  and  loaded
+     with the option -ms.  It has since become conventional in operating systems
+     to  use  a  suffixed  file name extension to suggest a file type or format,
+     thus we see roff documents with names ending in .man, .me, and so on.
+
+     groff commands permit space between an option and its argument.  The syntax
+     "groff -m s" makes the macro file name more clear but  may  surprise  users
+     familiar  with  the  original convention, unaware that the package's "real"
+     name was "s" all along.  For such packages of long pedigree, groff accommo-
+     dates different users' expectations by supplying wrapper macro  files  that
+     load the desired file with mso requests.  Thus, all of "groff -m s", "groff
+     -m ms", "groff -ms", and "groff -mms" serve to load the manuscript macros.
+
+Inclusion
+     The  traditional  method of employing a macro package is to specify the "-m
+     package" option to the formatter, which then  reads  package's  macro  file
+     prior  to  any  input.   Historically,  package  was sought in a file named
+     tmac.package (that is, with a "tmac."  prefix).   GNU  troff  searches  for
+     package.tmac in the macro path; if not found, it looks for tmac.package in-
+     stead, and vice versa.
+
+     Alternatively,  one  could  include a macro file with the request "so file-
+     name"; the argument is resolved as fopen(3) would, from the current working
+     directory of the formatter.  This approach was inadequate to  locate  macro
+     packages, since systems stored them in varying locations.  GNU troff offers
+     an  improved  feature in the similar request "mso package-file-name", which
+     searches the macro path for package-file-name.  Because its argument  is  a
+     file name, its ".tmac" component must be included for the file to be found.
+
+     If  a  sourced  file requires preprocessing, for example if it includes tbl
+     tables or eqn equations, the preprocessor soelim(1) must be used.  This can
+     be achieved with a pipeline or by specifying the  -s  option  to  groff(1).
+     man(1)  librarian programs typically run soelim automatically.  (As a rule,
+     macro packages themselves do not require preprocessing.)
+
+Writing macros
+     A roff(7) document is a text file that is enriched by predefined formatting
+     constructs, such as requests, escape sequences, strings, numeric registers,
+     and macros from a macro package.  roff(7) describes these elements.
+
+     To give a document a personal style, it is most useful to extend the exist-
+     ing elements by defining some macros for repeating tasks;  the  best  place
+     for this is near the beginning of the document or in a separate file.
+
+     Macros  without  arguments  are  just  like strings.  But the full power of
+     macros occurs when arguments are passed with  a  macro  call.   Within  the
+     macro  definition, the arguments are available as the escape sequences \$1,
+     ..., \$9, \$[...], \$*, and \$@, the name under which the macro was  called
+     is in \$0, and the number of arguments is in register \n[.$]; see groff(7).
+
+   Drafting macros
+     One  approach  temporarily  disables escape sequences by bracketing a macro
+     definition with eo and ec requests.
+
+            .eo
+            .ds midpart was called with the following
+            .de print_args
+            \f[I]\$0\f[] \*[midpart] \n[.$] arguments: \$*
+            ..
+            .ec
+
+     The above procedure has limitations; it is unsuitable for a macro that  re-
+     quires  certain  interpolations  at the time it is defined, or for indirect
+     definitions of identifiers.  See section "Copy mode" of groff(7).  In  such
+     cases,  you  might define and test the macro with the escape character dou-
+     bled before escape sequences that are interpreted even in copy  mode,  then
+     bracket  it  with eo and ec requests, un-double the escape characters, then
+     test again.
+
+   Tips for macro definitions
+     *  Use only control lines in macro definitions; that is, start every  input
+        line  with  a  control character.  groff's nop request makes use of text
+        lines unnecessary.
+
+               .de Text
+               .  if (\\n[.$] == 0) \
+               .    return
+               .  nop \&\\$*\&
+               ..
+
+     *  Write a comment macro that works in  both  draft  and  non-draft  modes;
+        since  the escape character is disabled in draft mode, trouble might oc-
+        cur when comment escape sequences are used.
+
+               .de c
+               ..
+               .c This is my comment.
+
+     *  Comment lengthy macro definitions.
+
+     *  Use empty requests, and indentation after control characters, to clarify
+        a macro's structure.
+
+Authors
+     This document was written by Werner Lemberg and G. Branden Robinson.
+
+See also
+     Groff: The GNU Implementation of troff, by Trent A. Fisher and Werner  Lem-
+     berg,  is  the  primary groff manual.  You can browse it interactively with
+     "info groff".
+
+     groff(1)          is an overview of the groff system.
+
+     groff_man(7),
+     groff_mdoc(7),
+     groff_me(7),
+     groff_mm(7),
+     groff_mom(7),
+     groff_ms(7),
+     groff_rfc1345(7),
+     groff_trace(7),
+     and
+     groff_www(7)      are groff macro packages.
+
+     groff(7)          summarizes the language recognized by GNU troff.
+
+     troff(1)          documents the default macro file search path.
+
+groff 1.24.1                       2026-03-15                      groff_tmac(5)

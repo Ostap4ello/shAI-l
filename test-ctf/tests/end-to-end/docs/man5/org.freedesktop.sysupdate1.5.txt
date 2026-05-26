@@ -1,0 +1,428 @@
+ORG.FREED...SYSUPDATE1(5)  org.freedesktop.sysupdate1  ORG.FREED...SYSUPDATE1(5)
+
+NAME
+     org.freedesktop.sysupdate1 - The D-Bus interface of systemd-sysupdated
+
+INTRODUCTION
+     systemd-sysupdated.service(8)  is a system service that allows unprivileged
+     clients to update the system. This page describes the D-Bus interface.
+
+     WARNING!  This API is currently unstable and is thus  subject  to  breaking
+     changes between versions of systemd.
+
+THE MANAGER OBJECT
+     The  service  exposes the following interfaces on the Manager object on the
+     bus:
+
+         node /org/freedesktop/sysupdate1 {
+           interface org.freedesktop.sysupdate1.Manager {
+             methods:
+               ListTargets(out a(sso) targets);
+               ListJobs(out a(tsuo) jobs);
+               ListAppStream(out as urls);
+             signals:
+               JobRemoved(t id,
+                          o path,
+                          i status);
+           };
+           interface org.freedesktop.DBus.Peer { ... };
+           interface org.freedesktop.DBus.Introspectable { ... };
+           interface org.freedesktop.DBus.Properties { ... };
+         };
+
+
+
+
+
+
+   Methods
+     ListTargets() returns a list all known update targets. It returns an  array
+     of  structures which consist of a string indicating the target's class (see
+     Target's Class property below for an explanation of the possible values), a
+     string with the name of the target, and the target object path.
+
+     ListJobs() returns a list all ongoing jobs. It returns an array  of  struc-
+     tures  which  consist of a numeric job ID, a string indicating the job type
+     (see Job's Type property below for an explanation of the possible  values),
+     the job's progress, and the job's object path.
+
+     ListAppStream()  returns  an  array  of all the appstream catalog URLs that
+     this service knows about. See Target's GetAppStream() method below for more
+     details.
+
+   Signals
+     The JobRemoved() signal is sent each time a job finishes,  is  canceled  or
+     fails.  It  also  carries the job ID and object path, followed by a numeric
+     status code. If the status is zero, the job has succeed. A positive  status
+     should  be  treated  as an exit code (i.e.  "EXIT_FAILURE"), and a negative
+     status should be treated as a negative errno-style error code (i.e.  "-EIN-
+     VAL").
+
+THE TARGET OBJECT
+     A target is a component of the system (i.e. the host itself,  a  sysext,  a
+     confext, etc.) that can be updated by systemd-sysupdate(8).
+
+     The service exposes the following interfaces on Target objects on the bus:
+
+         node /org/freedesktop/sysupdate1/target/host {
+           interface org.freedesktop.sysupdate1.Target {
+             methods:
+               List(in  t flags,
+                    out as versions);
+               Describe(in  s version,
+                        in  t flags,
+                        out s json);
+               CheckNew(out s new_version);
+               Acquire(in  s new_version,
+                       in  t flags,
+                       out s new_version,
+                       out t job_id,
+                       out o job_path);
+               Install(in  s new_version,
+                       in  t flags,
+                       out s new_version,
+                       out t job_id,
+                       out o job_path);
+               Vacuum(out u instances,
+                      out u disabled_transfers);
+               GetAppStream(out as appstream);
+               GetVersion(out s version);
+               ListFeatures(in  t flags,
+                            out as features);
+               DescribeFeature(in  s feature,
+                               in  t flags,
+                               out s json);
+               SetFeatureEnabled(in  s feature,
+                                 in  i enabled,
+                                 in  t flags);
+             properties:
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly s Class = '...';
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly s Name = '...';
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly s Path = '...';
+           };
+           interface org.freedesktop.DBus.Peer { ... };
+           interface org.freedesktop.DBus.Introspectable { ... };
+           interface org.freedesktop.DBus.Properties { ... };
+         };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   Methods
+     List() returns a list of versions available for this target. Additional op-
+     tions  may be passed through the flags argument. Valid flags are defined as
+     follows:
+
+         #define SD_SYSUPDATE_OFFLINE    (UINT64_C(1) << 0)
+
+     When SD_SYSUPDATE_OFFLINE is set, this method returns only the versions in-
+     stalled locally. Otherwise, this method pulls metadata from the network and
+     returns all versions available for this target.  Use  Describe()  to  query
+     more information about each version returned by this method.
+
+     Describe()  returns  all  known information about a given version as a JSON
+     object. The version argument is used to pass the version to  be  described.
+     Additional  options  may  be passed through the flags argument. This method
+     supports the same flags as List(). The returned JSON object  contains  sev-
+     eral  known keys. More keys may be added in the future. The currently known
+     keys are as follows:
+
+     "version"
+         A string containing the version number.
+
+     "newest"
+         A boolean indicating whether this version is the latest  available  for
+         the target.
+
+     "available"
+         A boolean indicating whether this version is available for download.
+
+     "installed"
+         A boolean indicating whether this version is installed locally.
+
+     "obsolete"
+         A boolean indicating whether this version is considered obsolete by the
+         service, and is therefore disallowed from being installed.
+
+     "protected"
+         A  boolean indicating whether this version is exempt from deletion by a
+         Vacuum() operation.
+
+     "incomplete"
+         A boolean indicating whether this version is  incomplete,  which  means
+         that  it is missing some file. Note that only installed incomplete ver-
+         sions will be offered by the service; versions that are  incomplete  on
+         the  server-side are completely ignored. Incomplete versions can be re-
+         paired in-place by calling Acquire() and Install() on that version.
+
+     "changelogUrls"
+         A list of strings that contain user-presentable URLs to change logs as-
+         sociated with this version.
+
+     CheckNew() checks if a newer version is available  for  this  target.  This
+     method  pulls  metadata from the network. If a newer version is found, this
+     method returns the version number. If  no  newer  version  is  found,  this
+     method  returns  an  empty string. Use Describe() to query more information
+     about the version returned by this method.
+
+     Acquire() downloads an update for this target, if one is  available.  If  a
+     new_version  is specified, that is the version that gets downloaded. Other-
+     wise, the latest version is downloaded. Call Install() to install  the  ac-
+     quired  update.  The  flags  argument is added for future extensibility. No
+     flags are currently defined, and the argument is required to be set to "0".
+     This method pulls both metadata and payload data from the network.
+
+     Install() installs  an  already-acquired  update  for  this  target.  If  a
+     new_version is specified, that is the version that gets installed, assuming
+     it has already been acquired. Otherwise, the latest acquired version is in-
+     stalled. The flags argument is added for future extensibility. No flags are
+     currently defined, and the argument is required to be set to "0".
+
+     Unlike  all the other methods in this interface, Acquire() and Install() do
+     not wait for their jobs to complete. Instead, they return the job's numeric
+     ID and object path as soon as the job begins, so that the caller can listen
+     for progress updates or cancel the operation. These methods also return the
+     version the target will be updated to, for cases where no version was spec-
+     ified by the caller. Listen for the Manager's JobRemoved() signal to detect
+     when the job is complete.
+
+     Vacuum() deletes old installed versions of this target to free up space. It
+     returns the number of instances that have been deleted.
+
+     GetAppStream() returns a list of HTTP/HTTPS URLs to this target's appstream
+     catalog[1] XML files. If this target has no appstream catalogs, the  method
+     will return an empty list. These catalog files can be used by software cen-
+     ters  (such  as  GNOME  Software  or KDE Discover) to present rich metadata
+     about the target, including a display name, changelog, icon, and more.  The
+     returned  catalogs  will  include special metadata[2] to allow the software
+     center to correctly associate the catalogs with this target.
+
+     GetVersion() returns the current version of this target, if any.  The  cur-
+     rent version is the newest version that is installed. Note that this is not
+     necessarily the same thing as the booted or currently-in-use version of the
+     target.  For  example, on the host system the booted version is the current
+     version most of the time, but if an update is installed and pending  a  re-
+     boot  it  will become the current version instead. You can query the booted
+     version of the host system via IMAGE_VERSION  in  /etc/os-release.  If  the
+     target has no current version, the function will return an empty string.
+
+     ListFeatures()  returns  a  list of this target's optional features, by ID.
+     The flags argument is added for future extensibility, and must be set to 0.
+     If the target has no optional features, the method returns an empty array.
+
+     DescribeFeature() returns all known information about a given optional fea-
+     ture. The feature argument is used to pass the ID of the feature to be  de-
+     scribed.  The flags argument is added for future extensibility, and must be
+     set to 0. The returned JSON object contains several known keys.  More  keys
+     may be added in the future. The currently known keys are as follows:
+
+     "name"
+         A string containing the feature's name.
+
+     "description"
+         An  optional  string  that contains a user-presentable description that
+         identifies this feature
+
+     "enabled"
+         A boolean indicating whether this feature is enabled.
+
+     "documentationUrl"
+         An optional string that contains a user-presentable HTTP/HTTPS  URL  to
+         documentation about this feature.
+
+     "appstreamUrl"
+         An optional string that contains an HTTP/HTTPS URL to an appstream cat-
+         alog[1] XML file containing metadata about this feature.
+
+     "transfers"
+         An  optional  array of strings that list which transfer definitions be-
+         long to this feature.
+
+     SetFeatureEnabled() writes an appropriate drop-in file to enable or disable
+     the specified optional feature. If enable is zero, the feature is disabled.
+     When greater than zero, the feature is enabled. When less  than  zero,  the
+     feature is reset to the distribution's default. The flags argument is added
+     for  future  extensibility, and must be set to 0. The feature does not have
+     to exist; this allows for graceful handling of  masked  features,  and  for
+     preemptive  decisions  to be made about features that are planned to appear
+     in future releases of the OS. The drop-in will have a filename of  "50-sys-
+     temd-sysupdate-enabled.conf". This method only changes configuration files;
+     to  actually apply the changes, clients will need to call Acquire() and In-
+     stall(). Depending on the exact needs of the client, it can choose  to  up-
+     date  the  system  to  the  latest  available version, or it can extend the
+     newest existing installation in-place (by passing in the  version  returned
+     by GetVersion()). For now, this method only works with the "host" target.
+
+   Properties
+     The  Class property exposes the class of this target, which describes where
+     it was enumerated. Possible values include: "machine"  for  containers  and
+     virtual  machines  managed  by  systemd-machined.service(8), "portable" for
+     portable services[3], "sysext" for system extensions managed by systemd-sy-
+     sext(8), "confext" for configuration  extensions  managed  by  systemd-con-
+     fext(8),  "component" for components accepted by the --component= option of
+     systemd-sysupdate(8), and "host" for the host system itself.  At  most  one
+     target will have a class of "host".
+
+     The  Path  property  exposes more detail about where this target was found.
+     For "machine", "portable", "extension", and "confext" targets, this is  the
+     file  path  to  the  image. For "component" and "host" targets, this is the
+     name of a sysupdate.d(5) directory.
+
+     The Name property exposes the name of this target. Note that  the  name  is
+     unique  within  a  class but is not necessarily unique between classes. For
+     instance, it is possible to have both a "portable"  target  named  "foobar"
+     and  an  "extension"  target named "foobar", but it is not possible to have
+     two "portable" targets named "foobar".
+
+   Security
+     Method calls on this service are authenticated via polkit[4].
+
+     List(), Describe(), and CheckNew()  use  the  polkit  action  org.freedesk-
+     top.sysupdate1.check. By default, this action is permitted without adminis-
+     trator authentication.
+
+     Acquire()  and  Install()  use  the  polkit  action  org.freedesktop.sysup-
+     date1.update when no version is specified. By default, this action is  per-
+     mitted  without  administrator authentication. When a version is specified,
+     org.freedesktop.sysupdate1.update-to-version is used instead.  By  default,
+     this alternate action requires administrator authentication.
+
+     Vacuum()  uses  the polkit action org.freedesktop.sysupdate1.vacuum. By de-
+     fault, this action requires administrator authentication.
+
+     SetFeatureEnabled() uses the polkit action  org.freedesktop.sysupdate1.man-
+     age-features.  By  default,  this action requires administrator authentica-
+     tion.
+
+     GetAppStream(), GetVersion(),  ListFeatures(),  and  DescribeFeature()  are
+     unauthenticated and may be called by anybody.
+
+     All  methods  called  on  this interface expose additional variables to the
+     polkit rules.  "class" contains the class of the Target being  acted  upon,
+     and  "name" contains the name of the same Target. Additionally, each method
+     exposes its arguments to the rule. Flags are mapped as follows:
+
+     *   SD_SYSUPDATE_OFFLINE ^a "update"
+
+THE JOB OBJECT
+     A job is an ongoing operation, started by one of the methods  on  a  Target
+     object.
+
+     The service exposes the following interfaces on Job objects on the bus:
+
+         node /org/freedesktop/sysupdate1/job/_1 {
+           interface org.freedesktop.sysupdate1.Job {
+             methods:
+               Cancel();
+             properties:
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly t Id = ...;
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly s Type = '...';
+               @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+               readonly b Offline = ...;
+               readonly u Progress = ...;
+           };
+           interface org.freedesktop.DBus.Peer { ... };
+           interface org.freedesktop.DBus.Introspectable { ... };
+           interface org.freedesktop.DBus.Properties { ... };
+         };
+
+
+
+
+
+
+
+   Methods
+     The Cancel() method may be used to cancel the job. It takes no parameters.
+
+   Properties
+     The Id property exposes the numeric job ID of the job object.
+
+     The  Type  property  exposes  the  type  of operation (one of: "list", "de-
+     scribe", "check-new", "acquire",  "install",  "vacuum",  or  "describe-fea-
+     ture").
+
+     The  Offline  property  exposes  whether the job is permitted to access the
+     network or not.
+
+     The Progress property exposes the current progress of the job  as  a  value
+     between  0  and 100. It is only available for "acquire" and "install" jobs;
+     for all other jobs it is always 0.
+
+   Security
+     Cancel() uses the polkit action that corresponds to the method that started
+     this job. For instance, trying to cancel a "list" job will  require  polkit
+     to permit the org.freedesktop.sysupdate1.check action.
+
+EXAMPLES
+     Example 1. Introspect org.freedesktop.sysupdate1.Manager on the bus
+
+         $ gdbus introspect --system \
+           --dest org.freedesktop.sysupdate1 \
+           --object-path /org/freedesktop/sysupdate1
+
+     Example 2. Introspect org.freedesktop.sysupdate1.Target on the bus
+
+         $ gdbus introspect --system \
+           --dest org.freedesktop.sysupdate1 \
+           --object-path /org/freedesktop/sysupdate1/target/host
+
+     Example 3. Introspect org.freedesktop.sysupdate1.Job on the bus
+
+         $ gdbus introspect --system \
+           --dest org.freedesktop.sysupdate1 \
+           --object-path /org/freedesktop/sysupdate1/job/_1
+
+VERSIONING
+     These D-Bus interfaces follow the usual interface versioning guidelines[5].
+
+HISTORY
+   The Manager Object
+     ListTargets(),  ListJobs(), ListAppStream(), and JobRemoved() were added in
+     version 257.
+
+   The Target Object
+     List(), Describe(), CheckNew(),  Acquire(),  Install(),  Vacuum(),  GetApp-
+     Stream(),  GetVersion(),  ListFeatures(),  DescribeFeature(), SetFeatureEn-
+     abled(), Class, Name, and Path were added in version 257.
+
+   The Job Object
+     Cancel(), Id, Type, Offline, and Progress were added in version 257.
+
+SEE ALSO
+     systemd(1), systemd-sysupdated.service(8), updatectl(1)
+
+NOTES
+      1. appstream catalog
+         https://wwww.freedesktop.org/software/appstream/docs/chap-CatalogData.html
+
+      2. special metadata
+         https://systemd.io/APPSTREAM_BUNDLE
+
+      3. portable services
+         https://systemd.io/PORTABLE_SERVICES
+
+      4. polkit
+         https://www.freedesktop.org/software/polkit/docs/latest/
+
+      5. the usual interface versioning guidelines
+         https://0pointer.de/blog/projects/versioning-dbus.html
+
+systemd 260.1                                          ORG.FREED...SYSUPDATE1(5)

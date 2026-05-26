@@ -1,0 +1,79 @@
+HOSTNAME(5)                         hostname                         HOSTNAME(5)
+
+NAME
+     hostname - Local hostname configuration file
+
+SYNOPSIS
+     /etc/hostname
+
+DESCRIPTION
+     The  /etc/hostname  file  configures  the  name of the local system. Unless
+     overridden as described in the next section, systemd(1) will set this host-
+     name during boot using the sethostname(2) system call.
+
+     The file should contain a single newline-terminated hostname  string.  Com-
+     ments  (lines starting with a "#") are ignored. The hostname should be com-
+     posed of up to 64 7-bit ASCII lower-case alphanumeric characters or hyphens
+     forming a valid DNS domain name. It is strongly recommended that this  name
+     contains  only a single DNS label, i.e does not contain any dots. This rec-
+     ommendation reflects both usual expectations of applications, and the  fact
+     that  the Linux kernel limits the length of the system hostname to 64 (i.e.
+     close to the maximum DNS label length of 63) rather than 255  (the  maximum
+     DNS  domain name length). When applied, invalid characters will be filtered
+     out in an attempt to make the name valid, but obviously it  is  recommended
+     to use a valid name and not rely on this filtering.
+
+     If the question mark character "?" appears in the hostname, it is automati-
+     cally substituted by a hexadecimal character derived from the machine-id(5)
+     when  applied, securely and deterministically by cryptographic hashing. Ex-
+     ample: "foobar-????-????" will automatically expand  to  "foobar-92a9-061c"
+     or similar, depending on the local machine ID.
+
+     You  may use hostnamectl(1) to change the value of this file during runtime
+     from the command line. Use systemd-firstboot(1) to initialize it on mounted
+     (but not booted) system images.
+
+HOSTNAME SEMANTICS
+     systemd(1) and the associated tools will obtain the hostname in the follow-
+     ing ways:
+
+     *   If the kernel command  line  parameter  systemd.hostname=  specifies  a
+         valid hostname, systemd(1) will use it to set the hostname during early
+         boot, see kernel-command-line(7),
+
+     *   Otherwise,  the  "static"  hostname  specified  by /etc/hostname as de-
+         scribed above will be used.
+
+     *   Otherwise, a transient hostname may be set during runtime, for  example
+         based on information in a DHCP lease, see systemd-hostnamed.service(8).
+         Both NetworkManager[1] and systemd-networkd.service(8) allow this. Note
+         that  systemd-hostnamed.service(8)  gives higher priority to the static
+         hostname, so the transient hostname will only be  used  if  the  static
+         hostname is not configured.
+
+     *   Otherwise,  a  fallback hostname configured at compilation time will be
+         used ("archlinux").
+
+     Effectively, the static hostname has higher priority than a transient host-
+     name, which has higher priority than the fallback hostname. Transient host-
+     names are equivalent, so setting a new transient hostname causes the previ-
+     ous transient hostname to be forgotten. The hostname specified on the  ker-
+     nel  command  line is like a transient hostname, with the exception that it
+     has higher priority when the machine boots. Also note that  those  are  the
+     semantics implemented by systemd tools, but other programs may also set the
+     hostname.
+
+HISTORY
+     The  simple  configuration file format of /etc/hostname originates from De-
+     bian GNU/Linux.
+
+SEE ALSO
+     systemd(1), sethostname(2), hostname(1),  hostname(7),  machine-id(5),  ma-
+     chine-info(5), hostnamectl(1), systemd-hostnamed.service(8), systemd-first-
+     boot(1)
+
+NOTES
+      1. NetworkManager
+         https://developer.gnome.org/NetworkManager/stable/
+
+systemd 260.1                                                        HOSTNAME(5)

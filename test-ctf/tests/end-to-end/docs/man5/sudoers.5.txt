@@ -1,0 +1,2340 @@
+The  policy plugin determines a user's privileges.  It is the de-
+fault policy plugin.  The policy is driven by the  file  or,  op-
+tionally,  in  LDAP.  The policy format is described in detail in
+the section.  For information on storing  policy  information  in
+LDAP,  see  consults the file to determine which plugins to load.
+If no file is present, or if it contains no lines, will  be  used
+for  auditing,  policy  decisions and I/O logging.  To explicitly
+configure to use the plugin, the following configuration  can  be
+used.   Plugin sudoers_audit sudoers.so Plugin sudoers_policy su-
+doers.so Plugin sudoers_io sudoers.so Starting with 1.8.5, it  is
+possible to specify optional arguments to the plugin in the file.
+Plugin  arguments, if any, should be listed after the path to the
+plugin (i.e., after The arguments are only effective for the plu-
+gin that opens (and parses) the  file.   For  version  1.9.1  and
+higher,  this  is the plugin.  For older versions, it is the plu-
+gin.  Multiple arguments may be  specified,  separated  by  white
+space.    For  example:  Plugin  sudoers_audit  sudoers.so  sudo-
+ers_mode=0400 error_recovery=false The following plugin arguments
+are supported: The argument can be used to control whether should
+attempt to recover from syntax errors in the  file.   If  set  to
+(the  default),  will  try to recover from a syntax error by dis-
+carding the portion of the line that contains the error until the
+end of the line.  A value of will disable error recovery.   Prior
+to  version 1.9.3, no error recovery was performed.  The argument
+can be used to disable security checks when loading the file.  If
+enabled, the file will be loaded regardless of the owner or  file
+mode.   This argument is intended to be used for testing purposes
+and should not be enabled on production  systems.   The  argument
+can  be used to override the default path to the file.  The argu-
+ment can be used to override the default path to the  file.   The
+argument  can  be  used to override the default path to the file.
+The argument can be used to override the default owner of the su-
+doers file.  It should be specified as a  numeric  user-ID.   The
+argument can be used to override the default group of the sudoers
+file.   It  must  be specified as a numeric group-ID (not a group
+name).  The argument can be used to  override  the  default  file
+mode  for  the  sudoers file.  It should be specified as an octal
+value.  For more information on configuring refer to its  manual.
+The  security  policy requires that most users authenticate them-
+selves before they can use A password is not required if the  in-
+voking  user  is  if  the target user is the same as the invoking
+user, or if the policy has disabled authentication for  the  user
+or  command.   Unlike  when requires authentication, it validates
+the invoking user's credentials, not the target user's  (or  cre-
+dentials.   This  can  be  changed  via  the and flags, described
+later.  If a user who is not listed in the policy tries to run  a
+command  via mail is sent to the proper authorities.  The address
+used for such mail is configurable via the  Defaults  entry  (de-
+scribed  later)  and defaults to No mail will be sent if an unau-
+thorized user tries to run with the or option unless there is  an
+authentication  error  and either the or flags are enabled.  This
+allows users to determine for themselves whether or not they  are
+allowed  to  use  By  default, all attempts to run (successful or
+not) are logged, regardless of whether or not mail is  sent.   If
+is  run  by  and the environment variable is set, the policy will
+use this value to determine who the actual user is.  This can  be
+used by a user to log commands through sudo even when a shell has
+been  invoked.   It  also allows the option to remain useful even
+when invoked via a sudo-run script or  program.   Note,  however,
+that  the file lookup is still done for not the user specified by
+uses per-user time stamp files for credential  caching.   Once  a
+user  has  been authenticated, a record is written containing the
+user-ID that was used to authenticate, the terminal  session  ID,
+the  start  time  of the session leader (or parent process) and a
+time stamp (using a monotonic clock if one  is  available).   The
+user  may  then use without a password for a short period of time
+(5 minutes unless overridden by the option).  By default, uses  a
+separate  record for each terminal, which means that a user's lo-
+gin sessions are authenticated separately.   The  option  can  be
+used to select the type of time stamp record will use.  The util-
+ity,  included  with the sudo source distribution, can be used to
+display the contents of a time stamp file.  See  for  details  of
+the time stamp file format.  By default, logs both successful and
+unsuccessful  attempts (as well as errors).  The and flags can be
+used to control this behavior.  Messages can be logged to  a  log
+file, or both.  The default is to log to but this is configurable
+via the and settings.  See for a description of the log file for-
+mat.   is  also capable of running a command in a pseudo-terminal
+and logging input and/or output.  The  standard  input,  standard
+output, and standard error can be logged even when not associated
+with a terminal.  For more information about I/O logging, see the
+section.   Starting  with version 1.9, the setting may be used to
+send event and I/O log data to a remote server running or another
+service that implements the protocol described by Since  environ-
+ment  variables  can influence program behavior, provides a means
+to restrict which variables from the user's environment  are  in-
+herited  by  the  command to be run.  There are two distinct ways
+can deal with environment variables.  By default, the flag is en-
+abled.  This causes commands to be executed with a  new,  minimal
+environment.   On  AIX (and Linux systems without PAM), the envi-
+ronment is initialized with the contents of the  file.   The  and
+environment  variables  are  initialized based on the target user
+and the variables are set based on the invoking user.  Additional
+variables, such as and are preserved from the invoking user's en-
+vironment if permitted by the  or  options.   A  few  environment
+variables  are  treated  specially.  If the and variables are not
+preserved from the user's environment, they will be  set  to  de-
+fault values.  The and are handled as a single entity.  If one of
+them  is  preserved (or removed) from the user's environment, the
+other will be as well.  If and are to be preserved but  only  one
+of  them  is present in the user's environment, the other will be
+set to the same value.  This avoids an  inconsistent  environment
+where one of the variables describing the user name is set to the
+invoking  user  and  one  is set to the target user.  Environment
+variables with a value beginning with are removed unless both the
+name and value parts are matched by or as they may be interpreted
+as functions by the shell.  Prior to version 1.8.11,  such  vari-
+ables  were  always  removed.  If, however, the flag is disabled,
+any variables not explicitly denied by the and  options  are  al-
+lowed  and  their values are inherited from the invoking process.
+Prior to version 1.8.21, environment variables with a  value  be-
+ginning with were always removed.  Beginning with version 1.8.21,
+a  pattern in is used to match shell functions instead.  Since it
+is not possible to block all  potentially  dangerous  environment
+variables,  use  of the default behavior is encouraged.  Environ-
+ment variables specified by or may include one or more characters
+which will match zero or  more  characters.   No  other  wildcard
+characters  are supported.  By default, environment variables are
+matched by name.  However, if the pattern includes an equal  sign
+both  the  variables  name  and value must match.  For example, a
+shell  function  could  be  matched  as  follows:   env_keep   +=
+"BASH_FUNC_my_func%%=()*"  Without  the  suffix,  this  would not
+match, as shell functions are not preserved by default.  The com-
+plete list of environment variables that  are  preserved  or  re-
+moved,  as modified by global Defaults parameters in is displayed
+when is run by with the option.  The list  of  environment  vari-
+ables  to  remove varies based on the operating system is running
+on.  Other settings may influence the  command  environment:  op-
+tions  such as and Command tags, such as and Note that is implied
+if the command matched is options, such as and  On  systems  that
+support  PAM where the module is enabled for variables in the PAM
+environment may be merged in to the environment.  If  a  variable
+in  the PAM environment is already present in the user's environ-
+ment, the value will only be overridden if the variable  was  not
+preserved by When is enabled, variables preserved from the invok-
+ing  user's environment by the list take precedence over those in
+the PAM environment.  When is disabled, variables present the in-
+voking user's environment take precedence over those in  the  PAM
+environment unless they match a pattern in the list.  The dynamic
+linker  on  most operating systems will remove variables that can
+control dynamic linking from the environment of set-user-ID  exe-
+cutables,  including  Depending  on the operating system this may
+include and others.  These type of variables are removed from the
+environment before even begins execution and, as such, it is  not
+possible  for to preserve them.  As a special case, if the option
+(initial login) is specified, will initialize the environment re-
+gardless of the value of The and variables remain unchanged;  and
+are  set  based  on  the  target user.  On AIX (and Linux systems
+without PAM), the contents of are also included.  All other envi-
+ronment variables are removed unless permitted  by  or  described
+above.   Finally,  the  and  files  are applied, if present.  The
+variables in are applied first and are subject to  the  same  re-
+strictions as the invoking user's environment, as detailed above.
+The  variables  in  are applied last and are not subject to these
+restrictions.  In both cases, variables present in the files will
+only be set to their specified values if they would not  conflict
+with  an  existing environment variable.  The file is composed of
+two types of entries:  aliases  (basically  variables)  and  user
+specifications  (which  specify who may run what).  When multiple
+entries match for a user, they are applied in order.  Where there
+are multiple matches, the last match is used (which is not neces-
+sarily the most specific match).  The file grammar  will  be  de-
+scribed below in Extended Backus-Naur Form (EBNF).  Don't despair
+if you are unfamiliar with EBNF; it is fairly simple, and the de-
+finitions  below  are  annotated.  By default, uses the operating
+system's native method of setting resource limits for the  target
+user.   On  Linux systems, resource limits are usually set by the
+PAM module.  On some BSD systems,  the  file  specifies  resource
+limits for the user.  On AIX systems, resource limits are config-
+ured  in  the  file.  If there is no system mechanism to set per-
+user resource limits, the command will run with the  same  limits
+as the invoking user.  The one exception to this is the core dump
+file size, which is set by to 0 by default.  Disabling core dumps
+by default makes it possible to avoid potential security problems
+where the core file is treated as trusted input.  Resource limits
+may  also  be set in the file itself, in which case they override
+those set by the system.  See the options described  below.   Re-
+source  limits  in  may be specified in one of the following for-
+mats: Both the soft and hard resource limits are set to the  same
+value.   The special value can be used to indicate that the value
+is unlimited.  Two comma-separated values.  The soft limit is set
+to the first value and the hard limit is set to the second.  Both
+values must either be enclosed in a set of double quotes, or  the
+comma  must  be escaped with a backslash The special value may be
+used in place of either value.  The default  resource  limit  for
+the  user  will  be used.  This may be a user-specific value (see
+above) or the value of the resource limit when  was  invoked  for
+systems  that don't support per-user limits.  The invoking user's
+resource limits will be preserved when running the command.   For
+example,  to restore the historic core dump file size behavior, a
+line like the following may be used.
+
+Resource limits in are only supported by version 1.8.7 or higher.
+EBNF is a concise and exact way of describing the  grammar  of  a
+language.  Each EBNF definition is made up of For example: symbol
+::=  definition  |  alternate1  | alternate2 ...  Each references
+others and thus makes up a grammar for the language.   EBNF  also
+contains  the following operators, which many readers will recog-
+nize from regular expressions.  Do  not,  however,  confuse  them
+with  characters,  which have different meanings.  Means that the
+preceding symbol (or group of symbols) is optional.  That is,  it
+may  appear  once or not at all.  Means that the preceding symbol
+(or group of symbols) may appear zero or more times.  Means  that
+the preceding symbol (or group of symbols) may appear one or more
+times.   Parentheses  may be used to group symbols together.  For
+clarity, we will use single quotes to designate what is a  verba-
+tim  character  string  (as opposed to a symbol name).  There are
+four kinds of aliases: and Beginning with 1.9.0, may be  used  in
+place  of  if  desired.   Alias ::= 'User_Alias'  User_Alias_Spec
+(':' User_Alias_Spec)* |
+          'Runas_Alias' Runas_Alias_Spec (':'  Runas_Alias_Spec)*
+|
+          'Host_Alias'  Host_Alias_Spec (':' Host_Alias_Spec)* |
+          'Cmnd_Alias'  Cmnd_Alias_Spec (':' Cmnd_Alias_Spec)* |
+          'Cmd_Alias'   Cmnd_Alias_Spec (':' Cmnd_Alias_Spec)*
+
+User_Alias ::= NAME
+
+User_Alias_Spec ::= User_Alias '=' User_List
+
+Runas_Alias ::= NAME
+
+Runas_Alias_Spec ::= Runas_Alias '=' Runas_List
+
+Host_Alias ::= NAME
+
+Host_Alias_Spec ::= Host_Alias '=' Host_List
+
+Cmnd_Alias ::= NAME
+
+Cmnd_Alias_Spec ::= Cmnd_Alias '=' Cmnd_List
+
+NAME  ::=  [A-Z]([A-Z][0-9]_)*  Each  definition  is  of the form
+Alias_Type NAME = item1, item2, ...  where is one of or  A  is  a
+string of uppercase letters, numbers, and underscore characters A
+start  with  an  uppercase letter.  It is possible to put several
+alias definitions of the same type on a single line, joined by  a
+colon For example: Alias_Type NAME = item1, item2, item3 : NAME =
+item4,  item5  It is a syntax error to redefine an existing It is
+possible to use the same name for of different types, but this is
+not recommended.  The definitions of  what  constitutes  a  valid
+member follow.  User_List ::= User |
+              User ',' User_List
+
+User ::= '!'* user name |
+         '!'* #user-ID |
+         '!'* %group |
+         '!'* %#group-ID |
+         '!'* +netgroup |
+         '!'* %:nonunix_group |
+         '!'* %:#nonunix_gid |
+         '!'*  User_Alias A is made up of one or more user names,
+user-IDs (prefixed with system group names and IDs (prefixed with
+and respectively), netgroups (prefixed with non-Unix group  names
+and  IDs (prefixed with and respectively), and Each list item may
+be prefixed with zero or more operators.  An odd number of opera-
+tors negate the value of the item; an  even  number  just  cancel
+each  other  out.   User netgroups are matched using the user and
+domain members only; the host member is not used  when  matching.
+A  or  may be enclosed in double quotes to avoid the need for es-
+caping special characters.  Alternately, special  characters  may
+be specified in escaped hex mode, e.g., \x20 for space.  When us-
+ing  double quotes, any prefix characters must be included inside
+the quotes.  The actual and  syntax  depends  on  the  underlying
+group  provider plugin.  For instance, the QAS AD plugin supports
+the following formats: Group in the same domain:  "%:Group  Name"
+Group  in any domain: "%:Group Name@FULLY.QUALIFIED.DOMAIN" Group
+SID:  "%:S-1-2-34-5678901234-5678901234-5678901234-567"  See  for
+more  information.   Quotes around group names are optional.  Un-
+quoted strings must use a backslash to escape spaces and  special
+characters.   See  for  a  list of characters that need to be es-
+caped.  Runas_List ::= Runas_Member |
+               Runas_Member ',' Runas_List
+
+Runas_Member ::= '!'* user name |
+                 '!'* #user-ID |
+                 '!'* %group |
+                 '!'* %#group-ID |
+                 '!'* %:nonunix_group |
+                 '!'* %:#nonunix_gid |
+                 '!'* +netgroup |
+                 '!'* Runas_Alias |
+                 '!'* ALL A is similar to a except  that  instead
+of  it  can contain User names and groups are matched as strings.
+In other words, two users (groups) with the same user (group)  ID
+are  considered  to  be  distinct.  If you wish to match all user
+names with the same user-ID (e.g., and you can use a user-ID  in-
+stead of a name (#0 in the example given).  The user-ID or group-
+ID  specified  in  a  need not be listed in the password or group
+database.  Host_List ::= Host |
+              Host ',' Host_List
+
+Host ::= '!'* host name |
+         '!'* ip_addr |
+         '!'* network(/netmask)? |
+         '!'* +netgroup |
+         '!'* Host_Alias |
+         '!'* ALL A is made up of one or more host names, IP  ad-
+dresses,  network  numbers,  netgroups  (prefixed  with and other
+aliases.  Again, the value of an item may be negated with the op-
+erator.  Host netgroups are matched using the host  (both  quali-
+fied and unqualified) and domain members only; the user member is
+not  used when matching.  If you specify a network number without
+a netmask, will query each of the local host's network interfaces
+and, if the network number corresponds to one of the hosts's net-
+work interfaces, will use the netmask  of  that  interface.   The
+netmask  may  be specified either in standard IP address notation
+(e.g., 255.255.255.0 or ffff:ffff:ffff:ffff::), or CIDR  notation
+(number of bits, e.g., 24 or 64).  A host name may include shell-
+style  wildcards  (see the section below), but unless the command
+on your machine returns the fully  qualified  host  name,  you'll
+need  to  use the flag for wildcards to be useful.  only inspects
+actual network interfaces; this means that IP  address  127.0.0.1
+(localhost)  will  never  match.   Also,  the host name will only
+match if that is the actual host name, which is usually only  the
+case for non-networked systems.  digest ::= [A-Fa-f0-9]+ |
+           [A-Za-z0-9\+/=]+
+
+Digest_Spec ::= "sha224" ':' digest |
+                "sha256" ':' digest |
+                "sha384" ':' digest |
+                "sha512" ':' digest
+
+Digest_List ::= Digest_Spec |
+                Digest_Spec ',' Digest_List
+
+Cmnd_List ::= Cmnd |
+              Cmnd ',' Cmnd_List
+
+command name ::= regex |
+                 file name
+
+command ::= command name |
+            command name args |
+            command name regex |
+            command name '""' |
+            ALL
+
+Edit_Spec ::= "sudoedit" file name+ |
+              "sudoedit" regex |
+              "sudoedit"
+
+List_Spec ::= "list"
+
+Cmnd ::= Digest_List? '!'* command |
+         '!'* directory |
+         '!'* Edit_Spec |
+         '!'* List_Spec |
+         '!'* Cmnd_Alias A is a list of one or more commands, di-
+rectories, or aliases.  A command is a fully qualified file name,
+which  may include shell-style wildcards (see the section below),
+or a regular expression that starts with and ends with  (see  the
+section  below).  A directory is a fully qualified path name end-
+ing in a When you specify a directory in a the user will be  able
+to  run any file within that directory (but not in any sub-direc-
+tories therein).  If no command line arguments are specified, the
+user may run the command with any arguments they choose.  Command
+line arguments can include wildcards or be a  regular  expression
+that starts with and ends with If the command line arguments con-
+sist of the command may only be run with arguments.  If a has as-
+sociated  command line arguments, the arguments in the must match
+those given by the user on the command line.  If the arguments in
+a begin with the character, they will be interpreted as a regular
+expression and matched accordingly.  Otherwise, shell-style wild-
+cards are used when matching.  Unless  a  regular  expression  is
+specified,  the  following  characters  must be escaped with a if
+they are used in command arguments: To  prevent  arguments  in  a
+that  begin  with a character from being interpreted as a regular
+expression, the must be escaped with a  There  are  two  commands
+built  into  itself: and Unlike other commands, these two must be
+specified in the file a leading path.  The built-in can  be  used
+to  permit  a user to list another user's privileges with option.
+For example, A user with the privilege is able  to  list  another
+user's  privileges even if they don't have permission to run com-
+mands as that user.  By default, only root or  a  user  with  the
+ability to run any command as either root or the specified on the
+current  host  may use the option.  No command line arguments may
+be specified with the built-in.  The built-in is used to permit a
+user to run with the option (or as It may take command line argu-
+ments just as a normal command does.  Unlike other  commands,  is
+built  into  itself  and  must be specified in the file a leading
+path.  If a leading path is present, for example  the  path  name
+will  be  silently  converted  to  A  fully-qualified path for is
+treated as an error by A may be preceded by a  a  comma-separated
+list  of  one or more entries.  If a is present, the command will
+only match successfully if it can be verified using  one  of  the
+SHA-2  digests in the list.  Starting with version 1.9.0, the re-
+served word can be used in conjunction with a The  following  di-
+gest  formats  are supported: sha224, sha256, sha384, and sha512.
+The string may be  specified  in  either  hex  or  base64  format
+(base64 is more compact).  There are several utilities capable of
+generating  SHA-2  digests in hex format such as openssl, shasum,
+sha224sum, sha256sum, sha384sum, sha512sum.  For  example,  using
+openssl:   $   openssl   dgst  -sha224  /bin/ls  SHA224(/bin/ls)=
+118187da8364d490b4a7debbf483004e8f3e053ec954309de2c41a25  It   is
+also possible to use openssl to generate base64 output: $ openssl
+dgst     -binary     -sha224    /bin/ls    |    openssl    base64
+EYGH2oNk1JC0p9679IMATo8+BT7JVDCd4sQaJQ== Warning, if the user has
+write access to the command itself (directly or via  a  command),
+it  may be possible for the user to replace the command after the
+digest check has been performed but before the  command  is  exe-
+cuted.   A similar race condition exists on systems that lack the
+system call when the directory in which the command is located is
+writable by the user.  See the description  of  the  setting  for
+more information on how executes commands that have an associated
+digest.   Command  digests are only supported by version 1.8.7 or
+higher.  Certain configuration options may be changed from  their
+default  values at run-time via one or more lines.  These may af-
+fect all users on any host all users on a specific  host  a  spe-
+cific user a specific command or commands being run as a specific
+user  White space is not permitted between and the or characters.
+While a comma-separated list may be used in  place  of  a  single
+value after the or character, using an alias instead of a list is
+often  improve  readability.  Per-command entries may not include
+command line arguments.  If you need to specify arguments, define
+a and reference that instead.  Default_Type ::= 'Defaults' |
+                 'Defaults@' Host_List |
+                 'Defaults:' User_List |
+                 'Defaults!' Cmnd_List |
+                 'Defaults>' Runas_List
+
+Default_Entry ::= Default_Type Parameter_List
+
+Parameter_List ::= Parameter |
+                   Parameter ',' Parameter_List
+
+Parameter ::= Parameter '=' Value |
+              Parameter '+=' Value |
+              Parameter '-=' Value |
+              '!'* Parameter Parameters may be values,  or  Flags
+are  implicitly  boolean  and can be turned off via the operator.
+Some integer, string and list parameters may also be  used  in  a
+boolean  context to disable them.  Values may be enclosed in dou-
+ble quotes when they contain multiple words.  Special  characters
+may  be  escaped  with a backslash To include a literal backslash
+character in a command line argument you must  escape  the  back-
+slash twice.  For example, to match as part of a command line ar-
+gument, you must use in the file.  This is due to there being two
+levels  of  escaping,  one  in the parser itself and another when
+command line arguments are matched by  the  or  function.   Lists
+have two additional assignment operators, and These operators are
+used to add to and delete from a list respectively.  It is not an
+error  to use the operator to remove an element that does not ex-
+ist in a list.  In general Defaults settings are applied  in  or-
+der, later entries will override earlier ones.  However, command-
+specific  Defaults settings are applied later, once the command's
+path is known.  In addition, the following Defaults settings must
+be applied before all others since they may affect subsequent en-
+tries:  See  for  a  list  of  supported   Defaults   parameters.
+User_Spec ::= User_List Host_List '=' Cmnd_Spec_List \
+              (':' Host_List '=' Cmnd_Spec_List)*
+
+Cmnd_Spec_List ::= Cmnd_Spec |
+                   Cmnd_Spec ',' Cmnd_Spec_List
+
+Cmnd_Spec ::= Runas_Spec? Option_Spec* (Tag_Spec ':')* Cmnd
+
+Runas_Spec ::= '(' Runas_List? (':' Runas_List)? ')'
+
+Option_Spec  ::=  (Date_Spec  |  Timeout_Spec  | Chdir_Spec | Ch-
+root_Spec)
+
+Date_Spec ::= ('NOTBEFORE=timestamp' | 'NOTAFTER=timestamp')
+
+Timeout_Spec ::= 'TIMEOUT=timeout'
+
+Chdir_Spec ::= 'CWD=directory'
+
+Chroot_Spec ::= 'CHROOT=directory'
+
+Tag_Spec ::= ('EXEC' | 'NOEXEC' | 'FOLLOW' | 'NOFOLLOW' |
+              'LOG_INPUT' | 'NOLOG_INPUT' | 'LOG_OUTPUT' |
+              'NOLOG_OUTPUT' | 'MAIL' | 'NOMAIL' | 'INTERCEPT' |
+              'NOINTERCEPT' | 'PASSWD' | 'NOPASSWD' | 'SETENV' |
+              'NOSETENV') A determines which commands a user  may
+run  (and as what user) on specified hosts.  By default, commands
+are run as (unless has been set to a different  value)  but  this
+can  also be changed on a per-command basis.  The basic structure
+of a user specification is Let's break that down  into  its  con-
+stituent  parts:  A  determines  the user and/or the group that a
+command may be run as.  A fully-specified consists of two (as de-
+fined above) separated by a colon and enclosed in a set of paren-
+theses.  The first indicates which users the command may  be  run
+as  via the option.  The second defines a list of groups that may
+be specified via the option (in addition to  any  of  the  target
+user's  groups).   If  both are specified, the command may be run
+with any combination of users and groups listed in their  respec-
+tive  If  only  the first is specified, the command may be run as
+any user in the list and, optionally, with any group  the  target
+user  belongs to.  If the first is empty but the second is speci-
+fied, the command may be run as the invoking user with the  group
+set  to any listed in the If both are empty, the command may only
+be run as the invoking user and the group, if specified, must  be
+one  that  the invoking user is a member of.  If no is specified,
+the command may only be run as  the  user  by  default)  and  the
+group, if specified, must be one that the user is a member of.  A
+sets  the  default  for  the  commands that follow it.  What this
+means  is  that  for  the  entry:  dgb     boulder  =  (operator)
+/bin/ls,  /bin/kill,  /usr/bin/lprm  The  user may run and on the
+host only as For example: $ sudo -u operator /bin/ls It  is  also
+possible  to  override  a later on in an entry.  If we modify the
+entry like  so:  dgb     boulder  =  (operator)  /bin/ls,  (root)
+/bin/kill,  /usr/bin/lprm  Then user is now allowed to run as but
+and as We can extend this to allow to run with either the user or
+group set to dgb     boulder =  (operator  :  operator)  /bin/ls,
+(root)  /bin/kill,\         /usr/bin/lprm While the group portion
+of the permits the user to run as command  with  that  group,  it
+does  not  force  the user to do so.  If no group is specified on
+the command line, the command will run with the group  listed  in
+the  target  user's password database entry.  The following would
+all be permitted by the sudoers entry above: $ sudo  -u  operator
+/bin/ls $ sudo -u operator -g operator /bin/ls $ sudo -g operator
+/bin/ls  In the following example, user may run commands that ac-
+cess a modem device file with the dialer group.   tcm     boulder
+=    (:dialer)   /usr/bin/tip,   /usr/bin/cu,\           /usr/lo-
+cal/bin/minicom In this example only the group will be  set,  the
+command  still  runs  as  user  For  example:  $  sudo  -g dialer
+/usr/bin/cu Multiple users and groups may  be  present  in  a  in
+which  case  the  user  may  select  any combination of users and
+groups via the and  options.   In  this  example:  alan    ALL  =
+(root,  bin  :  operator, system) ALL user may run any command as
+either user or optionally setting the group to operator  or  sys-
+tem.   A  may  have zero or more options associated with it.  Op-
+tions may consist of start and/or end dates and command timeouts.
+Once an option is set for a subsequent in the inherit that option
+unless it is overridden by another option.  Option names are  re-
+served  words  in  This means that none of the valid option names
+(see below) can be used when declaring an alias.   rules  can  be
+specified  with  a  start and end date via the and settings.  The
+time stamp must be specified in as defined by RFC 4517.  The for-
+mat is effectively where the minutes and  seconds  are  optional.
+The  suffix  indicates that the time stamp is in Coordinated Uni-
+versal Time (UTC).  It is also possible  to  specify  a  timezone
+offset  from  UTC  in hours and minutes instead of a For example,
+would correspond to Eastern Standard time in the US.  As  an  ex-
+tension,  if  no or timezone offset is specified, local time will
+be  used.    The   following   are   all   valid   time   stamps:
+20170214083000Z  2017021408Z 20160315220000-0500 20151201235900 A
+command may have a timeout associated with it.   If  the  timeout
+expires before the command has exited, the command will be termi-
+nated.   The  timeout  may  be specified in combinations of days,
+hours, minutes, and seconds with a single-letter case-insensitive
+suffix that indicates the unit of time.  For example,  a  timeout
+of  7  days, 8 hours, 30 minutes, and 10 seconds would be written
+as If a number is specified without a unit, seconds are  assumed.
+Any  of the days, minutes, hours, or seconds may be omitted.  The
+order must be from largest to smallest unit and a unit may not be
+specified more than once.  The following are all timeout  values:
+The  following are timeout values: This setting is only supported
+by version 1.8.20 or higher.  The working directory that the com-
+mand will be run in can be specified using the setting.  The must
+be a fully-qualified path name beginning with a or character,  or
+the  special value A value of indicates that the user may specify
+the working directory by running with the  option.   By  default,
+commands  are run from the invoking user's current working direc-
+tory, unless the option is given.  Path names of the form are in-
+terpreted as being relative to the named user's  home  directory.
+If  the  user  name  is omitted, the path will be relative to the
+runas user's home directory.  This setting is only  supported  by
+version  1.9.3 or higher.  Support for setting the root directory
+is deprecated and will be removed in a future version of The root
+directory that the command will be run in can be specified  using
+the  setting.   The must be a fully-qualified path name beginning
+with a or character, or the special value A  value  of  indicates
+that  the user may specify the root directory by running with the
+option.  This setting can be used to run the command in a similar
+to the utility.  Path names of the form are interpreted as  being
+relative to the named user's home directory.  If the user name is
+omitted,  the  path will be relative to the runas user's home di-
+rectory.  This setting is only  supported  by  version  1.9.3  or
+higher.  A command may have zero or more tags associated with it.
+The  following tag values are supported: and Once a tag is set on
+a subsequent in the inherit the tag unless it  is  overridden  by
+the opposite tag (in other words, overrides and overrides
+
+If  has  been  compiled with support and the underlying operating
+system supports it, the tag can be used to prevent a dynamically-
+linked executable from running further commands itself.   In  the
+following example, user may run and on the host shanty, but shell
+escapes    will    be   disabled.    aaron   shanty   =   NOEXEC:
+/usr/bin/more, /usr/bin/vi See the section below for more details
+on how works and whether or not it will work on your system.
+
+Starting with version 1.8.15, will not open a file that is a sym-
+bolic link unless the flag is enabled.  The and tags override the
+value of and can be used to permit (or deny) the editing of  sym-
+bolic  links  on a per-command basis.  These tags are only effec-
+tive for the command and are ignored for all other commands.
+
+These tags override the value of the flag on a per-command basis.
+For more information, see
+
+These tags override the value of the flag on a per-command basis.
+For more information, see
+
+These tags provide fine-grained control over whether mail will be
+sent when a user runs a command by overriding the  value  of  the
+flag  on  a  per-command  basis.  They have no effect when is run
+with the or options.  A tag will also override the  and  options.
+For  more information, see the descriptions of and in the section
+below.
+
+By default, requires that a user authenticate  before  running  a
+command.   This behavior can be modified via the tag.  Like a the
+tag sets a default for the commands that follow it  in  the  Con-
+versely,  the  tag  can  be used to reverse things.  For example:
+ray     rushmore = NOPASSWD:  /bin/kill,  /bin/ls,  /usr/bin/lprm
+would allow the user to run and as on the machine without authen-
+ticating  himself.   If  we only want to be able to run without a
+password  the  entry  would  be:  ray     rushmore  =   NOPASSWD:
+/bin/kill, PASSWD: /bin/ls, /usr/bin/lprm Note, however, that the
+tag  has no effect on users who are in the group specified by the
+setting.  By default, if the tag is applied to any  of  a  user's
+entries  for the current host, the user will be able to run with-
+out a password.  Additionally, a user  may  only  run  without  a
+password  if  all of the user's entries for the current host have
+the tag.  This behavior may be overridden via the and options.
+
+These tags override the value of the flag on a per-command basis.
+If has been set for a command, the user may disable the flag from
+the command line via the option.  Additionally, environment vari-
+ables set on the command line are not subject to the restrictions
+imposed by or As such, only trusted users should  be  allowed  to
+set  variables in this manner.  If the command matched is the tag
+is implied for that command; this default may  be  overridden  by
+use of the tag.
+
+If  has  been  compiled with support and the underlying operating
+system supports it, the tag can be used to cause programs spawned
+by a command to be validated against and logged  just  like  they
+would  be if run through directly.  This is useful in conjunction
+with commands that allow shell escapes such as  editors,  shells,
+and  paginators.   There is additional overhead due to the policy
+check that may add latency when running commands  such  as  shell
+scripts  that execute a large number of sub-commands.  For inter-
+active commands, such as a shell or editor, the overhead  is  not
+usually  noticeable.   In the following example, user may run any
+command on the machine in intercept mode.  chuck   research = IN-
+TERCEPT: ALL See the section below for more details on how  works
+and  whether  or  not it will work on your system.  allows shell-
+style (aka meta or glob characters) to be  used  in  host  names,
+path  names,  and  command  line arguments in the file.  Wildcard
+matching is done via the and functions as  specified  by  Matches
+any  set  of  zero  or  more  characters (including white space).
+Matches any single character (including  white  space).   Matches
+any  character  in the specified range.  Matches any character in
+the specified range.  For any character evaluates to This is used
+to escape special characters such as: and These are  not  regular
+expressions.   Unlike  a  regular  expression  there is no way to
+match one or more characters within a range.   Character  classes
+may  be  used  if your system's and functions support them.  How-
+ever, because the character has special meaning in it must be es-
+caped.  For example: /bin/ls [[\:alpha\:]]* Would match any  file
+name beginning with a letter.  A forward slash will be matched by
+wildcards  used in the file name portion of the command.  This is
+to make a path like: /usr/bin/* match but not When  matching  the
+command line arguments, however, a slash get matched by wildcards
+since  command  line  arguments may contain arbitrary strings and
+not just path names.  Wildcards in command line arguments  should
+be used with care.
+Wildcards  can  match  any  character, including white space.  In
+most cases, it is safer to use a regular expression to match com-
+mand line arguments.  For more information, see below.  The  fol-
+lowing  exceptions  apply to the above rules: If the empty string
+is the only command line argument in the file entry it means that
+command is not allowed to be run with  arguments.   Command  line
+arguments to the built-in command should always be path names, so
+a forward slash will not be matched by a wildcard.  Starting with
+version  1.9.10,  it  is  possible to use regular expressions for
+path names and command line arguments.  Regular  expressions  are
+more  expressive  than  shell-style and are usually safer because
+they provide a greater degree of control when matching.  The type
+of regular expressions supported by are  POSIX  extended  regular
+expressions, similar to those used by the utility.  They are usu-
+ally documented in the or manual, depending on the system.  As an
+extension,  if  the  regular  expression  begins  with it will be
+matched in a case-insensitive  manner.   In  regular  expressions
+must start with a character and end with a This makes it explicit
+what  is, or is not, a regular expression.  Either the path name,
+the command line arguments or both may  be  regular  expressions.
+Because the path name and arguments are matched separately, it is
+even  possible to use wildcards for the path name and regular ex-
+pressions for the arguments.  It is not possible to use a  single
+regular  expression  to match both the command and its arguments.
+Regular expressions in are limited to 1024 characters.  There  is
+no  need  to  escape  special  characters in a regular expression
+other than the pound sign In the following example, user can  run
+the command as on any host but is not allowed to change password.
+This  kind  of  rule  is impossible to express safely using wild-
+cards.  john    ALL = /usr/bin/passwd ^[a-zA-Z0-9_]+$,\
+              !/usr/bin/passwd root It is also possible to use  a
+regular expression in conjunction with rules.  The following rule
+would  give user bob the ability to edit the and files only.  bob
+ALL = sudoedit ^/etc/(motd|issue|hosts)$ Regular expressions  may
+also  be  used  to  match the command itself.  In this example, a
+regular expression is used to allow user to run the and  commands
+as  sid    ALL = ^/usr/sbin/(group|user)(add|mod|del)$ One disad-
+vantage of using a regular expression to match the  command  name
+is  that  it  is  not possible to match relative paths such as or
+This has security implications when a regular expression is  used
+for  the  command name in conjunction with the negation operator,
+as such rules can be trivially bypassed.  Because of this,  using
+a  negated  regular  expression for the command name is This does
+not apply to negated commands that only use a regular  expression
+to  match the command arguments.  See below for more information.
+It is possible to include other files from within the  file  cur-
+rently  being parsed using the and directives.  For compatibility
+with sudo versions prior to 1.9.1, and are also accepted.  An in-
+clude file can be used, for example, to keep a site-wide file  in
+addition  to a local, per-machine file.  For the sake of this ex-
+ample the site-wide file will be and the per-machine one will  be
+To  include  from within one would use the following line in @in-
+clude /etc/sudoers.local When reaches this line it  will  suspend
+processing  of  the  current file and switch to Upon reaching the
+end of the rest of will be processed.  Files  that  are  included
+may  themselves  include other files.  A hard limit of 128 nested
+include files is enforced to prevent include file loops.   Start-
+ing  with version 1.9.1, the path to the include file may contain
+white space if it is escaped with a  backslash  Alternately,  the
+entire path may be enclosed in double quotes in which case no es-
+caping is necessary.  To include a literal backslash in the path,
+should  be  used.   If the path to the include file is not fully-
+qualified (does not begin with a it must be located in  the  same
+directory as the sudoers file it was included from.  For example,
+if  contains  the line: @include sudoers.local the file that will
+be included is The file name may also include the escape,  signi-
+fying  the  short  form of the host name.  In other words, if the
+machine's host name is then @include /etc/sudoers.%h  will  cause
+to include the file Any path name separator characters present in
+the host name will be replaced with an underbar during expansion.
+The  directive  can be used to create a directory that the system
+package manager can drop file rules into as part of  package  in-
+stallation.   For example, given: @includedir /etc/sudoers.d will
+suspend processing of the current file  and  read  each  file  in
+skipping  file  names that end in or contain a character to avoid
+causing problems with package manager or editor  temporary/backup
+files.   Files are parsed in sorted lexical order.  That is, will
+be parsed before Be aware that because the  sorting  is  lexical,
+not numeric, would be loaded Using a consistent number of leading
+zeroes in the file names can be used to avoid such problems.  Af-
+ter  parsing  the  files in the directory, control returns to the
+file that contained the directive.   Unlike  files  included  via
+will  not  edit  the files in a directory unless one of them con-
+tains a syntax error.  It is still possible to run with the  flag
+to edit the files directly, but this will not catch the redefini-
+tion  of  an that is also present in a different file.  The pound
+sign is used to indicate a comment (unless it is part of  a  #in-
+clude directive or unless it occurs in the context of a user name
+and  is  followed  by  one  or  more  digits, in which case it is
+treated as a user-ID).  Both the comment character and  any  text
+after  it,  up to the end of the line, are ignored.  The reserved
+word is a built-in that always causes a match to succeed.  It can
+be used wherever one might otherwise use a or Attempting  to  de-
+fine  an  named will result in a syntax error.  Using can be dan-
+gerous since in a command context, it allows the user to run com-
+mand on the system.  The following option names permitted  in  an
+are  also  considered reserved words: and Attempting to define an
+with the same name as one of the options will result in a  syntax
+error.  An exclamation point can be used as a logical operator in
+a  list  or  as  well as in front of a This allows one to exclude
+certain values.  For the operator to be effective, there must  be
+something for it to exclude.  For example, to match all users ex-
+cept  for  one  would  use:  ALL, !root If the is omitted, as in:
+!root it would explicitly deny but not  match  any  other  users.
+This  is different from a true operator.  Note, however, that us-
+ing a in conjunction with the built-in alias to allow a  user  to
+run  commands  rarely  works as intended (see below).  Long lines
+can be continued with a backslash as the last  character  on  the
+line.   White space between elements in a list as well as special
+syntactic characters in a is optional.  The following  characters
+must  be  escaped  with  a  backslash when used as part of a word
+(e.g., a user name or host name): behavior  can  be  modified  by
+lines,  as  explained  earlier.  A list of all supported Defaults
+parameters, grouped by type, are listed below.  If a  is  config-
+ured,  use  it  to resolve groups of the form as long as there is
+not also a system group of the same name.  Normally, only  groups
+of  the  form  are passed to the This flag is by default.  If en-
+abled, will set the environment variable to the home directory of
+the target user (which is the user unless the  option  is  used).
+This  flag  is largely obsolete and has no effect unless the flag
+has been disabled or is present in the list, both  of  which  are
+strongly  discouraged.   This  flag is by default.  If set, users
+must authenticate themselves via a password (or  other  means  of
+authentication)  before  they may run commands.  This default may
+be overridden via the and tags.  This flag is by default.  If en-
+abled, group names in will be matched in a case insensitive  man-
+ner.   This may be necessary when users are stored in LDAP or AD.
+This flag is by default.  If  enabled,  user  names  in  will  be
+matched in a case insensitive manner.  This may be necessary when
+groups  are  stored  in LDAP or AD.  This flag is by default.  If
+set, the user may use the  option  which  overrides  the  default
+starting  point  at  which  begins closing open file descriptors.
+This flag is by default.  If set, and is configured to log a com-
+mand's input or output, the I/O logs  will  be  compressed  using
+This  flag  is  by default when is compiled with support.  By de-
+fault, runs a command as the foreground process as long as itself
+is running in the foreground.  When the flag is enabled  and  the
+command  is being run in a pseudo-terminal (due to I/O logging or
+the flag), the command will be run as a background process.   At-
+tempts to read from the controlling terminal (or to change termi-
+nal settings) will result in the command being suspended with the
+signal  (or  in  the case of terminal settings).  If this happens
+when is a foreground process, the command  will  be  granted  the
+controlling  terminal  and resumed in the foreground with no user
+intervention required.  The advantage of  initially  running  the
+command in the background is that need not read from the terminal
+unless the command explicitly requests it.  Otherwise, any termi-
+nal  input must be passed to the command, whether it has required
+it or not (the kernel buffers terminals so it is not possible  to
+tell  whether  the command really wants the input).  This is dif-
+ferent from historic behavior or when the command  is  not  being
+run in a pseudo-terminal.  For this to work seamlessly, the oper-
+ating  system  must  support  the  automatic restarting of system
+calls.  Unfortunately, not all operating systems do this  by  de-
+fault,  and even those that do may have bugs.  For example, macOS
+fails to restart the and functions (this  is  a  bug  in  macOS).
+Furthermore,  because  this behavior depends on the command stop-
+ping with the or signals, programs that catch these  signals  and
+suspend  themselves  with a different signal (usually will not be
+automatically foregrounded.  Some versions of the  linux  command
+behave  this way.  This flag is by default.  This setting is only
+supported by version 1.8.7 or higher.  It has  no  effect  unless
+I/O  logging is enabled or the flag is enabled.  If set, will use
+the value of the or environment variables before falling back  on
+the  default  editor  list.  is typically run as so this flag may
+allow a user with privileges to run arbitrary commands as without
+logging.  An alternative is to place a  colon-separated  list  of
+editors  int  the setting.  will then only use or if they match a
+value specified in If the flag is enabled, the and/or environment
+variables must be present in the list for the  flag  to  function
+when  is  invoked  via This flag is by default.  If set, will run
+the command in a minimal environment  containing  the  and  vari-
+ables.   Any variables in the caller's environment or in the file
+specified by the setting that match the and lists are then added,
+followed by any variables present in the file  specified  by  the
+setting  (if any).  The contents of the and lists, as modified by
+global Defaults parameters in are displayed when is run  by  with
+the  option.   If  the setting is enabled, its value will be used
+for the environment variable.  This flag  is  by  default.   Nor-
+mally, uses the function to do shell-style globbing when matching
+path names.  However, since it accesses the file system, can take
+a  long  time  to complete for some patterns, especially when the
+pattern references a network file system that is mounted  on  de-
+mand  (auto mounted).  The flag causes to use the function, which
+does not access the file system to do its matching.   The  disad-
+vantage  of  is that it is unable to match relative paths such as
+or This has security implications when path  names  that  include
+globbing  characters are used with the negation operator, as such
+rules can be trivially bypassed.  As such, this flag  should  not
+be  used  when  the file contains rules that contain negated path
+names which include globbing characters.  This  flag  is  by  de-
+fault.  Most programs that require a user's password will disable
+echo  before  reading the password to avoid displaying the plain-
+text password on the screen.  However, if terminal input is being
+logged (see the password will still be present in  the  I/O  log.
+If the option is disabled, will attempt to prevent passwords from
+being  logged.   It does this by using the regular expressions in
+to match a password prompt in the terminal output buffer.  When a
+match is found, input characters in the I/O log will be  replaced
+with  until either a line feed or carriage return is found in the
+terminal input or a new terminal output buffer is received.   If,
+however, a program displays characters as the user types (such as
+when  is  set),  only the first character of the password will be
+replaced in the I/O log.  This option has no effect unless or are
+also set.  This flag is by default.  This setting  is  only  sup-
+ported by version 1.9.10 or higher.  Set this flag if you want to
+put  fully  qualified  host names in the file when the local host
+name (as returned by the command) does  not  contain  the  domain
+name.  In other words, instead of myhost you would use myhost.my-
+domain.edu.   You  may  still use the short form if you wish (and
+even mix the two).  This flag is only  effective  when  the  host
+name, as returned by the or function, is a fully-qualified domain
+name.   This is usually the case when the system is configured to
+use DNS for host name resolution.  If the system is configured to
+use the file in preference to DNS,  the  host  name  may  not  be
+fully-qualified.   The  order  that  sources are queried for host
+name resolution is usually specified in the or,  in  some  cases,
+file.   In  the file, the first host name of the entry is consid-
+ered to be the name; subsequent names are aliases  that  are  not
+used  by  For  example, the following hosts file line for the ma-
+chine has the fully-qualified domain name as the host  name,  and
+the short version as an alias.
+
+
+If  the machine's hosts file entry is not formatted properly, the
+flag will not be effective if it is queried before  DNS.   Beware
+that when using DNS for host name resolution, turning on requires
+to  make  DNS lookups which renders unusable if DNS stops working
+(for example if the machine is disconnected  from  the  network).
+Just like with the hosts file, you must use the name as DNS knows
+it.   That  is, you may not use a host alias (CNAME entry) due to
+performance issues and the fact that there is no way to  get  all
+aliases from DNS.  This flag is by default.  Allow commands to be
+run  even if cannot write to the audit log.  If enabled, an audit
+log write failure is not treated as a fatal error.  If  disabled,
+a  command  may only be run after the audit event is successfully
+written.  This flag is only effective on systems for  which  sup-
+ports  audit  logging, including Linux, macOS, and Solaris.  This
+flag is by default.  If set, will ignore "." or "" (both denoting
+the current directory) in the environment variable; the itself is
+not modified.  This flag is by default.  Allow commands to be run
+even if cannot write to the I/O log (local or  remote).   If  en-
+abled,  an I/O log write failure is not treated as a fatal error.
+If disabled, the command will be terminated if the I/O log cannot
+be written to.  This flag is by default.  Allow  commands  to  be
+run even if cannot write to the log file.  If enabled, a log file
+write  failure  is  not treated as a fatal error.  If disabled, a
+command may only be run after the log file entry is  successfully
+written.   This flag only has an effect when is configured to use
+file-based logging via the setting.  This flag is by default.  If
+set via LDAP, parsing of will be skipped.  This is  intended  for
+sites  that  wish  to prevent the usage of local sudoers files so
+that only LDAP is used.  This thwarts the efforts of rogue opera-
+tors who would attempt to add roles to When this flag is enabled,
+does not even need to exist.  Since this flag tells how to behave
+when no specific LDAP entries have been matched, this  sudoOption
+is only meaningful for the section.  This flag is by default.  If
+set,  will  not produce a warning if it encounters an unknown De-
+faults entry in the file or an unknown sudoOption in LDAP.   This
+flag is by default.  If set, will insult users when they enter an
+incorrect  password.   This flag is by default.  If set, will log
+commands allowed by the policy to the  system  audit  log  (where
+supported)  as well as to syslog and/or a log file.  This flag is
+by default.  This setting is only supported by version 1.8.29  or
+higher.   If  set,  will log commands denied by the policy to the
+system audit log (where supported) as well as to syslog and/or  a
+log  file.   This  flag is by default.  This setting is only sup-
+ported by version 1.8.29 or higher.  If set, will  log  the  exit
+value of commands that are run to syslog and/or a log file.  If a
+command  was terminated by a signal, the signal name is logged as
+well.  This flag is by default.  This setting is  only  supported
+by  version  1.9.8  or higher.  If set, the host name will be in-
+cluded in log entries written to the file configured by the  set-
+ting.   This flag is by default.  If set, will run the command in
+a pseudo-terminal (if was run from a terminal) and log  all  user
+input.  If the standard input is not connected to the user's ter-
+minal, due to I/O redirection or because the command is part of a
+pipeline,  that input is also logged.  For more information about
+I/O logging, see the section.  This flag is by default.  If  set,
+will run the command in a pseudo-terminal (if was run from a ter-
+minal)  and  log  all output that is sent to the user's terminal,
+the standard output or the standard error.  If the standard  out-
+put  or  standard  error is not connected to the user's terminal,
+due to I/O redirection or  because  the  command  is  part  of  a
+pipeline, that output is also logged.  For more information about
+I/O  logging, see the section.  This flag is by default.  If set,
+will enable the TCP keepalive socket option on the connection  to
+the  log  server.   This  enables  the  periodic  transmission of
+keepalive messages to the server.  If the server does not respond
+to a message, the connection will be closed and the running  com-
+mand  will be terminated unless the flag (I/O logging enabled) or
+the flag (I/O logging disabled) is set.  This flag is by default.
+This setting is only supported by version 1.9.0  or  higher.   If
+set,  the  server  certificate  received during the TLS handshake
+must be valid and it must contain either the server name (from or
+its IP address.  If either of these conditions is  not  met,  the
+TLS  handshake will fail.  This flag is by default.  This setting
+is only supported by version 1.9.0 or higher.  If set,  will  log
+the standard error if it is not connected to the user's terminal.
+This can be used to log output to a pipe or redirected to a file.
+This  flag  is  by default but is enabled when either the flag or
+the command tag is set.  If set, will log the standard  input  if
+it  is not connected to the user's terminal.  This can be used to
+log input from a pipe or redirected from a file.  This flag is by
+default but is enabled when either the flag or the command tag is
+set.  If set, will log the standard output if it is not connected
+to the user's terminal.  This can be used to log output to a pipe
+or redirected to a file.  This flag is by default but is  enabled
+when either the flag or the command tag is set.  If set, will log
+when  a command spawns a child process and executes a program us-
+ing the or library functions.  For example, if a shell is run  by
+the  individual  commands run via the shell will be logged.  This
+flag is by default.  The flag uses the same underlying  mechanism
+as  the setting.  Some commands may not work properly when is en-
+abled, due to the way it intercepts sub-commands.  See  for  more
+information  on  what systems support this option and its limita-
+tions.  This setting is only supported by version 1.9.8 or higher
+and is incompatible with SELinux RBAC support unless  the  system
+supports  filter mode.  If set, will run the command in a pseudo-
+terminal and log user keystrokes sent to the user's terminal,  if
+one  is present.  This flag is by default but is enabled when ei-
+ther the flag or the command tag  is  set.   If  no  terminal  is
+present,  for  example  when  running a remote command using this
+flag will have no effect.  If set, will  run  the  command  in  a
+pseudo-terminal and log all output displayed on the user's termi-
+nal,  if  one is present.  This flag is by default but is enabled
+when either the flag or the command tag is set.  If  no  terminal
+is  present, for example when running a remote command using this
+flag will have no effect.  If set, the four-digit  year  will  be
+logged  in  the  (non-syslog) log file.  This flag is by default.
+When validating with a One Time Password (OTP) scheme such as  or
+a  two-line prompt is used to make it easier to cut and paste the
+challenge to a local window.  It's not as pretty as  the  default
+but  some  people  find  it more convenient.  This flag is by de-
+fault.  Send mail to the user every time a user attempts to run a
+command via (this includes No mail will be sent if the user  runs
+with  the  or  option unless there is an authentication error and
+the flag is also set.  This flag is by default.  Send mail to the
+user every time a user runs This flag is by default.   Send  mail
+to  the user if the user running does not enter the correct pass-
+word.  If the command the user is attempting to run is  not  per-
+mitted by and one of the or flags are set, this flag will have no
+effect.   This  flag is by default.  If set, mail will be sent to
+the user if the invoking user exists in the file, but is not  al-
+lowed  to  run commands on the current host.  This flag is by de-
+fault.  If set, mail will be sent to the  user  if  the  invoking
+user  is  allowed  to  use but the command they are trying is not
+listed in their file entry or is explicitly denied.  This flag is
+by default.  If set, mail will be sent to the user if the  invok-
+ing  user  is  not in the file.  This flag is by default.  By de-
+fault, will look up each group the user is a member of by  group-
+ID to determine the group name (this is only done once).  The re-
+sulting  list  of  the  user's  group names is used when matching
+groups listed in the file.  This works well on systems where  the
+number  of groups listed in the file is larger than the number of
+groups a typical user belongs to.  On systems where group lookups
+are slow, where users may belong to a large number of groups,  or
+where  the  number  of  groups  listed  in the file is relatively
+small, it may be prohibitively expensive and running commands via
+may take longer than normal.  On such systems it may be faster to
+use the flag to avoid resolving the  user's  group-IDs  to  group
+names.   In  this case, must look up any group name listed in the
+file and use the group-ID instead of the group name  when  deter-
+mining whether the user is a member of the group.  If is enabled,
+group  database  lookups performed by will be keyed by group name
+as opposed to group-ID.  On  systems  where  there  are  multiple
+sources  for the group database, it is possible to have conflict-
+ing group names or group-IDs in the local  file  and  the  remote
+group  database.   On  such systems, enabling or disabling can be
+used to choose whether group database queries  are  performed  by
+name  (enabled) or ID (disabled), which may aid in working around
+group entry conflicts.  The flag  has  no  effect  when  data  is
+stored  in  LDAP.  This flag is by default.  This setting is only
+supported by version 1.8.18 or higher.  If set, all commands  run
+via  will behave as if the tag has been set, unless overridden by
+an tag.  Some commands may not work properly when is enabled, due
+to the way it intercept sub-commands.   See  the  description  of
+above  as  well  as  the section at the end of this manual.  This
+flag is by default.  This setting is only  supported  by  version
+1.9.8 or higher and is incompatible with SELinux RBAC support un-
+less  the  system supports filter mode.  On most systems, the dy-
+namic loader will ignore (or the equivalent)  when  running  set-
+user-ID  and  set-group-ID programs, effectively disabling inter-
+cept mode.  To prevent this from happening,  will  not  permit  a
+set-user-ID  or  set-group-ID program to be run in intercept mode
+unless is enable.  This flag has no effect unless the flag is en-
+abled or the tag has been set for the command.  This flag  is  by
+default  when  the  option is set to otherwise it default to This
+setting is only supported by version 1.9.8 or  higher.   If  set,
+commands run by an intercepted process must be authenticated when
+the user's time stamp is not current.  For example, if a shell is
+run  with  enabled,  as soon as the invoking user's time stamp is
+out of date, subsequent commands will need to  be  authenticated.
+This flag has no effect unless the flag is enabled or the tag has
+been set for the command.  This flag is by default.  This setting
+is  only  supported by version 1.9.8 or higher.  If set, will at-
+tempt to verify that a command run in intercept mode has the  ex-
+pected  path  name,  command line arguments and environment.  The
+process will be stopped after has completed but  before  the  new
+command  has  had  a  chance to run.  To verify the command, will
+read the command's path from the command line arguments and envi-
+ronment from the process's memory, and compare them  against  the
+arguments  that  were  passed  to In the event of a mismatch, the
+command will be sent a signal and terminated.  This can help pre-
+vent a time of check versus time of use issue with intercept mode
+where the arguments could be altered after the policy check.  The
+checks can only be performed if the  file  system  is  available.
+This flag has no effect unless the flag is enabled or the tag has
+been set for the command and the option is set to This setting is
+incompatible  with  programs that change their root directory via
+If a program changes its  root  directory,  path  names  will  no
+longer  match  those  seen by the parent process and sub-commands
+will be terminated before they have a chance to run.   This  flag
+is  by default.  This setting is only supported by version 1.9.12
+or higher.  If set, netgroup lookups will be performed using  the
+full  netgroup tuple: host name, user name, and domain (if one is
+set).  Historically, only matched the user name  and  domain  for
+netgroups used in a and only matched the host name and domain for
+netgroups  used  in  a This flag is by default.  If set, all com-
+mands run via will behave as if the  tag  has  been  set,  unless
+overridden  by  an  tag.  See the description of above as well as
+the section at the end of this manual.  This flag is by  default.
+If  set, authentication will be attempted even in non-interactive
+mode (when option  is  specified).   This  allows  authentication
+methods  that don't require user interaction to succeed.  Authen-
+tication methods that require input from the user's terminal will
+still fail.  If disabled, authentication will not be attempted in
+non-interactive mode.  This flag is by default.  This setting  is
+only  supported by version 1.9.10 or higher.  On systems that use
+PAM for authentication, will perform PAM account  validation  for
+the invoking user by default.  The actual checks performed depend
+on which PAM modules are configured.  If enabled, account valida-
+tion will be performed regardless of whether or not a password is
+required.   This  flag  is by default.  This setting is only sup-
+ported by version 1.8.28 or higher.  On systems that use PAM  for
+authentication, will set the PAM remote host value to the name of
+the  local  host when the flag is enabled.  On Linux systems, en-
+abling may result in DNS lookups of the local host name when  PAM
+is  initialized.  On Solaris versions prior to Solaris 8, must be
+enabled if is also enabled to avoid a crash in  the  Solaris  PAM
+implementation.   This  flag  is by default on systems other than
+Solaris.  This setting is only  supported  by  version  1.9.0  or
+higher.  On systems that use PAM for authentication, will set the
+PAM  remote  user value to the name of the user that invoked sudo
+when the flag is enabled.  This flag is by default.  This setting
+is only supported by version 1.9.0 or higher.   On  systems  that
+use PAM for authentication, will create a new PAM session for the
+command  to  be run in.  Unless is given the or options, PAM ses-
+sion modules are run with the flag enabled.  This  prevents  last
+login  information from being displayed for every command on some
+systems.  Disabling may be needed on older PAM implementations or
+on operating systems where opening a PAM session changes the utmp
+or wtmp files.  If PAM session support is disabled, resource lim-
+its may not be updated for the command being  run.   If  and  are
+disabled,  has  not been set and I/O logging has not been config-
+ured, will execute the command directly instead of running it  as
+a  child process.  This flag is by default.  This setting is only
+supported by version 1.8.7 or higher.  On systems  that  use  PAM
+for authentication, will attempt to establish credentials for the
+target  user by default, if supported by the underlying authenti-
+cation system.  One example of a credential is a Kerberos ticket.
+If and are disabled, has not been set and  I/O  logging  has  not
+been  configured,  will  execute  the command directly instead of
+running it as a child process.  This flag is  by  default.   This
+setting  is  only  supported by version 1.8.8 or higher.  If set,
+PAM authentication will be performed in silent mode.   This  pre-
+vents PAM authentication modules from generating output.  In some
+cases,  this may suppress important information about why authen-
+tication failed.  For example, PAM modules such as will only dis-
+play a warning if is disabled.  This flag is  by  default.   This
+setting  is  only supported by version 1.9.16 or higher.  If set,
+the prompt specified by or the environment variable  will  always
+be  used  and will replace the prompt provided by a PAM module or
+other authentication method.  This flag is by default.  Normally,
+will tell the user when a command could not be found in their en-
+vironment variable.  Some sites may wish to disable  this  as  it
+could  be  used to gather information on the location of executa-
+bles that the normal user does not have access to.  The disadvan-
+tage is that if the executable is simply not in the  user's  will
+tell  the  user that they are not allowed to run it, which can be
+confusing.  This flag is by default.  By default, will initialize
+the group vector to the list of groups the  target  user  is  in.
+When  is set, the user's existing group vector is left unaltered.
+The real and effective group-IDs, however, are still set to match
+the target user.  This flag is by default.  By default, reads the
+password like most other Unix programs, by turning off echo until
+the user hits the return (or enter) key.  Some users become  con-
+fused  by this as it appears to them that has hung at this point.
+When is set, will provide visual feedback when the user presses a
+key.  This does have a security impact as an onlooker may be able
+to determine the length of the password being entered.  This flag
+is by default.  If set, will only run when the user is logged  in
+to a real tty.  When this flag is set, can only be run from a lo-
+gin  session  and not via other means such as or cgi-bin scripts.
+This flag is by default.  If set, is allowed to  run  too.   Dis-
+abling  this prevents users from commands to get a shell by doing
+something like Note, however, that turning off will also  prevent
+from  running  Disabling provides no real additional security; it
+exists purely for historical reasons.  This flag is  by  default.
+If  set,  will prompt for the password instead of the password of
+the invoking user when running a command or editing a file.  This
+flag is by default.  If enabled, allow matching of runas user and
+group IDs that are not present in the  password  or  group  data-
+bases.   In addition to explicitly matching unknown user or group
+IDs in a this option also allows the alias to match unknown  IDs.
+This  flag is by default.  This setting is only supported by ver-
+sion 1.8.30 or higher.  Older versions of always allowed matching
+of unknown user and group IDs.  If enabled, will  only  run  com-
+mands  as a user whose shell appears in the file, even if the in-
+voking user's would otherwise permit it.  If no file is  present,
+a  system-dependent  list of built-in default shells is used.  On
+many operating systems, system users such as do not have a  valid
+shell  and  this  flag can be used to prevent commands from being
+run as those users.  This flag is by default.   This  setting  is
+only  supported by version 1.8.30 or higher.  If set, will prompt
+for the password of the user defined by the option  (defaults  to
+instead  of the password of the invoking user when running a com-
+mand or editing a file.  This flag is by default.  If enabled and
+is invoked with the option, the environment variable will be  set
+to  the  home directory of the target user (which is the user un-
+less the option is used).  This flag is largely obsolete and  has
+no  effect unless the flag has been disabled or is present in the
+list, both of which are strongly discouraged.  This  flag  is  by
+default.  Normally, will set the and environment variables to the
+name  of the target user (the user specified by unless the option
+is given).  However, since some programs (including the RCS revi-
+sion control system) use to determine the real  identity  of  the
+user,  it  may be desirable to change this behavior.  This can be
+done by negating the set_logname option.  The option will have no
+effect if the option has not been disabled and the list  contains
+or  This  flag is by default.  When enabled, will create an entry
+in the utmp (or utmpx) file when a pseudo-terminal is  allocated.
+A  pseudo-terminal is allocated by when it is running in a termi-
+nal and one or more of the or flags is enabled.  By default,  the
+new  entry  will  be a copy of the user's existing utmp entry (if
+any), with the tty, time, type, and  pid  fields  updated.   This
+flag  is  by  default.  Allow the user to disable the option from
+the command line via the option.  Additionally, environment vari-
+ables set via the command line are not subject  to  the  restric-
+tions imposed by or As such, only trusted users should be allowed
+to  set  variables  in this manner.  This flag is by default.  If
+set and is invoked with no arguments it acts as if the option had
+been given.  That is, it runs a shell as (the shell is determined
+by the environment variable if it is set,  falling  back  on  the
+shell  listed  in  the invoking user's /etc/passwd entry if not).
+This flag is by default.  Normally, when executes a  command  the
+real  and  effective  user-IDs  are set to the target user by de-
+fault).  This option changes that behavior  such  that  the  real
+user-ID  is left as the invoking user's user-ID.  In other words,
+this makes act as a set-user-ID wrapper.  This can be  useful  on
+systems  that  disable  some  potentially dangerous functionality
+when a program is run set-user-ID.  This option is only effective
+on systems that support either the or system call.  This flag  is
+by  default.   If set, will check all directory components of the
+path to be edited for writability by the invoking user.  Symbolic
+links will not be  followed  in  writable  directories  and  will
+refuse to edit a file located in a writable directory.  These re-
+strictions  are  not  enforced when is run by On some systems, if
+all directory components of the path to be edited are  not  read-
+able  by  the target user, will be unable to edit the file.  This
+flag is by default.  This setting was first introduced in version
+1.8.15 but initially suffered from a race condition.   The  check
+for symbolic links in writable intermediate directories was added
+in  version  1.8.16.   By default, will not follow symbolic links
+when opening files.  The option can be enabled to allow  to  open
+symbolic  links.   It may be overridden on a per-command basis by
+the and tags.  This flag is by default.   This  setting  is  only
+supported  by version 1.8.15 or higher.  When logging via include
+the process ID in the log entry.  This flag is by default.   This
+setting  is  only supported by version 1.8.21 or higher.  If set,
+will prompt for the password of the user specified by the  option
+(defaults to the value of instead of the password of the invoking
+user  when  running  a command or editing a file.  This flag pre-
+cludes the use of a user-ID not listed in the passwd database  as
+an  argument  to  the  option.  This flag is by default.  If set,
+users must authenticate on a per-tty basis.  With this  flag  en-
+abled, will use a separate record in the time stamp file for each
+terminal.   If  disabled,  a  single record is used for all login
+sessions.  This option has been superseded  by  the  option.   If
+set,  will set the umask as specified in the file without modifi-
+cation.  This makes it possible to specify a umask  in  the  file
+that  is  more  permissive  than the user's own umask and matches
+historical behavior.  If is not set, will set the umask to be the
+union of the user's umask and what is specified in This  flag  is
+by  default.   If  set,  netgroups  (prefixed with may be used in
+place of a user or host.  For LDAP-based sudoers,  netgroup  sup-
+port  requires an expensive sub-string match on the server unless
+the directive is present in  the  file.   If  netgroups  are  not
+needed,  this  option  can  be disabled to reduce the load on the
+LDAP server.  This flag is by default.  If set, and is running in
+a terminal, the command will be run in a new pseudo-terminal.  If
+the process is not attached to a terminal, has no effect.  A  ma-
+licious  program  run  under may be capable of injecting commands
+into the user's terminal or running a background process that re-
+tains access to the user's terminal device even  after  the  main
+program has finished executing.  By running the command in a sep-
+arate pseudo-terminal, this attack is no longer possible.  A side
+effect  of  running  the command in a new pseudo-terminal is that
+input will be passed to the command even if  it  is  non-interac-
+tive.  This means that, for example, keys pressed while a non-in-
+teractive command is running will be consumed by instead of being
+passed to the shell after the command exits.  This flag is by de-
+fault for 1.9.14 and above.  If set, the user may specify a time-
+out  on the command line.  If the timeout expires before the com-
+mand has exited, the command will be terminated.  If a timeout is
+specified both in the file and on the command line,  the  smaller
+of the two timeouts will be used.  See the section for a descrip-
+tion  of the timeout syntax.  This flag is by default.  This set-
+ting is only supported by version 1.8.20 or higher.  If set, will
+store the name of the runas  user  when  updating  the  utmp  (or
+utmpx)  file.   By default, stores the name of the invoking user.
+This flag is by default.  By default, will refuse to run  if  the
+user must enter a password but it is not possible to disable echo
+on  the terminal.  If the flag is set, will prompt for a password
+even when it would be visible on the screen.  This makes it  pos-
+sible  to  run  things like since by default, does not allocate a
+tty when running a command.  This flag is by default.  Before  it
+executes  a  command,  will close all open file descriptors other
+than standard input, standard output, and  standard  error  (file
+descriptors  0-2).  The option can be used to specify a different
+file descriptor at which to start closing.   The  default  is  3.
+The  maximum amount of time a command is allowed to run before it
+is terminated.  See the section for a description of the  timeout
+syntax.   This  setting  is  only  supported by version 1.8.20 or
+higher.  The maximum amount of time to wait when connecting to  a
+log server or waiting for a server response.  See the section for
+a  description  of  the  timeout syntax.  The default value is 30
+seconds.  This setting is only  supported  by  version  1.9.0  or
+higher.  The maximum sequence number that will be substituted for
+the  escape  in  the  I/O log file (see the description below for
+more information).  While the value substituted for  is  in  base
+36,  itself  should  be expressed in decimal.  Values larger than
+2176782336 (which corresponds to the base 36 sequence number will
+be silently  truncated  to  2176782336.   The  default  value  is
+2176782336.   Once the local sequence number reaches the value of
+it will to zero, after which will truncate and reuse any existing
+I/O log path names.  This setting is only  supported  by  version
+1.8.7  or  higher.   The  number  of  tries  a user gets to enter
+his/her password before logs the failure and exits.  The  default
+is  3.  On many systems, has a relatively small log buffer.  IETF
+RFC 5424 states that syslog servers must support messages  of  at
+least 480 bytes and should support messages up to 2048 bytes.  By
+default,  creates  log messages up to 980 bytes which corresponds
+to the historic syslog implementation  which  used  a  1024  byte
+buffer  to  store  the message, date, hostname, and program name.
+To prevent syslog messages from being truncated,  will  split  up
+log  messages  that  are  larger  than  bytes.  When a message is
+split, additional parts will include the string  after  the  user
+name  and before the continued command line arguments.  This set-
+ting is only supported by version 1.8.19 or  higher.   Number  of
+characters  per line for the file log.  This value is used to de-
+cide when to wrap lines for nicer log files.  This has no  effect
+on  the  syslog  log  file, only the file log.  The default is 80
+(use 0 or negate the option to disable  word  wrap).   Number  of
+minutes  before  the password prompt times out, or 0 for no time-
+out.  The timeout may include a fractional  component  if  minute
+granularity  is insufficient, for example 2.5.  The default is 5.
+Number of minutes that can elapse before will ask for a  password
+again.   The timeout may include a fractional component if minute
+granularity is insufficient, for example 2.5.  The default is  5.
+Set this to 0 to always prompt for a password.  If set to a value
+less  than 0 the user's time stamp will not expire until the sys-
+tem is rebooted.  This can be used to allow users  to  create  or
+delete  their  own  time  stamps via and respectively.  File mode
+creation mask to use when running the command.  Negate  this  op-
+tion  or  set it to 0777 to prevent from changing the umask.  Un-
+less the flag is set, the actual umask will be the union  of  the
+user's  umask  and  the  value  of the setting, which defaults to
+0022.  This guarantees that never lowers the umask when running a
+command.  If is explicitly set in it will override any umask set-
+ting in PAM or login.conf.  If is not set in the umask  specified
+by  PAM or login.conf will take precedence.  The umask setting in
+PAM is not used for which does not create a new PAM session.   It
+set,  will  display  this message when a user is denied access to
+run the specified command, but is listed  in  the  file  for  the
+host.   This can be used to provide additional, site-specific in-
+formation to the user when a command is denied  by  the  security
+policy.   It  does not override the standard warning the user re-
+ceives when a command is denied.  Message that is displayed after
+a user fails to authenticate.  The message may include the escape
+which will expand to the number of failed password attempts.   If
+set,  it overrides the default message, Message that is displayed
+if a user enters an incorrect password.  The  default  is  unless
+insults are enabled.  A colon separated list of editor path names
+used  by and For this list is used to find an editor when none of
+the or environment variables are set to an editor that exists and
+is executable.  For it is used as a white list  of  allowed  edi-
+tors;  will choose the editor that matches the user's or environ-
+ment variable if possible, or the first editor in the  list  that
+exists and is executable if not.  Unless invoked as does not pre-
+serve the or environment variables unless they are present in the
+list  or  the  option is disabled.  The default is The underlying
+mechanism used by the and options.  It has the following possible
+values: Preload a dynamic shared object (shared library) that in-
+tercepts the and library functions.  A value of  is  incompatible
+with  SELinux  RBAC  support.   Use to intercept the system call.
+This is only supported on Linux systems where  filtering  is  en-
+abled.   If  the  file  is missing or does not contain a element,
+setting to will have no effect and will be used instead.  The de-
+fault is to use if it is supported by the system  and  if  it  is
+not.   The  top-level directory to use when constructing the path
+name for the input/output log directory.  Only used if the or op-
+tions are enabled or when the or tags are present for a  command.
+The  session sequence number, if any, is stored in the directory.
+The default is The following percent escape  sequences  are  sup-
+ported:  expanded  to a monotonically increasing base-36 sequence
+number, such as 0100A5, where every two digits are used to form a
+new directory, e.g., expanded to the invoking user's  login  name
+expanded  to  the  name  of the invoking user's real group-ID ex-
+panded to the login name of the user the command will be  run  as
+(e.g., expanded to the group name of the user the command will be
+run  as (e.g., expanded to the local host name without the domain
+name expanded to the base name of the command being run In  addi-
+tion,  any  escape  sequences  supported by the system's function
+will be expanded.  To include a  literal  character,  the  string
+should  be  used.   Any path name separator characters present in
+the user, group or host name will be replaced  with  an  underbar
+during  expansion.   The path name, relative to in which to store
+input/output logs when the or options are enabled or when the  or
+tags  are  present  for  a command.  may contain directory compo-
+nents.  The default is See the option above for a  list  of  sup-
+ported  percent  escape sequences.  In addition to the escape se-
+quences, path names that end in six or more  will  have  the  re-
+placed  with  a unique combination of digits and letters, similar
+to the function.  If the path created by  concatenating  and  al-
+ready  exists,  the  existing  I/O log file will be truncated and
+overwritten unless ends in six or more If set, will flush I/O log
+data to disk after each write  instead  of  buffering  it.   This
+makes it possible to view the logs in real-time as the program is
+executing  but  may significantly reduce the effectiveness of I/O
+log compression.  This flag is by default.  This setting is  only
+supported by version 1.8.20 or higher.  The group name to look up
+when  setting  the group-ID on new I/O log files and directories.
+If is not set, the primary group-ID of the user specified  by  is
+used.   If neither nor are set, I/O log files and directories are
+created with group-ID 0.  This setting is only supported by  ver-
+sion  1.8.19  or  higher.  The file mode to use when creating I/O
+log files.  Mode bits for read and write permissions  for  owner,
+group,  or  other  are  honored, everything else is ignored.  The
+file permissions will always include the  owner  read  and  write
+bits,  even  if they are not present in the specified mode.  When
+creating I/O log directories, search (execute) bits are added  to
+match the read and write bits specified by Defaults to 0600 (read
+and  write by user only).  This setting is only supported by ver-
+sion 1.8.19 or higher.  The user name to look up when setting the
+user and group-IDs on new I/O log files and directories.   If  is
+set,  it will be used instead of the user's primary group-ID.  By
+default, I/O log files and directories are created with user  and
+group-ID  0.   This  setting  can be useful when the I/O logs are
+stored on a Network File System (NFS) share.  Having a  dedicated
+user  own  the I/O log files means that does not write to the log
+files as user-ID 0, which is usually not permitted by NFS.   This
+setting  is  only supported by version 1.8.19 or higher.  The di-
+rectory in which stores per-user lecture status  files.   Once  a
+user  has  received the lecture, a zero-length file is created in
+this directory so that will not lecture the user again.  This di-
+rectory should be cleared when the system reboots.   The  default
+is  The  path to a certificate authority bundle file, in PEM for-
+mat, to use instead of the system's default certificate authority
+database when authenticating the log server.  The default  is  to
+use  the  system's  default certificate authority database.  This
+setting has no effect unless is set and the remote log server  is
+secured  with  TLS.   This  setting  is only supported by version
+1.9.0 or higher.  The path to the client's certificate  file,  in
+PEM  format.  This setting is required when the remote log server
+is secured with TLS and client certificate validation is enabled.
+For client certificate validation is controlled  by  the  option,
+which defaults to This setting is only supported by version 1.9.0
+or  higher.   The  path  to the client's private key file, in PEM
+format.  This setting is required when the remote log  server  is
+secured  with  TLS  and client certificate validation is enabled.
+For client certificate validation  is  controlled  by  the  flag,
+which defaults to This setting is only supported by version 1.9.0
+or  higher.   Subject  of  the mail sent to the user.  The escape
+will expand to the host name of the machine.  Default  is  As  of
+version  1.8.1  this  option is no longer supported.  The path to
+the noexec file should now be set in the file.  On  systems  that
+use  PAM  for  authentication, this is the service name used when
+the option is specified.  The default value is either or  depend-
+ing  on whether or not the option is also specified.  See the de-
+scription of for more information.  This  setting  is  only  sup-
+ported  by  version 1.9.9 or higher.  On systems that use PAM for
+authentication, this is the service name used when the option  is
+specified.   The default value is See the description of for more
+information.  This setting is only supported by version 1.8.8  or
+higher.   On systems that use PAM for authentication, the service
+name specifies the PAM policy to apply.  This usually corresponds
+to an entry in the file or a file in the directory.  The  default
+value  is  This  setting  is  only  supported by version 1.8.8 or
+higher.  The default prompt to use when asking  for  a  password;
+can  be  overridden  via  the option or the environment variable.
+The following percent escape sequences are supported: expanded to
+the local host name including the domain name (only  if  the  ma-
+chine's  host  name  is fully qualified or the option is set) ex-
+panded to the local host name without the domain name expanded to
+the user whose password is being  asked  for  (respects  the  and
+flags  in expanded to the login name of the user the command will
+be run as (defaults to expanded to the invoking user's login name
+two consecutive characters are collapsed into a single  character
+On  systems that use PAM for authentication, will only be used if
+the prompt provided by the PAM module matches the string or  This
+ensures  that  the  setting does not interfere with challenge-re-
+sponse style authentication.  The flag can be used to change this
+behavior.  The default value is The default user to run  commands
+as  if the option is not specified on the command line.  This de-
+faults to Locale to use when parsing the  sudoers  file,  logging
+commands,  and sending email.  Changing the locale may affect how
+sudoers is interpreted.  Defaults to  uses  per-user  time  stamp
+files  for credential caching.  The option can be used to specify
+the type of time stamp record used.  It has the following  possi-
+ble  values:  A  single  time  stamp  record is used for all of a
+user's login sessions,  regardless  of  the  terminal  or  parent
+process  ID.   An additional record is used to serialize password
+prompts when is used multiple times in a pipeline, but this  does
+not  affect  authentication.   A single time stamp record is used
+for all processes with the same parent process  ID  (usually  the
+shell).  Commands run from the same shell (or other common parent
+process)  will not require a password for minutes (5 by default).
+Commands run via with a different parent process ID, for  example
+from  a shell script, will be authenticated separately.  One time
+stamp record is used for each terminal, which means that a user's
+login sessions are authenticated separately.  If no  terminal  is
+present,  the  behavior is the same as Commands run from the same
+terminal will not require a password for minutes (5 by  default).
+The  time  stamp  is  stored in the kernel as an attribute of the
+terminal device.  If no terminal is present, the behavior is  the
+same as Negative values are not supported and positive values are
+limited  to a maximum of 60 minutes.  This is currently only sup-
+ported on The default value is This setting is only supported  by
+version 1.8.21 or higher.  The directory in which stores its time
+stamp  files.   This  directory should be cleared when the system
+reboots.  The default is The owner of the lecture  status  direc-
+tory, time stamp directory and all files stored therein.  The de-
+fault  is The option specifies the path to a file that is created
+the first time a user that is a member of the or groups runs Only
+available if is configured with the option.  The default value is
+The option specifies the fully qualified path to a file  contain-
+ing  variables  to be set in the environment of the program being
+run.  Entries in this file should either be of the  form  or  The
+value  may  optionally  be  enclosed  in single or double quotes.
+Variables in this file are only added if the  variable  does  not
+already  exist in the environment.  This file is considered to be
+part of the security policy, its  contents  are  not  subject  to
+other  environment  restrictions  such as and Users in this group
+are exempt from password and PATH requirements.  The  group  name
+specified  should  not  include a prefix.  This is not set by de-
+fault.  Determines whether will execute a command by its path  or
+by  an  open file descriptor.  It has the following possible val-
+ues: Always execute by file descriptor.  Never  execute  by  file
+descriptor.   Only  execute by file descriptor if the command has
+an associated digest in the file.   The  default  value  is  This
+avoids a time of check versus time of use race condition when the
+command  is located in a directory writable by the invoking user.
+will change the first element of the argument vector for  scripts
+($0  in  the  shell) due to the way the kernel runs script inter-
+preters.  Instead of being a normal path, it will refer to a file
+descriptor.  For example, on Solaris and on Linux.  A  workaround
+is  to use the environment variable instead.  The setting is only
+used when the command is matched by path name.  It has no  effect
+if the command is matched by the built-in alias.  This setting is
+only  supported  by  version  1.8.20 or higher.  If the operating
+system does not support the system call, this setting has no  ef-
+fect.   A  string  containing  a group plugin with optional argu-
+ments.  The string should consist  of  the  plugin  path,  either
+fully-qualified  or  relative  to  the directory, followed by any
+configuration arguments the plugin requires.  These arguments (if
+any) will be passed to the plugin's initialization function.   If
+arguments  are  present,  the  string  must be enclosed in double
+quotes On 64-bit systems, if the plugin is present but cannot  be
+loaded,  will  look  for a 64-bit version and, if it exists, load
+that as a fallback.  The exact rules for this vary by system.  On
+Solaris, if the plugin is stored in a directory  ending  in  will
+create  a  fallback  path by appending to the directory name; be-
+comes On Linux, a directory ending in will be transformed  to  as
+the  fallback  path;  becomes  On all other systems, the fallback
+path is generated by adding a before the file extension;  becomes
+On  AIX  systems, the plugin may be either a shared object ending
+in or an archive file containing a shared object ending  in  with
+the  name  of  the  shared object in parentheses at the end.  For
+more information see This option controls when  a  short  lecture
+will  be printed along with the password prompt.  It has the fol-
+lowing possible values: Always lecture the user.   Never  lecture
+the  user.   Only  lecture the user the first time they run If no
+value is specified, a value of is implied.  Negating  the  option
+results in a value of being used.  The default value is Path to a
+file  containing  an alternate lecture that will be used in place
+of the standard lecture if the named file  exists.   By  default,
+uses  a  built-in  lecture.  This option controls when a password
+will be required when a user runs with the option.   It  has  the
+following  possible  values:  All the user's file entries for the
+current host must have the flag set to avoid entering a password.
+The user must always enter a password  to  use  the  option.   At
+least  one  of  the user's file entries for the current host must
+have the flag set to avoid entering a password.   The  user  need
+never  enter a password to use the option.  If no value is speci-
+fied, a value of is implied.  Negating the option  results  in  a
+value  of being used.  The default value is The event log format.
+Supported log formats are: Currently, this is an alias for  In  a
+future  version of will be equivalent to JSON log entries contain
+the full user details as well as the execution environment if the
+command was allowed.  Log events in (minified) JSON format.  Each
+event is written as a separate JSON object on single line without
+extraneous white space.  Due to limitations of the protocol, JSON
+events sent via may be truncated.  Log  events  in  JSON  format.
+When  logging  to  a file, the entire file is treated as a single
+JSON object consisting of multiple events,  each  event  spanning
+multiple  lines.  When logging via there is no difference between
+the and formats.  Log events in  traditional  sudo-style  format,
+see  for  details.  This setting affects logs sent via as well as
+the file specified by the setting, if any.  The default value  is
+Path  to  the log file (not the syslog log file).  Setting a path
+turns on logging to a file; negating this option  turns  it  off.
+By  default, logs via syslog.  Flags to use when invoking mailer.
+Defaults to Path to  mail  program  used  to  send  warning  mail
+(negate  to  prevent from sending mail).  Defaults to the path to
+sendmail found at configure time.  Address to use for the address
+when sending warning and error mail.  The address should  be  en-
+closed in double quotes to protect against interpreting the sign.
+Defaults  to the name of the user running Address to send warning
+and error mail to (negate to prevent from sending mail).  The ad-
+dress should be enclosed in double quotes to protect against  in-
+terpreting  the  sign.   Defaults  to  root.  The maximum size to
+which the process's address space may grow (in  bytes),  if  sup-
+ported  by  the operating system.  See for more information.  The
+largest size core dump file that may be created (in bytes).   See
+for more information.  Defaults to 0 (no core dump created).  The
+maximum amount of CPU time that the process may use (in seconds).
+See  for  more information.  The maximum size of the data segment
+for the process (in  bytes).   See  for  more  information.   The
+largest  size  file  that the process may create (in bytes).  See
+for more information.  The  maximum  number  of  locks  that  the
+process may establish, if supported by the operating system.  See
+for more information.  The maximum size that the process may lock
+in  memory (in bytes), if supported by the operating system.  See
+for more information.  The  maximum  number  of  files  that  the
+process  may  have  open.  See for more information.  The maximum
+number of processes that the user may  run  simultaneously.   See
+for  more  information.   The maximum size to which the process's
+resident set size may grow (in bytes).  See for more information.
+The maximum size to  which  the  process's  stack  may  grow  (in
+bytes).   See  for  more  information.   The option specifies the
+fully qualified path to a file containing variables to be set  in
+the  environment  of the program being run.  Entries in this file
+should be assignments in the form or separated by newline charac-
+ters.  The value may optionally be enclosed in single  or  double
+quotes.   Shell-style  variable  substitution  is  not supported.
+Empty lines and comments starting with a pound sign are  ignored.
+Variables  in  this  file are only added if the variable does not
+already exist in the environment.  Unlike the file's contents are
+not trusted and are processed in a manner similar to that of  the
+invoking  user's  environment.   If  is enabled, variables in the
+file will only be added if they are  matched  by  either  the  or
+list.  If is disabled, variables in the file are added as long as
+they  are  not matched by the list.  In either case, the contents
+of are processed before the contents of If  set,  will  use  this
+value for the root directory when running a command.  The special
+value  will  allow the user to specify the root directory via op-
+tion.  See the section for more details.  It is only possible  to
+use  as a command-specific Defaults setting if the command exists
+with the same path both inside and outside the chroot jail.  This
+restriction does not apply to global,  host,  or  user-based  De-
+faults settings or to a that includes a This setting is only sup-
+ported  by version 1.9.3 or higher.  Support for setting the root
+directory is deprecated and will be removed in a  future  version
+of  If  set,  will  use this value for the working directory when
+running a command.  The special value  will  allow  the  user  to
+specify  the  working  directory via option.  See the section for
+more details.  This setting is only supported by version 1.9.3 or
+higher.  If set, will use this value in place of the user's envi-
+ronment variable.  There are two basic use cases for To  make  it
+possible for to find system administrator commands located in di-
+rectories  that  may  not be in the default user path, such as To
+help protect scripts and programs  that  execute  other  commands
+without  first  setting  to a safe value.  Otherwise, a user with
+limited privileges may be able to run arbitrary commands  by  ma-
+nipulating  the  if the command being run executes other commands
+without using a fully-qualified path name.  Users  in  the  group
+specified  by  the option are not affected by This option is dis-
+abled by default.  Syslog facility if syslog is  being  used  for
+logging  (negate  to  disable syslog logging).  Defaults to auth.
+The following syslog facilities are supported: (if your  OS  sup-
+ports  it),  and  Syslog priority to use when the user is not al-
+lowed to run a command or when  authentication  is  unsuccessful.
+Defaults  to  alert.   The  following  syslog priorities are sup-
+ported: and Negating the option or setting it to a value of  will
+disable logging of unsuccessful commands.  Syslog priority to use
+when  the  user is allowed to run a command and authentication is
+successful.  Defaults to notice.  See for the list  of  supported
+syslog  priorities.  Negating the option or setting it to a value
+of will disable logging of successful commands.  This option con-
+trols when a password will be required when a user runs with  the
+option.   It  has  the  following possible values: All the user's
+file entries for the current host must have the flag set to avoid
+entering a password.  The user must always enter  a  password  to
+use  the option.  At least one of the user's file entries for the
+current host must have the flag set to avoid entering a password.
+The user need never enter a password to use the  option.   If  no
+value  is  specified, a value of is implied.  Negating the option
+results in a value of being used.  The default value is  Environ-
+ment  variables  to be removed from the user's environment unless
+they are considered For all variables except means that the vari-
+able's value does not contain any or  characters.   This  can  be
+used  to  guard  against  printf-style  format vulnerabilities in
+poorly-written programs.  The variable is  considered  unsafe  if
+any  of  the following are true: It consists of a fully-qualified
+path name, optionally prefixed with a colon that does  not  match
+the  location  of the directory.  It contains a path element.  It
+contains white space or non-printable characters.  It  is  longer
+than the value of The argument may be a double-quoted, space-sep-
+arated  list  or  a single value without double-quotes.  The list
+can be replaced, added to, deleted from, or disabled by using the
+and operators respectively.  Regardless of whether the option  is
+enabled  or disabled, variables specified by will be preserved in
+the environment if  they  pass  the  aforementioned  check.   The
+global  list  of environment variables to check is displayed when
+is run by with the option.  Environment variables to  be  removed
+from  the  user's  environment  when the option is not in effect.
+The argument may be a double-quoted, space-separated  list  or  a
+single  value  without  double-quotes.  The list can be replaced,
+added to, deleted from, or disabled by using  the  and  operators
+respectively.  The global list of environment variables to remove
+is displayed when is run by with the option.  Many operating sys-
+tems  will  remove potentially dangerous variables from the envi-
+ronment of any set-user-ID process (such as Environment variables
+to be preserved in the user's environment when the option  is  in
+effect.   This  allows  fine-grained control over the environment
+processes will receive.  The argument  may  be  a  double-quoted,
+space-separated  list  or  a  single value without double-quotes.
+The list can be replaced, added to, deleted from, or disabled  by
+using  the  and operators respectively.  The global list of vari-
+ables to keep is displayed when is run by with the option.   Pre-
+serving  the environment variable has security implications since
+many programs use it when searching  for  configuration  or  data
+files.   Adding to may enable a user to run unrestricted commands
+via and is strongly discouraged.  Users  wishing  to  edit  files
+with  should run (or to get their accustomed editor configuration
+instead of invoking the editor directly.  A list of one  or  more
+servers to use for remote event and I/O log storage, separated by
+white space.  Log servers must be running or another service that
+implements  the  protocol described by Server addresses should be
+of the form The host portion may be a host name, an IPv4 address,
+or an IPv6 address in square brackets.  If the optional  flag  is
+present,  the connection will be secured with Transport Layer Se-
+curity (TLS) version 1.2 or 1.3.  Versions of TLS  prior  to  1.2
+are  not  supported.   If a port is specified, it may either be a
+port number or a well-known service name as defined by the system
+service name database.  If no port is specified, port 30343  will
+be used for plaintext connections and port 30344 will be used for
+TLS connections.  When is set, event log data will be logged both
+locally  (see  the and settings) as well as remotely, but I/O log
+data will only be logged remotely.  If multiple hosts are  speci-
+fied, they will be attempted in reverse order.  If no log servers
+are  available, the user will not be able to run a command unless
+either the flag (I/O logging enabled) or the  flag  (I/O  logging
+disabled)  is set.  Likewise, if the connection to the log server
+is interrupted while is running, the command will  be  terminated
+unless  the  flag  (I/O logging enabled) or the flag (I/O logging
+disabled) is set.  This setting  is  only  supported  by  version
+1.9.0  or  higher.   A list of POSIX extended regular expressions
+used to match password prompts in the terminal output.  As an ex-
+tension, if the regular expression begins with it will be matched
+in a case-insensitive manner.  Each regular expression is limited
+to 1024 characters.  This option is only used when has been  dis-
+abled.   The  default  value is This setting is only supported by
+version 1.9.10 or higher.  The plugin supports its own plugin in-
+terface to allow non-Unix group lookups which can query  a  group
+source  other than the standard Unix group database.  This can be
+used to implement  support  for  the  syntax  described  earlier.
+Group  provider plugins are specified via the setting.  The argu-
+ment to should consist of the plugin path, either fully-qualified
+or relative to the directory, followed by any  configuration  op-
+tions  the plugin requires.  These options (if specified) will be
+passed to the plugin's initialization function.  If  options  are
+present, the string must be enclosed in double quotes The follow-
+ing  group  provider plugins are installed by default: The plugin
+supports an alternate group file that uses the same syntax as the
+file.  The path to the group file should be specified as  an  op-
+tion to the plugin.  For example, if the group file to be used is
+Defaults  group_plugin="group_file.so /etc/sudo-group" The plugin
+supports group lookups via the standard C library  functions  and
+This  plugin  can  be used in instances where the user belongs to
+groups not present in the user's supplemental group vector.  This
+plugin takes no  options:  Defaults  group_plugin=system_group.so
+The  group  provider plugin API is described in detail in can log
+events in either JSON or format, this section describes  the  log
+format.   Depending on configuration, can log events via to a lo-
+cal log file, or both.  The log format  is  almost  identical  in
+both  cases.   Any control characters present in the log data are
+formatted in octal with a leading character.  For example, a hor-
+izontal tab is stored as  and  an  embedded  carriage  return  is
+stored  as  In addition, space characters in the command path are
+stored as Command line arguments that contain spaces are enclosed
+in single quotes This makes it possible to  distinguish  multiple
+command  line  arguments  from  a  single  argument that contains
+spaces.  Literal single quotes and backslash characters  in  com-
+mand  line arguments are escaped with a backslash.  Commands that
+sudo runs are logged using the following format (split into  mul-
+tiple  lines for readability): date hostname progname: username :
+TTY=ttyname ; CHROOT=chroot ; \
+    PWD=cwd ; USER=runasuser ; GROUP=runasgroup ; TSID=logid ; \
+    ENV=env_vars COMMAND=command Where the fields are as follows:
+The date the command was run.  Typically, this is in  the  format
+If logging via the actual date format is controlled by the syslog
+daemon.  If logging to a file and the option is enabled, the date
+will  also  include  the  year.  The name of the host was run on.
+This field is only present when logging via The name of the  pro-
+gram,  usually or This field is only present when logging via The
+login name of the user who ran The short  name  of  the  terminal
+(e.g.,  or  was run on, or if there was no terminal present.  The
+root directory that the command was run in, if one was specified.
+The current working directory that was run in.  The user the com-
+mand was run as.  The group the command was run  as  if  one  was
+specified on the command line.  An I/O log identifier that can be
+used  to  replay the command's output.  This is only present when
+the or option is enabled.  A list of environment variables speci-
+fied on the command line, if specified.  The actual command  that
+was executed, including any command line arguments.  Messages are
+logged  using  the  locale specified by which defaults to the lo-
+cale.  If the user is not allowed to run the command, the  reason
+for  the  denial will follow the user name.  Possible reasons in-
+clude: The user is not listed in the file.  The user is listed in
+the file but is not allowed to run commands  on  the  host.   The
+user  is listed in the file for the host but they are not allowed
+to run the specified command.  The user  failed  to  enter  their
+password  after  3  tries.   The actual number of tries will vary
+based on the number of failed attempts and the value of  the  op-
+tion.  The option was specified but a password was required.  The
+user  specified  environment  variables  on the command line that
+were not allowed by If an error occurs, will log a  message  and,
+in  most  cases,  send  a message to the administrator via email.
+Possible errors include: encountered an error  when  parsing  the
+specified  file.  In some cases, the actual error may be one line
+above or below the line number listed, depending on the  type  of
+error.   The file contains one or more unknown Defaults settings.
+This does not prevent  from  running,  but  the  file  should  be
+checked using The time stamp directory owner, as specified by the
+setting,  could  not be found in the password database.  The file
+could not be opened for reading.  This can happen when  the  file
+is  located on a remote file system that maps user-ID 0 to a dif-
+ferent value.  Normally, tries to open the file using group  per-
+missions  to  avoid  this  problem.  Consider either changing the
+ownership of or adding an argument like  (where  is  the  user-ID
+that owns the file) to the end of the line in the file.  The file
+is  missing.   The  file exists but is not a regular file or sym-
+bolic link.  The file has the wrong owner.  If you wish to change
+the file owner, add (where is the user-ID that owns the file)  to
+the  line  in  the  file.   The permissions on the file allow all
+users to write to it.  The file must not be  world-writable,  the
+default  file mode is 0440 (readable by owner and group, writable
+by none).  The default mode may be changed via the option to  the
+line  in  the  file.  The file has the wrong group ownership.  If
+you wish to change the file group ownership, add  (where  is  the
+group-ID that owns the file) to the line in the file.  was unable
+to  read  or  create the user's time stamp file.  This can happen
+when is set to a user other than and the mode on is  not  search-
+able  by  group or other.  The default mode for is 0711.  was un-
+able to write to the user's time stamp file.  The time stamp  di-
+rectory  is  owned  by  a user other than This can occur when the
+value of has been changed.  will ignore the time stamp  directory
+until the owner is corrected.  The time stamp directory is group-
+writable;  it should be writable only by The default mode for the
+time stamp directory is 0700.  will ignore the time stamp  direc-
+tory  until the mode is corrected.  By default, logs messages via
+The and fields are added by the system's  function,  not  itself.
+As such, they may vary in format on different systems.  The maxi-
+mum  size  of  syslog messages varies from system to system.  The
+setting can be used to change the  maximum  syslog  message  size
+from  the  default value of 980 bytes.  For more information, see
+the description of If the option is set,  will  log  to  a  local
+file,  such  as  When logging to a file, uses a format similar to
+with a few important differences: The field is not present.   The
+is  only  logged if the option is enabled.  The date does not in-
+clude the year unless the option  is  enabled.   Lines  that  are
+longer  than characters (80 by default) are word-wrapped and con-
+tinued on the next line with a four character indent.  This makes
+entries easier to read for a human being, but makes it more  dif-
+ficult  to  use  on the log files.  If the option is set to 0 (or
+negated with a word wrap will be disabled.  When I/O  logging  is
+enabled, will runs the command in a pseudo-terminal, logging user
+input and/or output, depending on which flags are enabled.  There
+are  five  distinct  types of I/O that can be logged, each with a
+corresponding flag.  In addition to flags  described  the  above,
+the  flag  and  command tag set both and The flag and command tag
+set and To capture terminal input and output, run the command  in
+a pseudo-terminal, logging the input and output before passing it
+on  to  the user.  To capture the standard input, standard output
+or standard error, uses a pipe to interpose  itself  between  the
+input  or output stream, logging the I/O before passing it to the
+other end of the pipe.  I/O can be logged either to the local ma-
+chine or to a remote log server.  For local logs, I/O  is  logged
+to  the  directory  specified  by  the  option by default using a
+unique session ID that is included in the log line, prefixed with
+The option may be used to control the format of the  session  ID.
+For  remote  logs, the setting is used to specify one or more log
+servers running or another server that  implements  the  protocol
+described  by  When  logging standard input, anything sent to the
+standard input will be consumed, regardless of whether or not the
+command run via is actively reading the standard input.  This may
+have unexpected results when using in a shell script that expects
+to process the standard input.  For example, given the  following
+shell  script:  #!/bin/sh sudo echo testing echo done It will be-
+have as expected when the script is passed to the shell as  a  an
+argument:  $  sh  test.sh  testing done However, if the script is
+passed to the shell on the standard input, the command will  con-
+sume  the  rest  of the script.  This means that the statement is
+never executed.  $ sh -s < test.sh testing There are several ways
+to work around this problem: Redirect  the  standard  input  from
+when  running  a command via that does not need to read the stan-
+dard input.  sudo echo testing < /dev/null Pass the script to the
+shell by path name instead of via the standard input.  sh test.sh
+Disable logging the standard input for commands that do not  need
+to  read  the  standard input.  Defaults!/bin/echo !log_stdin De-
+pending on the command, it may not be desirable to log the  stan-
+dard  input or standard output.  For example, I/O logging of com-
+mands that send or receive large amount of data via the  standard
+output  or  standard input such as and could fill up the log file
+system with superfluous data.  It is possible to disable  logging
+of  the  standard  input and standard output for such commands as
+follows:  Cmnd_Alias  COPY_CMDS  =  /usr/bin/tar,  /usr/bin/cpio,
+/usr/bin/rsync
+
+#  Log  input  and  output but omit stdin and stdout when copying
+files.    Defaults   log_input,   log_output   Defaults!COPY_CMDS
+!log_stdin,  !log_stdout However, be aware that using the flag or
+the command tag will also enable Likewise, the flag or  the  com-
+mand  tag will enable and Careful ordering of rules may be neces-
+sary to achieve the results that you expect.  For both local  and
+remote  I/O logs, each log is stored in a separate directory that
+contains the following files: A text file containing  information
+about  the  command.   The  first  line consists of the following
+colon-delimited fields: the time the command was run, the name of
+the user who ran the name of the target user,  the  name  of  the
+target  group (optional), the terminal that was run from, and the
+number of lines and columns of  the  terminal.   The  second  and
+third  lines  contain  the  working directory the command was run
+from and the path name of the command itself (with  arguments  if
+present).  A JSON-formatted file containing information about the
+command.  This is similar to the file but contains additional in-
+formation  and is easily extensible.  The file will be used by in
+preference to the file if it exists.  The file  may  contain  the
+following elements: A JSON object containing time the command was
+run.  It consists of two values, and The number of columns of the
+terminal  the command ran on, or zero if no terminal was present.
+The fully-qualified path of the command that was run.  The number
+of lines of the terminal the command ran on, or zero if no termi-
+nal was present.  A JSON array representing the  command's  argu-
+ment  vector  as  passed to the system call.  A JSON array repre-
+senting the command's environment as passed to the  system  call.
+The  group  ID  the command ran as.  This element is only present
+when the user specifies a group on the command line.  The name of
+the group the command ran as.  This element is only present  when
+the  user specifies a group on the command line.  The user ID the
+command ran as.  The name of the user the command  ran  as.   The
+current  working  directory at the time was run.  The name of the
+host the command was run on.  The name of the user  who  ran  the
+command  via The path name of the terminal the user invoked from.
+If the command was run in a pseudo-terminal,  will  be  different
+from  the  terminal the command actually ran in.  Timing informa-
+tion used to replay the session.  Each line consists of  the  I/O
+log  entry type and amount of time since the last entry, followed
+by type-specific data.  The I/O log entry types and their  corre-
+sponding  type-specific data are: standard input, number of bytes
+in the entry standard output, number of bytes in the entry  stan-
+dard  error,  number of bytes in the entry terminal input, number
+of bytes in the entry terminal output, number of bytes in the en-
+try window change, new number lines and columns bug compatibility
+for 1.8.7 terminal output command suspend or resume,  signal  re-
+ceived  Raw input from the user's terminal, exactly as it was re-
+ceived.  This file is only present if the or flags  are  set  and
+was  run  from a terminal.  No post-processing is performed.  For
+manual viewing, you may wish to convert carriage  return  charac-
+ters  in  the log to line feeds.  For example: The standard input
+when no terminal is present, or input redirected from a  pipe  or
+file.   This file is only present if the or flags are set and the
+standard input is not connected to a terminal.  Output  from  the
+pseudo-terminal  (what the command writes to the screen).  Termi-
+nal-specific post-processing is  performed  before  the  data  is
+logged.   This  means  that,  for example, line feeds are usually
+converted to line feed/carriage return pairs and tabs may be  ex-
+panded  to spaces.  This file is only present if the or flags are
+set and was run from a terminal.  The  standard  output  when  no
+terminal  is  present,  or  output  redirected to a pipe or file.
+This file is only present if the or flags are set and  the  stan-
+dard  output  is not connected to a terminal.  The standard error
+when no terminal is present, or output redirected to  a  pipe  or
+file.   This file is only present if the or flags are set and the
+standard error is not connected to a terminal.  All  files  other
+than  are compressed in gzip format unless the flag has been dis-
+abled.  Due to buffering, it is not normally possible to  display
+the  I/O  logs in real-time as the program is executing.  The I/O
+log data will not be complete until the program run by has exited
+or has been terminated by a signal.  The flag can be used to dis-
+able buffering, in which case I/O log data is written to disk  as
+soon  as  it is available.  The output portion of an I/O log file
+can be viewed with the utility, which can also be used to list or
+search the available logs.  User input may contain sensitive  in-
+formation  such  as passwords (even if they are not echoed to the
+screen), which will be stored in the log  file  unencrypted.   In
+most  cases, logging the command output via or is all that is re-
+quired.  When logging input, consider disabling the flag.   Since
+each  session's I/O logs are stored in a separate directory, tra-
+ditional log rotation utilities cannot be used to limit the  num-
+ber  of I/O logs.  The simplest way to limit the number of I/O is
+by setting the option to the maximum number of logs you  wish  to
+store.  Once the I/O log sequence number reaches it will be reset
+to  zero and will truncate and reuse any existing I/O logs.  Sudo
+front-end configuration List of who can  run  what  Local  groups
+file  List  of  network groups I/O log files Directory containing
+time stamps for the security policy Directory containing  lecture
+status files for the security policy Initial environment for mode
+on  AIX and Linux systems Below are example file entries.  Admit-
+tedly, some of these are a bit contrived.  First, we allow a  few
+environment  variables to pass and then define our # Run X appli-
+cations through sudo; HOME is used  to  find  the  #  .Xauthority
+file.   Other  programs  use HOME to locate configuration # files
+and this may lead to privilege escalation!  Defaults env_keep  +=
+"DISPLAY HOME"
+
+#  User alias specification User_Alias      FULLTIMERS = millert,
+mikef, dowdy User_Alias      PARTTIMERS = bostley,  jwfox,  crawl
+User_Alias      WEBADMIN = will, wendy, wim
+
+#  Runas  alias specification Runas_Alias     OP = root, operator
+Runas_Alias     DB = oracle,  sybase  Runas_Alias     ADMINGRP  =
+adm, oper
+
+#  Host  alias  specification  Host_Alias      SPARC  =  bigtime,
+eclipse, moet, anchor :\                 SGI  =  grolsch,  dande-
+lion,  black  :\                 ALPHA = widget, thalamus, foobar
+:\                 HPPA = boa, nag, python Host_Alias      CUNETS
+= 128.138.0.0/255.255.0.0 Host_Alias      CSNETS = 128.138.243.0,
+128.138.204.0/24, 128.138.242.0  Host_Alias      SERVERS  =  pri-
+mary,  mail, www, ns Host_Alias      CDROM = orion, perseus, her-
+cules
+
+# Cmnd alias specification Cmnd_Alias      DUMPS  =  /usr/bin/mt,
+/usr/sbin/dump,                                 /usr/sbin/rdump,\
+                        /usr/sbin/restore,   /usr/sbin/rrestore,\
+                        sha224:0GomF8mNN3wlDt1HD9XldjJ3SNgpFd-
+bjO1+NsQ==         \                                 /home/opera-
+tor/bin/start_backups   Cmnd_Alias      KILL   =    /usr/bin/kill
+Cmnd_Alias      PRINTING     =    /usr/sbin/lpc,    /usr/bin/lprm
+Cmnd_Alias      SHUTDOWN           =           /usr/sbin/shutdown
+Cmnd_Alias      HALT  =  /usr/sbin/halt  Cmnd_Alias      REBOOT =
+/usr/sbin/reboot    Cmnd_Alias      SHELLS     =     /usr/bin/sh,
+/usr/bin/csh,  /usr/bin/ksh,\                            /usr/lo-
+cal/bin/tcsh,  /usr/bin/rsh,\                            /usr/lo-
+cal/bin/zsh        Cmnd_Alias      SU        =        /usr/bin/su
+Cmnd_Alias      PAGERS     =     /usr/bin/more,      /usr/bin/pg,
+/usr/bin/less  Here  we  override some of the compiled in default
+values.  We want to log via using the facility in all  cases  and
+for  commands  to be run with the target user's home directory as
+the working directory.  We don't want to subject  the  full  time
+staff  to  the  lecture.  User need not provide a password and we
+don't want to reset the or  environment  variables  when  running
+commands as Additionally, on the machines in the we keep an addi-
+tional  local  log file and make sure we log the year in each log
+line since the log entries will be kept around for several years.
+Lastly, we disable shell escapes for the commands in  the  PAGERS
+and This will not effectively constrain users with privileges.  #
+Override     built-in    defaults    Defaults                sys-
+log=auth,runcwd=~    Defaults>root           !set_logname     De-
+faults:FULLTIMERS     !lecture Defaults:millert        !authenti-
+cate  Defaults@SERVERS        log_year, logfile=/var/log/sudo.log
+Defaults!PAGERS         noexec The is the part that actually  de-
+termines  who  may  run  what.   root            ALL  = (ALL) ALL
+%wheel          ALL = (ALL) ALL We let and any user in group  run
+any  command  on  any  host  as  any user.  FULLTIMERS      ALL =
+NOPASSWD: ALL Full time sysadmins and may run any command on  any
+host  without  authenticating  themselves.  PARTTIMERS      ALL =
+ALL Part time sysadmins and may run any command on any  host  but
+they  must  authenticate  themselves first (since the entry lacks
+the tag).  jack            CSNETS = ALL The user may run any com-
+mand on the machines in the alias  (the  networks  128.138.243.0,
+128.138.204.0,  and  128.138.242.0).   Of  those  networks,  only
+128.138.204.0 has an explicit netmask (in CIDR notation) indicat-
+ing it is a class C network.  For the other networks in the local
+machine's    netmask    will    be    used    during    matching.
+lisa            CUNETS  = ALL The user may run any command on any
+host in the alias (the  class  B  network  128.138.0.0).   opera-
+tor        ALL  = DUMPS, KILL, SHUTDOWN, HALT, REBOOT, PRINTING,\
+                sudoedit /etc/printcap, /usr/oper/bin/  The  user
+may  run commands limited to simple maintenance.  Here, those are
+commands related to backups, killing processes, the printing sys-
+tem, shutting down the system, and any commands in the  directory
+One  command  in the Cmnd_Alias includes a sha224 digest, This is
+because the directory containing the script is  writable  by  the
+operator  user.  If the script is modified (resulting in a digest
+mismatch)  it  will  no  longer  be  possible  to  run   it   via
+joe             ALL  =  /usr/bin/su operator The user may only to
+operator.   pete            HPPA  =  /usr/bin/passwd   [A-Za-z]*,
+!/usr/bin/passwd *root*
+
+%opers          ALL  = (: ADMINGRP) /usr/sbin/ Users in the group
+may run commands in as themselves with any group in the (the  and
+groups).   The user is allowed to change anyone's password except
+for on the machines.  Because command line arguments are  matched
+as  a single, concatenated string, the wildcard will match words.
+This example assumes that does not take multiple  user  names  on
+the  command  line.  On systems with GNU options to may be speci-
+fied after the user argument.  As a result, this rule  will  also
+allow:  passwd  username  --expire  which  may  not be desirable.
+bob             SPARC = (OP) ALL : SGI = (OP) ALL  The  user  may
+run  anything  on  the and machines as any user listed in the and
+jim             +biglab = ALL The user may run any command on ma-
+chines in the netgroup.  knows that is a netgroup due to the pre-
+fix.    +secretaries    ALL   =    PRINTING,    /usr/bin/adduser,
+/usr/bin/rmuser  Users  in  the  netgroup need to help manage the
+printers as well as add and remove users, so they are allowed  to
+run  those  commands on all machines.  fred            ALL = (DB)
+NOPASSWD: ALL The user can run commands as any  user  in  the  or
+without  giving  a password.  john            ALPHA = /usr/bin/su
+[!-]*, !/usr/bin/su *root* On the machines, user may su to anyone
+except but he is not allowed to specify any options to  the  com-
+mand.   jen             ALL,  !SERVERS = ALL The user may run any
+command on any machine except for those in  the  (primary,  mail,
+www,  and ns).  jill            SERVERS = /usr/bin/, !SU, !SHELLS
+For any machine in the may run any commands in the directory  ex-
+cept  for  those commands belonging to the and While not specifi-
+cally mentioned in the rule, the commands in the  all  reside  in
+and  have  the  option  set.  steve           CSNETS = (operator)
+/usr/local/op_commands/ The user may run any command in  the  di-
+rectory   /usr/local/op_commands/  but  only  as  user  operator.
+matt            valkyrie =  KILL  On  his  personal  workstation,
+valkyrie,  needs  to  be  able  to  kill  hung processes.  WEBAD-
+MIN        www = (www) ALL, (root) /usr/bin/su www  On  the  host
+www,  any user in the (will, wendy, and wim), may run any command
+as user www  (which  owns  the  web  pages)  or  simply  to  www.
+ALL             CDROM    =    NOPASSWD:   /sbin/umount   /CDROM,\
+                /sbin/mount -o nosuid\,nodev /dev/cd0a /CDROM Any
+user may mount or unmount a CD-ROM on the machines in  the  CDROM
+(orion,  perseus, hercules) without entering a password.  This is
+a bit tedious for users to type, so it is a prime  candidate  for
+encapsulating  in  a shell script.  It is generally not effective
+to commands from using the operator.  A user can  trivially  cir-
+cumvent  this  by copying the desired command to a different name
+and then executing that.  For example: bill    ALL  =  ALL,  !SU,
+!SHELLS  Doesn't  really prevent from running the commands listed
+in or since he can simply copy  those  commands  to  a  different
+name,  or  use  a  shell  escape from an editor or other program.
+Therefore, these kind of restrictions should be considered  advi-
+sory  at  best (and reinforced by policy).  In general, if a user
+has sudo there is nothing to prevent them from creating their own
+program that gives them a shell (or making their own  copy  of  a
+shell)  regardless of any elements in the user specification.  If
+the option is in use, it is not possible to reliably negate  com-
+mands  where the path name includes globbing (aka wildcard) char-
+acters.  This is because the C library's function cannot  resolve
+relative  paths.   While  this is typically only an inconvenience
+for rules that grant privileges, it can result in a security  is-
+sue  for  rules that subtract or revoke privileges.  For example,
+given the following file  entry:  john    ALL  =  /usr/bin/passwd
+[a-zA-Z0-9]*, /usr/bin/chsh [a-zA-Z0-9]*,\
+              /usr/bin/chfn  [a-zA-Z0-9]*,  !/usr/bin/* root User
+can still run if is enabled by changing to and  running  instead.
+Another  potential  issue  is  that when executes the command, it
+must use the command or path specified by the user instead  of  a
+path listed in the file.  This may lead to a time of check versus
+time  of  use race condition.  Command line arguments are matched
+as a single, concatenated string.  This mean a wildcard character
+such as or will match across word boundaries, which may be  unex-
+pected.  For example, while a sudoers entry like: %operator ALL =
+/bin/cat  /var/log/messages*  will allow command like: $ sudo cat
+/var/log/messages.1 It will also allow: $ sudo cat  /var/log/mes-
+sages  /etc/shadow  which  is  probably not what was intended.  A
+safer alternative is to use a  regular  expression  for  matching
+command  line arguments.  The above example can be rewritten as a
+regular  expression:  %operator  ALL  =  /bin/cat  ^/var/log/mes-
+sages[^[:space:]]*$ The regular expression will only match a sin-
+gle  file  with  a name that begins with and does not include any
+white space in the name.  It is often better to do  command  line
+processing  outside  of the file in a scripting language for any-
+thing non-trivial.  Using a regular expression to match a command
+name has the same security implications as using the  option:  It
+is not possible to reliably negate commands when the path name is
+a regular expression.  When executes the command, it must use the
+command or path specified by the user instead of a path listed in
+the  file.   This  may lead to a time of check versus time of use
+race condition.  These issues do not apply to  rules  where  only
+the  command line options are matched using a regular expression.
+Once executes a program, that program is free to do  whatever  it
+pleases,  including  run  other programs.  This can be a security
+issue since it is not uncommon for a program to allow  shell  es-
+capes, which lets a user bypass access control and logging.  Com-
+mon  programs  that  permit  shell  escapes include shells (obvi-
+ously), editors, paginators, mail, and terminal programs.   There
+are four basic approaches to this problem: Avoid giving users ac-
+cess  to  commands that allow the user to run arbitrary commands.
+Many editors have a restricted mode where shell escapes are  dis-
+abled,  though is a better solution to running editors via Due to
+the large number of programs that offer shell escapes,  restrict-
+ing users to the set of programs that do not is often unworkable.
+On  most  systems, functionality can be used to transparently in-
+tercept an attempt to run a new command, allow or deny  it  based
+on  rules,  and log the result.  For example, this can be used to
+restrict the commands run from within a privileged shell or  edi-
+tor.   However,  not  all  programs operate correctly when is en-
+abled.  There are two underlying mechanisms that may be  used  to
+implement  mode:  and  The  setting can be used to select between
+them.  The first mechanism,  overrides  the  standard  C  library
+functions  that  are  used to execute a command.  It does this by
+setting an environment variable (usually to the path of a dynamic
+shared object, or shared library, containing custom  versions  of
+the and library functions that connect back to for a policy deci-
+sion.   Note,  however,  that  this  applies only to dynamically-
+linked executables.  It is not possible to intercept commands for
+statically-linked executables or executables that run  under  bi-
+nary emulation this way.  Because most dynamic loaders ignore (or
+the  equivalent)  when  running set-user-ID and set-group-ID pro-
+grams, will not permit such programs to be run  in  mode  by  de-
+fault.   The  mechanism is incompatible with SELinux RBAC support
+(but see below).  SELinux disables by default and interferes with
+file descriptor inheritance, which relies on.  The second  mecha-
+nism,  is  available on Linux systems that support filtering.  It
+uses and to intercept the system call instead  of  pre-loading  a
+dynamic  shared  object.  Both static and dynamic executables are
+supported and it is compatible with SELinux RBAC mode.  Functions
+utilizing the system call, such as are not currently intercepted.
+Programs that rely on themselves, such as  debuggers  and  system
+call tracers such as and will be unable to function if is enabled
+in  mode.   This  same restriction applies to the sudoers option.
+The feature is known to work on Solaris, *BSD, Linux, macOS,  HP-
+UX  11.x  and  AIX 5.3 and above.  It should be supported on most
+operating systems that support the  environment  variable  or  an
+equivalent.   It is not possible to intercept shell built-in com-
+mands or restrict the ability to read or  write  sensitive  files
+from  within  a shell.  To enable intercept mode on a per-command
+basis, use the tag as documented in the User  Specification  sec-
+tion  above.   Here is that example again: chuck   research = IN-
+TERCEPT: ALL This allows user to run any command on  the  machine
+in  intercept  mode.   Any commands run via shell escapes will be
+validated and logged by If you are unsure  whether  or  not  your
+system  is  capable  of supporting you can always just try it out
+and check whether or not external commands run via  a  shell  are
+logged  when is enabled.  There is an inherent race condition be-
+tween when a command is checked against rules and when it is  ac-
+tually executed.  If a user is allowed to run arbitrary commands,
+they may be able to change the arguments in the program after the
+policy  check  has  completed  but before the new command is exe-
+cuted.  Starting with version 1.9.12, the method will verify that
+the command and its arguments have not  changed  after  has  com-
+pleted  but  before execution of the new program has had a chance
+to run.  This is not the case with the method.  See the  descrip-
+tion of the setting for more information.  There are two separate
+but related ways to log additional commands.  The first is to en-
+able  I/O  logging  using  the flag.  This will log the command's
+output but will not create an event log entry when the additional
+command is run.  The second is to enable the flag in  which  will
+create  an  event  log entry every time a new command is run.  If
+I/O logging is also enabled, the log entry will  include  a  time
+offset  into  the  I/O  log to indicate when the command was run.
+This offset can be passed to the utility to replay the I/O log at
+the exact moment when the command was run.   The  flag  uses  the
+same  mechanism  as  (see  above)  and  has the same limitations.
+functionality can be used to prevent a program run by  from  exe-
+cuting  any  other  programs.   On most systems, it uses the same
+mechanism as (see above) and thus the same  caveats  apply.   The
+functionality  is  capable  of blocking execution of commands run
+via the and functions.  On Linux, a filter is used  to  implement
+On  Solaris 10 and higher, uses Solaris privileges instead of the
+environment variable.  To enable for a command, use  the  tag  as
+documented in the User Specification section above.  Here is that
+example    again:   aaron   shanty   =   NOEXEC:   /usr/bin/more,
+/usr/bin/vi This allows user to run and with enabled.  This  will
+prevent those two commands from executing other commands (such as
+a  shell).  If you are unsure whether or not your system is capa-
+ble of supporting you can  always  just  try  it  out  and  check
+whether  shell  escapes  work when is enabled.  Restricting shell
+escapes is not a panacea.  Programs running as are still  capable
+of  many  potentially  hazardous  operations (such as changing or
+overwriting files) that could lead to unintended privilege  esca-
+lation.   In  the specific case of an editor, a safer approach is
+to give the user permission to run (see below).  The  plugin  in-
+cludes support which allows users to securely edit files with the
+editor  of  their  choice.   As is a built-in command, it must be
+specified in the file without a leading path.   However,  it  may
+take command line arguments just as a normal command does.  Wild-
+cards  used  in  command  line  arguments are expected to be path
+names, so a forward slash will not be matched by a wildcard.  Un-
+like other commands, the editor is run with  the  permissions  of
+the  invoking user and with the environment unmodified.  More in-
+formation may be found in the description of the  option  in  For
+example,  to allow user operator to edit the file on any machine:
+operator ALL = sudoedit /etc/motd The operator user then runs  as
+follows: $ sudoedit /etc/motd The editor will run as the operator
+user,  not on a temporary copy of After the file has been edited,
+will be updated with the contents of the temporary  copy.   Users
+should be granted permission to edit a file that resides in a di-
+rectory  the  user  has write access to, either directly or via a
+wildcard.  If the user has write access to the  directory  it  is
+possible  to  replace  the legitimate file with a link to another
+file, allowing the editing of arbitrary files.  To prevent  this,
+starting with version 1.8.16, symbolic links will not be followed
+in writable directories and will refuse to edit a file located in
+a  writable  directory unless the option has been disabled or the
+invoking user is Additionally, in version 1.8.15 and higher, will
+refuse to open a symbolic link unless either the  option  is  en-
+abled  or the command is prefixed with the tag in the file.  will
+check the ownership of its time stamp directory  by  default  and
+ignore the directory's contents if it is not owned by or if it is
+writable by a user other than Older versions of stored time stamp
+files  in this is no longer recommended as it may be possible for
+a user to create the time stamp themselves on systems that  allow
+unprivileged  users to change the ownership of files they create.
+While the time stamp directory be cleared at reboot time, not all
+systems contain a or directory.   To  avoid  potential  problems,
+will  ignore  time  stamp files that date from before the machine
+booted on systems where the boot time is available.  Some systems
+with graphical desktop environments allow unprivileged  users  to
+change  the  system  clock.  Since relies on the system clock for
+time stamp validation, it may be possible on such systems  for  a
+user to run for longer than by setting the clock back.  To combat
+this,  uses  a  monotonic clock (which never moves backwards) for
+its time stamps if the system supports it.  will not  honor  time
+stamps  set  far  in the future.  Time stamps with a date greater
+than current_time + 2 * will be ignored and  will  log  and  com-
+plain.   If  the  option is set to the time stamp record includes
+the device number of the terminal the  user  authenticated  with.
+This provides per-terminal granularity but time stamp records may
+still  outlive  the  user's session.  Unless the option is set to
+the time stamp record also includes the session ID of the process
+that last authenticated.  This prevents  processes  in  different
+terminal sessions from using the same time stamp record.  On sys-
+tems  where a process's start time can be queried, the start time
+of the session leader is recorded in the time stamp  record.   If
+no  terminal is present or the option is set to the start time of
+the parent process is used instead.  In most cases this will pre-
+vent a time stamp record from being reused without the  user  en-
+tering  a  password when logging out and back in again.  Versions
+1.8.4 and higher of  the  plugin  support  a  flexible  debugging
+framework  that  can help track down what the plugin is doing in-
+ternally if there is a problem.  This can be  configured  in  the
+file.   The  plugin uses the same debug flag format as the front-
+end: The priorities used by in order of decreasing severity, are:
+and Each priority, when specified, also includes  all  priorities
+higher  than  it.  For example, a priority of would include debug
+messages logged at and higher.  The following subsystems are used
+by the plugin: and processing matches  every  subsystem  BSM  and
+Linux  audit  code  user authentication file settings environment
+handling LDAP-based sudoers logging support  matching  of  users,
+groups,  hosts,  and netgroups in the file network interface han-
+dling network service switch handling in file parsing  permission
+setting  The  equivalent  of for the plugin.  pseudo-terminal re-
+lated code redblack tree  internals  SSSD-based  sudoers  utility
+functions  For  example:  Debug sudoers.so /var/log/sudoers_debug
+match@info,nss@info For more information, see the  manual.   Many
+people  have  worked  on over the years; this version consists of
+code written primarily by: See the CONTRIBUTORS.md  file  in  the
+distribution (https://www.sudo.ws/about/contributors/) for an ex-
+haustive  list  of people who have contributed to The file should
+be edited by the utility which locks the file and checks for syn-
+tax errors.  If contains syntax errors, may refuse to run,  which
+is  a  serious  problem if is your only method of obtaining supe-
+ruser privileges.  Recent versions of will attempt to recover af-
+ter a syntax error by ignoring the rest of the line after encoun-
+tering an error.  Older versions of will not run  if  contains  a
+syntax  error.   When  using netgroups of machines (as opposed to
+users), if you store fully qualified host name  in  the  netgroup
+(as  is  usually the case), you either need to have the machine's
+host name be fully qualified as returned by the  command  or  use
+the  option in If you believe you have found a bug in you can ei-
+ther  file   a   bug   report   in   the   sudo   bug   database,
+https://bugzilla.sudo.ws/,     or     open     an     issue    at
+https://github.com/sudo-project/sudo/issues.  If you would prefer
+to use email, messages may be sent to  the  sudo-workers  mailing
+list,  https://www.sudo.ws/mailman/listinfo/sudo-workers (public)
+or <sudo@sudo.ws> (private).  Please do not report security  vul-
+nerabilities  through  public  GitHub issues, Bugzilla or mailing
+lists.  Instead, report them via email to  <Todd.Miller@sudo.ws>.
+You  may  encrypt  your message with PGP if you would like, using
+the key found at https://www.sudo.ws/dist/PGPKEYS.  Limited  free
+support  is  available  via  the  sudo-users  mailing  list,  see
+https://www.sudo.ws/mailman/listinfo/sudo-users to  subscribe  or
+search the archives.  is provided and any express or implied war-
+ranties, including, but not limited to, the implied warranties of
+merchantability  and  fitness  for  a particular purpose are dis-
+claimed.   See  the   LICENSE.md   file   distributed   with   or
+https://www.sudo.ws/about/license/ for complete details.
+
+

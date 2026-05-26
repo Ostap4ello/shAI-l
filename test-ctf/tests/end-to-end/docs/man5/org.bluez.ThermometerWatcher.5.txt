@@ -1,0 +1,60 @@
+org.bluez...erWatcher(5)   Linux System Administration  org.bluez...erWatcher(5)
+
+Name
+     org.bluez.ThermometerWatcher  -  BlueZ D-Bus Health Thermometer Watcher API
+     documentation
+
+Interface
+     Service
+            unique name
+
+     Interface
+            org.bluez.ThermometerWatcher1
+
+     Object path
+            freely definable
+
+   Methods
+   void MeasurementReceived(dict measurement)
+     This callback gets called when a measurement has been scanned in the  ther-
+     mometer.
+
+     Possible measurement values:
+
+     int16 Exponent
+
+     int32 Mantissa
+            Exponent  and  Mantissa values as extracted from float value defined
+            by IEEE-11073-20601.
+
+            Measurement value is calculated as (Mantissa) * (10^Exponent)
+
+            For special cases Exponent is set to 0 and Mantissa is set to one of
+            following values:
+     box center; l|l.  T{ Value T}   T{ Description T} _ T{ +(2^23 - 1)  T}   T{
+     NaN (invalid or missing data) T} _ T{ -(2^23) T}   T{ NRes T} _ T{ +(2^23 -
+     2) T}   T{ +Infinity T} _ T{ -(2^23 - 2) T}   T{ -Infinity T}
+
+     string Unit
+
+            Possible values: "celsius" or
+                   "fahrenheit"
+
+     uint64 Time (optional)
+            Time  of  measurement, if supported by device.  Expressed in seconds
+            since epoch.
+
+     string Type (optional)
+            Only present if measurement type is known.
+
+            Possible values: "armpit", "body",
+                   "ear",  "finger",  "intestines",  "mouth",  "rectum",  "toe",
+                   "tympanum"
+
+     string Measurement
+            Possible values: "final" or "intermediate"
+
+Author
+     Santiago Carot-Nemesio <sancane@gmail.com>
+
+BlueZ                               July 2011           org.bluez...erWatcher(5)

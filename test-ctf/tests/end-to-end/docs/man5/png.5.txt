@@ -1,0 +1,70 @@
+PNG(5)                         File Formats Manual                        PNG(5)
+
+NAME
+     png - Portable Network Graphics (PNG) format
+
+
+DESCRIPTION
+     PNG  (Portable Network Graphics) is an extensible file format for the loss-
+     less, portable, well-compressed storage of raster images.  PNG  provides  a
+     patent-free  replacement  for GIF, and can also replace many common uses of
+     TIFF. Indexed-color, grayscale, and truecolor images are supported, plus an
+     optional alpha channel.  Sample depths range from 1 to 16 bits.
+
+     PNG is designed to work well in online viewing applications,  such  as  the
+     World  Wide  Web,  so it is fully streamable with a progressive display op-
+     tion.  PNG is robust, providing both full file integrity checking and fast,
+     simple detection of common transmission errors.  Also, PNG can store  color
+     space data for improved color matching on heterogeneous platforms.
+
+
+SEE ALSO
+     libpng(3), zlib(3), deflate(5), and zlib(5)
+
+     Portable Network Graphics (PNG) Specification (Third Edition):
+
+            W3C Recommendation 24 June 2025
+            https://www.w3.org/TR/2025/REC-png-3-20250624/
+
+     Portable Network Graphics (PNG) Specification (Second Edition):
+
+            ISO/IEC 15948:2004(E)
+            https://www.iso.org/standard/29581.html
+
+            W3C Recommendation 10 November 2003
+            https://www.w3.org/TR/2003/REC-PNG-20031110/
+
+     Portable Network Graphics (PNG) Specification Version 1.2:
+
+            Published by the PNG Development Group on 14 July 1999
+            https://www.libpng.org/pub/png/spec/1.2/
+
+     Portable Network Graphics (PNG) Specification Version 1.1:
+
+            Published by the PNG Development Group on 15 February 1999
+            https://www.libpng.org/pub/png/spec/1.1/
+
+     Portable Network Graphics (PNG) Specification Version 1.0:
+
+            IETF RFC 2083, March 1997
+            https://www.ietf.org/rfc/rfc2083.txt
+
+            W3C Recommendation 1 October 1996
+            https://www.w3.org/TR/REC-png-961001
+
+
+AUTHORS
+     This man page: Glenn Randers-Pehrson, Cosmin Truta, Chris Lilley.
+
+     PNG Specification (Third Edition): Chris Blume et al.
+
+     PNG Specification (Second Edition): David Duce et al.
+
+     PNG Specification Version 1.2: Glenn Randers-Pehrson et al.
+
+     PNG Specification Version 1.1: Glenn Randers-Pehrson et al.
+
+     PNG Specification Version 1.0: Thomas Boutell et al.
+
+
+                                 April 15, 2026                           PNG(5)

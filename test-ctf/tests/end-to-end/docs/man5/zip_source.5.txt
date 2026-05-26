@@ -1,0 +1,19 @@
+libzip  (-lzip)  A  represents a data source (or destination when
+used for writing).  uses it for adding or replacing file contents
+for a file in a zip archive.  If the source supports seeking,  it
+can also be used to open zip archives from.  Data can come from a
+file  on  disk  or memory or a file inside an archive or provided
+via a callback function or or can be used restrict  access  to  a
+part  of  the contained data.  It can also be used as a filter to
+process the data provided by an underlying (e.g., to compress  it
+or  compute  a  checksum), created with or Sources are freed with
+Sources must support reading, and can optionally support  seeking
+and  writing.  is reference counted, and created with a reference
+count of 1.  and will take ownership of the passed source (decre-
+ment the reference count when they are done using  it),  so  only
+needs to be called when these functions return an error.  The un-
+derlying  data  (file  or  buffer)  must  remain  valid until the
+archive is closed.  Use to increase the reference count, for  ex-
+ample if you need the source after and
+
+

@@ -1,0 +1,610 @@
+In  addition  to  the  standard file, may be configured via LDAP.
+This can be especially useful for synchronizing in a large,  dis-
+tributed  environment.   Using  LDAP for has several benefits: no
+longer needs to read in its entirety.  When LDAP is  used,  there
+are only two or three LDAP queries per invocation.  This makes it
+especially fast and particularly usable in LDAP environments.  It
+is possible to specify per-entry options that override the global
+default  options.   only supports default options and limited op-
+tions associated with user/host/commands/aliases.  The syntax  is
+complicated  and can be difficult for users to understand.  Plac-
+ing the options directly in the entry is more natural.  The  pro-
+gram  is  no longer needed.  provides locking and syntax checking
+of the file.  Since LDAP updates are atomic, locking is no longer
+necessary.  Because syntax is checked when the data  is  inserted
+into  LDAP, there is no need for a specialized tool to check syn-
+tax.  The configuration is contained in the LDAP container.  Sudo
+first looks for the entry in the SUDOers  container.   If  found,
+the  multi-valued  attribute  is  parsed  in the same manner as a
+global line in In the following example,  the  variable  will  be
+preserved   in   the  environment  for  all  users.   dn:  cn=de-
+faults,ou=SUDOers,dc=my-domain,dc=com  objectClass:  top  object-
+Class: sudoRole cn: defaults description: Default sudoOption's go
+here  sudoOption: env_keep+=SSH_AUTH_SOCK The equivalent of a su-
+doer in LDAP is a It consists of the following attributes: A user
+name, user-ID (prefixed with Unix group name or ID (prefixed with
+or respectively), user netgroup (prefixed with or non-Unix  group
+name  or  ID (prefixed with or respectively).  User netgroups are
+matched using the user and domain members only; the  host  member
+is not used when matching.  Non-Unix group support is only avail-
+able  when  an appropriate is defined in the global object.  If a
+entry is preceded by an exclamation point, and the entry matches,
+the in which it resides will be  ignored.   Negated  entries  are
+only  supported  by version 1.9.9 or higher.  A host name, IP ad-
+dress, IP network, or host netgroup (prefixed with a The  special
+value  will match any host.  Host netgroups are matched using the
+host (both qualified and unqualified) and  domain  members  only;
+the  user  member  is not used when matching.  If a entry is pre-
+ceded by an exclamation point, and  the  entry  matches,  the  in
+which  it resides will be ignored.  Negated entries are only sup-
+ported by version 1.8.18 or higher.  A fully-qualified Unix  com-
+mand  name  with optional command line arguments, potentially in-
+cluding globbing characters (aka wild cards).  If a command  name
+is  preceded by an exclamation point, the user will be prohibited
+from running that command.  The built-in command is used to  per-
+mit a user to run with the option (or as It may take command line
+arguments  just as a normal command does.  Unlike other commands,
+is built into itself and must be specified in without  a  leading
+path.   The  special  value will match any command.  If a command
+name is prefixed with a SHA-2 digest, it will only be allowed  if
+the  digest  matches.  This may be useful in situations where the
+user invoking has write access to the command or its  parent  di-
+rectory.   The  following  digest  formats are supported: sha224,
+sha256, sha384, and sha512.  The digest name must be followed  by
+a  colon and then the actual digest, in either hex or base64 for-
+mat.  For example, given the  following  value  for  sudoCommand:
+sha224:0GomF8mNN3wlDt1HD9XldjJ3SNgpFdbjO1+NsQ  /bin/ls  The  user
+may only run if its sha224 digest matches  the  specified  value.
+Command  digests  are  only supported by version 1.8.7 or higher.
+Identical in function to the global options described above,  but
+specific  to  the  in  which  it resides.  A user name or user-ID
+(prefixed with that commands may be run as or a Unix group  (pre-
+fixed  with  a  or user netgroup (prefixed with a that contains a
+list of users that commands may be run  as.   The  special  value
+will  match  any  user.  If a entry is preceded by an exclamation
+point, and the entry matches, the in which it resides will be ig-
+nored.  If is specified but empty, it  will  match  the  invoking
+user.   If neither nor are present, the value of the is used (de-
+faults to root).  The attribute is  only  available  in  versions
+1.7.0  and  higher.  Older versions of use the attribute instead.
+Negated entries are only supported by version 1.8.26  or  higher.
+A  Unix group or group-ID (prefixed with that commands may be run
+as.  The special value will match any group.  If a entry is  pre-
+ceded  by  an  exclamation  point,  and the entry matches, the in
+which it resides will be ignored.  The attribute is  only  avail-
+able in versions 1.7.0 and higher.  Negated entries are only sup-
+ported by version 1.8.26 or higher.  A timestamp in the form that
+can  be  used  to  provide a start date/time for when the will be
+valid.  If multiple entries are present, the  earliest  is  used.
+Timestamps  must  be in Coordinated Universal Time (UTC), not the
+local timezone.  The minute and seconds  portions  are  optional,
+but  some  LDAP servers require that they be present (contrary to
+the RFC).  The attribute is only available in versions 1.7.5  and
+higher  and  must be explicitly enabled via the option in A time-
+stamp in the form that indicates an expiration  date/time,  after
+which  the  will  no  longer  be  valid.  If multiple entries are
+present, the last one is used.  Timestamps must be in Coordinated
+Universal Time (UTC), not the local  timezone.   The  minute  and
+seconds portions are optional, but some LDAP servers require that
+they  be  present  (contrary  to the RFC).  The attribute is only
+available in versions 1.7.5 and higher and must be explicitly en-
+abled via the option in The entries retrieved from the  LDAP  di-
+rectory  have no inherent order.  The attribute is an integer (or
+floating point value for LDAP servers that support  it)  that  is
+used  to sort the matching entries.  This allows LDAP-based sudo-
+ers entries to more closely mimic the  behavior  of  the  sudoers
+file,  where  the order of the entries influences the result.  If
+multiple entries match, the entry with the highest  attribute  is
+chosen.   This  corresponds  to the behavior of the sudoers file.
+If the attribute is not present, a value of 0  is  assumed.   The
+attribute  is  only available in versions 1.7.5 and higher.  Each
+attribute listed above should contain a single value,  but  there
+may be multiple instances of each attribute type.  A must contain
+at  least  one  and  The  following example allows users in group
+wheel to run any command on any host via  dn:  cn=%wheel,ou=SUDO-
+ers,dc=my-domain,dc=com  objectClass:  top  objectClass: sudoRole
+cn: %wheel sudoUser: %wheel sudoHost: ALL sudoCommand:  ALL  When
+looking  up  a sudoer using LDAP there are only two or three LDAP
+queries per invocation.  The first query is to parse  the  global
+options.   The second is to match against the user's name and the
+groups that the user belongs to.  (The special tag is matched  in
+this query too.)  If no match is returned for the user's name and
+groups,  a  third  query returns all entries containing user net-
+groups and other non-Unix groups and checks to see  if  the  user
+belongs  to  any  of them.  If timed entries are enabled with the
+parameter, the LDAP queries include a sub-filter that limits  re-
+trieval to entries that satisfy the time constraints, if any.  If
+the  parameter  is present and has not been disabled (see below),
+queries are performed to determine the list of netgroups the user
+belongs to before the sudoers query.  This makes it  possible  to
+include  netgroups in the sudoers query string in the same manner
+as Unix groups.  The third query mentioned above is not performed
+unless a group provider plugin is also  configured.   The  actual
+LDAP  queries performed by are as follows: Match all records with
+a containing the user, host, and  NIS  domain.   The  query  will
+match entries with either the short or long form of the host name
+or  no  host  name  specified in the tuple.  If the NIS domain is
+set, the query will only match entries that include the domain or
+for which there is no domain present.  If the NIS domain is  set,
+a wildcard is used to match any domain name but be aware that the
+NIS  schema  used by some LDAP servers may not support wild cards
+for Repeated queries are performed to  find  any  nested  records
+with a entry that refers to an already-matched record.  For sites
+with  a  large number of netgroups, using can significantly speed
+up execution time as long as the LDAP  server  supports  querying
+the  object  by  its attribute.  One of the major differences be-
+tween LDAP and file-based is that in LDAP, Aliases are  not  sup-
+ported.   For  the  most  part, there is little need for Aliases.
+Unix groups, non-Unix groups (via the or user  netgroups  can  be
+used  in place of User_Aliases and Runas_Aliases.  Host netgroups
+can be used in place of Host_Aliases.  Since groups and netgroups
+can also be stored in LDAP there is no  real  need  for  aliases.
+There are also some subtle differences in the way sudoers is han-
+dled once in LDAP.  Probably the biggest is that according to the
+RFC,  LDAP  ordering  is arbitrary and you cannot expect that At-
+tributes and Entries are returned in any specific order.  The or-
+der in which different entries are applied can be controlled  us-
+ing  the attribute, but there is no way to guarantee the order of
+attributes within a specific entry.   If  there  are  conflicting
+command  rules  in an entry, the negative takes precedence.  This
+is called paranoid behavior (not necessarily  the  most  specific
+match).  Here is an example: # /etc/sudoers: # Allow all commands
+except  shell johnny  ALL=(root) ALL,!/bin/sh # Always allows all
+commands  because  ALL  is  matched   last   puddles   ALL=(root)
+!/bin/sh,ALL
+
+#  LDAP  equivalent  of johnny # Allows all commands except shell
+dn: cn=role1,ou=Sudoers,dc=my-domain,dc=com objectClass: sudoRole
+objectClass: top cn: role1 sudoUser: johnny sudoHost:  ALL  sudo-
+Command: ALL sudoCommand: !/bin/sh
+
+#  LDAP equivalent of puddles # Notice that even though ALL comes
+last, it still behaves like # role1 since the LDAP  code  assumes
+the more paranoid configuration dn: cn=role2,ou=Sudoers,dc=my-do-
+main,dc=com  objectClass: sudoRole objectClass: top cn: role2 su-
+doUser: puddles sudoHost: ALL sudoCommand: !/bin/sh  sudoCommand:
+ALL  The  utility  can  be used to convert between file-based and
+LDAP However, there are features in the file-based  sudoers  that
+have no equivalent in LDAP-based sudoers (and vice versa).  These
+cannot  be converted automatically.  For example, a Cmnd_Alias in
+a file may be converted to a  that  contains  multiple  commands.
+Multiple  users  and/or groups may be assigned to the Also, host,
+user, runas, and command-based entries are not  supported.   How-
+ever,  a may contain one or more attributes which can often serve
+the same  purpose.   Consider  the  following  lines:  Cmnd_Alias
+PAGERS    =   /usr/bin/more,   /usr/bin/pg,   /usr/bin/less   De-
+faults!PAGERS noexec alice, bob ALL = ALL In this example,  alice
+and  bob are allowed to run all commands, but the commands listed
+in PAGERS will have the noexec flag  set,  preventing  shell  es-
+capes.  When converting this to LDAP, two sudoRole objects can be
+used:  dn:  cn=PAGERS,ou=SUDOers,dc=my-domain,dc=com objectClass:
+top objectClass: sudoRole cn: PAGERS  sudoUser:  alice  sudoUser:
+bob   sudoHost:   ALL   sudoCommand:  /usr/bin/more  sudoCommand:
+/usr/bin/pg sudoCommand: /usr/bin/less sudoOption:  noexec  sudo-
+Order: 900
+
+dn: cn=ADMINS,ou=SUDOers,dc=my-domain,dc=com objectClass: top ob-
+jectClass:  sudoRole cn: ADMINS sudoUser: alice sudoUser: bob su-
+doHost: ALL sudoCommand: ALL sudoOrder: 100 In the LDAP  version,
+the  sudoOrder attribute is used to guarantee that the PAGERS su-
+doRole with has precedence.  Unlike the version, the LDAP version
+requires that all users for whom the restriction should apply  be
+assigned  to the PAGERS sudoRole.  Using a Unix group or netgroup
+in PAGERS rather than listing each user would make this easier to
+maintain.  Per-user entries can be emulated by using one or  more
+sudoOption  attributes  in  a  sudoRole.   Consider the following
+lines: User_Alias ADMINS = john, sally Defaults:ADMINS !authenti-
+cate ADMINS ALL = (ALL:ALL) ALL In this example, john  and  sally
+are  allowed  to run any command as any user or group.  When con-
+verting this to LDAP, we can use a  Unix  group  instead  of  the
+User_Alias.  dn: cn=admins,ou=SUDOers,dc=my-domain,dc=com object-
+Class:  top objectClass: sudoRole cn: admins sudoUser: %admin su-
+doHost: ALL sudoRunAsUser: ALL sudoRunAsGroup:  ALL  sudoCommand:
+ALL  sudoOption:  !authenticate  This assumes that users john and
+sally are members of the Unix group.  In order to use  LDAP  sup-
+port, the schema must be installed on your LDAP server.  In addi-
+tion,  be sure to index the attribute.  The distribution includes
+versions of the schema for multiple LDAP servers:  Microsoft  Ac-
+tive Directory IBM Directory Server, also known as IBM Tivoli Di-
+rectory  Server,  IBM Security Directory Server, and IBM Security
+Verify Directory Netscape-derived servers such  as  the  iPlanet,
+Oracle,  and  389 Directory Servers OpenLDAP slapd 2.3 and higher
+when on-line configuration is enabled OpenLDAP  slapd  and  ldapd
+The  schema  in  OpenLDAP format is also included in the section.
+Sudo reads the file for LDAP-specific configuration.   Typically,
+this  file  is  shared  between different LDAP-aware clients.  As
+such, most of the settings are not The file is parsed  by  itself
+and  may  support options that differ from those described in the
+system's manual.  The path to may be overridden  via  the  plugin
+argument in On systems using the OpenLDAP libraries, default val-
+ues  specified  in  or the user's files are not used.  supports a
+variety of  LDAP  library  implementations,  including  OpenLDAP,
+Netscape-derived  (also  used by Solaris and HP-UX), and IBM LDAP
+(aka Tivoli).  Some options are specific to certain  LDAP  imple-
+mentations  or have implementation-specific behavior.  These dif-
+ferences are noted below where applicable.   Only  those  options
+explicitly listed in as being supported by are honored.  Configu-
+ration options are listed below in upper case but are parsed in a
+case-independent  manner.   Lines beginning with a pound sign are
+ignored.  Leading white space is removed from  the  beginning  of
+lines.   The  parameter specifies the amount of time, in seconds,
+to wait while trying to connect to an LDAP server.   If  multiple
+or  are specified, this is the amount of time to wait before try-
+ing the next one in the list.  The parameter specifies the  iden-
+tity,  in the form of a Distinguished Name (DN), to use when per-
+forming LDAP operations.  If not specified, LDAP  operations  are
+performed  with  an  anonymous  identity.   By default, most LDAP
+servers will allow anonymous access.  The parameter specifies the
+password to use when performing LDAP operations.  This  is  typi-
+cally  used  in  conjunction  with  the  parameter.  The may be a
+plaintext password or a base64-encoded string with a prefix.  For
+example: BINDPW base64:dGVzdA== If a plaintext password is  used,
+it  should  be  a simple string without quotes.  Plain text pass-
+words may not include the comment character and the  escaping  of
+special  characters with a backslash is not supported.  How alias
+dereferencing is to be performed when searching.  See the  manual
+for  a  full description of this option.  If no is specified (see
+below), the parameter specifies a white space-delimited  list  of
+LDAP  servers  to  connect to.  Each host may include an optional
+separated by a colon The parameter is deprecated in favor of  the
+specification  and  is  included for backward compatibility only.
+The path to the Kerberos 5 credential cache to use when authenti-
+cating with the remote server.  This option is only relevant when
+using SASL authentication (see below).  The version of  the  LDAP
+protocol to use when connecting to the server.  The default value
+is  protocol  version 3.  The base DN to use when performing LDAP
+netgroup queries.  Typically this is of the form for  the  domain
+my-domain.com.   Multiple  lines  may be specified, in which case
+they are queried in the order specified.  When this option is en-
+abled, will query the LDAP server  directly  when  matching  net-
+groups  present  in a instead of relying on the C library's func-
+tion.  Additionally, if the parameter (which is  enabled  by  de-
+fault)  has  not  been  disabled,  the  user's  netgroups will be
+queried directly via LDAP for use  in  the  main  sudoers  query.
+This  is  usually  faster than fetching every object containing a
+that begins with a prefix and checking whether the user is a mem-
+ber of each one.  The NIS schema used by some LDAP servers  needs
+a  modification  to support querying the object by its attribute.
+For example, OpenLDAP's requires the following change to the  at-
+tribute:  attributetype  (  1.3.6.1.1.1.1.14  NAME  'nisNetgroup-
+Triple'
+   DESC 'Netgroup triple'
+   EQUALITY caseIgnoreIA5Match
+   SUBSTR caseIgnoreIA5SubstringsMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26  )  Before  enabling  you
+should  verify  that your LDAP server supports matching For exam-
+ple, using $ ldapsearch -b $NETGROUP_BASE \
+  '(&(objectClass=nisNetgroup)(nisNetgroupTriple=\28*,USER,\29))'
+where your data includes an object with the following The parame-
+ter indicates whether or not the LDAP  server  supports  querying
+objects  by  matching  on  attributes.  By default, expects to be
+able to perform queries that match on attributes when is set, but
+not all LDAP servers support this.  If is disabled, will not  at-
+tempt to determine the list of netgroups the user belongs to, but
+will  still  use  directly  when matching netgroups.  This can be
+used to support netgroups on systems  that  lack  the  C  library
+function.  See the description of the parameter for more informa-
+tion.   An  LDAP  filter  which  is  used  to restrict the set of
+records returned when performing an LDAP netgroup  query.   Typi-
+cally, this is of the form or The default search filter is: If is
+omitted, no search filter will be used.  This option is only used
+when querying netgroups directly via LDAP.  An alias for provided
+for  OpenLDAP  compatibility.   If no is specified, the parameter
+specifies the default port to connect to on the LDAP server if  a
+parameter  does  not specify the port itself.  If no parameter is
+used, the default is port 389 for LDAP and port 636 for LDAP over
+TLS (SSL).  The parameter is deprecated in favor of the  specifi-
+cation  and is included for backward compatibility only.  The pa-
+rameter specifies the identity, in the form  of  a  Distinguished
+Name  (DN),  to  use  when performing privileged LDAP operations,
+such as queries.  The  password  corresponding  to  the  identity
+should be stored in the or the path specified by the plugin argu-
+ment  in  which  defaults  to If no is specified, the identity is
+used (if any).  Enable to enable SASL  authentication  when  con-
+necting  to an LDAP server from a privileged process, such as The
+SASL user name to use when connecting to the LDAP server.  By de-
+fault, will use an anonymous connection.   This  option  is  only
+relevant when using SASL authentication.  A white space-delimited
+list  of SASL authentication mechanisms to use.  By default, will
+use authentication.  SASL security properties or for  no  proper-
+ties.  See the SASL programmer's manual for details.  This option
+is  only relevant when using SASL authentication.  If the parame-
+ter is set to or TLS (SSL) encryption is always used when  commu-
+nicating with the LDAP server.  Typically, this involves connect-
+ing  to  the server on port 636 (ldaps).  If the parameter is set
+to the LDAP server connection is initiated normally and  TLS  en-
+cryption is begun before the bind credentials are sent.  This has
+the  advantage  of  not  requiring a dedicated port for encrypted
+communications.  This parameter is only supported by LDAP servers
+that honor the extension, such as the OpenLDAP and IBM Tivoli Di-
+rectory servers.   The  base  DN  to  use  when  performing  LDAP
+queries.   Typically  this  is  of the form for the domain my-do-
+main.com.  Multiple lines may be specified, in  which  case  they
+are  queried  in  the order specified.  This sets the debug level
+for LDAP queries.  Debugging information is printed to the  stan-
+dard  error.  A value of 1 results in a moderate amount of debug-
+ging information.  A value of 2 shows the results of the  matches
+themselves.  This parameter should not be set in a production en-
+vironment  as  the  extra information is likely to confuse users.
+The parameter is deprecated and will be removed in a  future  re-
+lease.   The  same  information  is  now logged via the debugging
+framework using the subsystem at priorities and for values 1  and
+2  respectively.   See the manual for details on how to configure
+debugging.  An LDAP filter which is used to restrict the  set  of
+records  returned  when performing a LDAP query.  Typically, this
+is of the form or The default search filter is: If is omitted, no
+search filter will be used.  Whether or not to evaluate  the  and
+attributes  that  implement  time-dependent sudoers entries.  The
+parameter specifies the amount of time, in seconds, to wait for a
+response to an LDAP query.  The parameter specifies the amount of
+time, in seconds, to wait for a response from  the  various  LDAP
+APIs.   An  alias  for for OpenLDAP compatibility.  The path to a
+certificate authority bundle which contains the certificates  for
+all  the  Certificate  Authorities  the client knows to be valid,
+e.g., This option is only supported by  the  OpenLDAP  libraries.
+Netscape-derived LDAP libraries use the same certificate database
+for  CA  and client certificates (see Similar to but instead of a
+file, it is a directory containing individual Certificate Author-
+ity certificates, e.g., The directory specified by is checked af-
+ter This option is only supported by the OpenLDAP libraries.  The
+path to a file containing the client  certificate  which  can  be
+used to authenticate the client to the LDAP server.  The certifi-
+cate  type  depends  on the LDAP libraries used.  Unused, the key
+database specified by contains both keys and certificates.   When
+using Netscape-derived libraries, this file may also contain Cer-
+tificate Authority certificates.  If enabled, will cause the LDAP
+server's  TLS  certificated  to be verified.  If the server's TLS
+certificate cannot be verified (usually because it is  signed  by
+an  unknown  certificate authority), will be unable to connect to
+it.  If is disabled, no check is made.  Disabling this check cre-
+ates an  opportunity  for  man-in-the-middle  attacks  since  the
+server's  identity  will  not be authenticated.  If possible, the
+CA's certificate should be installed locally so it can  be  veri-
+fied.   This  option  is not supported by the IBM LDAP libraries.
+The path to a file containing the private key which  matches  the
+certificate  specified  by  The private key must not be password-
+protected.  The key type depends  on  the  LDAP  libraries  used.
+When  using  IBM  LDAP libraries, this file may also contain Cer-
+tificate Authority and client certificates and may be  encrypted.
+The  parameter allows the administer to restrict which encryption
+algorithms may be used for TLS (SSL) connections.  See the OpenL-
+DAP or IBM Tivoli Directory Server manual for a list of valid ci-
+phers.  This option is  not  supported  by  Netscape-derived  li-
+braries.  The contains the password used to decrypt the key data-
+base  on clients using the IBM LDAP library.  The may be a plain-
+text password or a base64-encoded string with a prefix.  For  ex-
+ample: TLS_KEYPW base64:dGVzdA== If a plaintext password is used,
+it  should  be  a simple string without quotes.  Plain text pass-
+words may not include the comment character and the  escaping  of
+special  characters  with  a backslash is not supported.  If this
+option is used, must not be world-readable to avoid exposing  the
+password.   Alternately,  a  can be used to store the password in
+encrypted form (see below).  If no is specified, a will  be  used
+if  it exists.  The must have the same path as the file specified
+by but use a file extension instead of for  example  The  default
+that ships with the IBM Tivoli Directory Server is encrypted with
+the  password  The utility can be used to manage the key database
+and create a This option is only supported by the  IBM  LDAP  li-
+braries.   The  parameter controls how the LDAP server's TLS cer-
+tificated will be verified (if at all).  If the server's TLS cer-
+tificate cannot be verified (usually because it is signed  by  an
+unknown  certificate authority), will be unable to connect to it.
+The following values are supported: The server  certificate  will
+not  be requested or checked.  The server certificate will be re-
+quested.  A missing or invalid certificate  is  ignored  and  not
+considered  an  error.  The server certificate will be requested.
+A missing certificate is ignored but an invalid certificate  will
+result in a connection error.  The server certificate will be re-
+quested.   A missing or invalid certificate will result in a con-
+nection error.  This is the default  behavior.   This  option  is
+only  supported  by the OpenLDAP libraries.  Other LDAP libraries
+only support the parameter.  The parameter specifies the path  to
+an  entropy  source for systems that lack a random device.  It is
+generally used in conjunction with or This option  is  only  sup-
+ported by the OpenLDAP libraries.  Specifies a white space-delim-
+ited  list  of  one or more URIs describing the LDAP server(s) to
+connect to.  The may be either the latter being for servers  that
+support TLS (SSL) encryption.  If no is specified, the default is
+port  389 for or port 636 for If no is specified, will connect to
+Multiple lines are treated identically to a line containing  mul-
+tiple  entries.  Only systems using the OpenSSL libraries support
+the mixing of and URIs.  Both the Netscape-derived and  IBM  LDAP
+libraries used on most commercial versions of Unix are only capa-
+ble of supporting one or the other.  Enable for LDAP servers that
+support  SASL  authentication.  The SASL user name to use when is
+enabled.  See the entry in the section.  Unless it is disabled at
+build time, consults the Name Service Switch file, to specify the
+search order.  Sudo looks for a line beginning with and uses this
+to determine the search order.  By default, does not stop search-
+ing after the first match and later matches take precedence  over
+earlier  ones (unless is used, see below).  The following sources
+are recognized: read sudoers from read sudoers from LDAP In addi-
+tion, a subset of action statements  is  supported,  specifically
+and  These  will unconditionally terminate the search if the user
+was either found  or  not  found  in  the  immediately  preceding
+source.  Other action statements tokens are not supported, nor is
+test  negation  with  To consult LDAP first followed by the local
+sudoers file (if it exists), use: sudoers: ldap files To  consult
+LDAP only when no match is found in the local sudoers file (if it
+exists), use: sudoers: files [SUCCESS=return] ldap The local file
+can  be ignored completely by using: sudoers: ldap If the file is
+not present or there is no sudoers line, the following default is
+assumed: sudoers: files The file is supported even when  the  un-
+derlying operating system does not support it, except on AIX (see
+below).   On AIX systems, the file is consulted instead of simply
+treats as a variant of information in the previous section  unre-
+lated  to  the file format itself still applies.  To consult LDAP
+first followed by the local sudoers file (if it exists), use: su-
+doers = ldap, files The local file can be ignored  completely  by
+using: sudoers = ldap To treat LDAP as authoritative and only use
+the  local  sudoers file if the user is not present in LDAP, use:
+sudoers = ldap = auth, files In the above example, the  qualifier
+only  affects user lookups; both LDAP and will be queried for en-
+tries.  If the file is not present or there is no  sudoers  line,
+the following default is assumed: sudoers = files On systems with
+the (SSSD) and where has been built with SSSD support, it is pos-
+sible  to  use  SSSD  to  cache  LDAP  rules.  To use SSSD as the
+source, you should use instead of for the sudoers  entry  in  The
+file  is not used by the SSSD back end.  See for more information
+on configuring to work with SSSD.  LDAP configuration file deter-
+mines sudoers source order determines sudoers source order on AIX
+# Either specify one or more URIs or one or more host:port pairs.
+# If neither is specified sudo will default  to  localhost,  port
+389.   #  #host           ldapserver  #host           ldapserver1
+ldapserver2:390 # # Default port if  host  is  specified  without
+one,  defaults  to 389.  #port          389 # # URI will override
+the host and  port  settings.   uri             ldap://ldapserver
+#uri                      ldaps://secureldapserver           #uri
+ldaps://secureldapserver ldap://ldapserver  #  #  The  amount  of
+time,  in  seconds,  to wait while trying to connect to # an LDAP
+server.  bind_timelimit 30 # # The amount of time, in seconds, to
+wait while performing an LDAP query.  timelimit 30 #  #  Must  be
+set  or  sudo  will ignore LDAP; may be specified multiple times.
+sudoers_base   ou=SUDOers,dc=my-domain,dc=com # # verbose sudoers
+matching from ldap #sudoers_debug 2 # # Enable support for  time-
+based  entries in sudoers.  #sudoers_timed yes # # optional proxy
+credentials   #binddn          <who   to   search   as>   #bindpw
+<password>  #rootbinddn     <who to search as, uses /etc/ldap.se-
+cret for bindpw>  #  #  LDAP  protocol  version,  defaults  to  3
+#ldap_version  3  # # Define if you want to use an encrypted LDAP
+connection.  # Typically, you must  also  set  the  port  to  636
+(ldaps).   #ssl  on  #  #  Define if you want to use port 389 and
+switch to # encryption before the bind credentials are  sent.   #
+Only  supported  by LDAP servers that support the start_tls # ex-
+tension such as OpenLDAP.  #ssl start_tls # # Additional TLS  op-
+tions  follow that allow tweaking of the # SSL/TLS connection.  #
+#tls_checkpeer yes # verify server SSL certificate #tls_checkpeer
+no  # ignore server SSL certificate # # If you enable  tls_check-
+peer,  specify  either  tls_cacertfile  # or tls_cacertdir.  Only
+supported    when    using    OpenLDAP.     #     #tls_cacertfile
+/etc/certs/trusted_signers.pem #tls_cacertdir  /etc/certs # # For
+systems  that  don't have /dev/random # use this along with PRNGD
+or EGD.pl to seed the # random number pool  to  generate  crypto-
+graphic  session  keys.  # Only supported when using OpenLDAP.  #
+#tls_randfile /etc/egd-pool # # You may  restrict  which  ciphers
+are  used.  Consult your SSL # documentation for which options go
+here.  # Only supported when using OpenLDAP.  # #tls_ciphers <ci-
+pher-list> # # Sudo can provide a client certificate when  commu-
+nicating  to  # the LDAP server.  # Tips: #   * Enable both lines
+at the same time.  #   * Do not password protect the key file.  #
+* Ensure the keyfile is only readable by root.  # # For OpenLDAP:
+#tls_cert           /etc/certs/client_cert.pem           #tls_key
+/etc/certs/client_key.pem # # For Netscape-derived LDAP, tls_cert
+and  tls_key  may specify either # a directory, in which case the
+files in the directory must  have  the  #  default  names  (e.g.,
+cert8.db  and  key4.db),  or the path to the cert # and key files
+themselves.  However, a bug in version 5.0 of the LDAP # SDK will
+prevent specific file names from working.  For this reason  #  it
+is  suggested  that tls_cert and tls_key be set to a directory, #
+not a file name.  #  #  The  certificate  database  specified  by
+tls_cert may contain CA certs # and/or the client's cert.  If the
+client's cert is included, tls_key # should be specified as well.
+#  For  backward compatibility, "sslpath" may be used in place of
+tls_cert.  #tls_cert /var/ldap #tls_key /var/ldap #  #  If  using
+SASL   authentication   for  LDAP  (OpenSSL)  #  use_sasl  yes  #
+sasl_auth_id  <SASL  user  name>  #  rootuse_sasl  yes  #   root-
+sasl_auth_id  <SASL  user  name  for root access> # sasl_secprops
+none #  krb5_ccname  /etc/.ldapcache  The  following  schema,  in
+OpenLDAP format, is included with source and binary distributions
+as  Simply  copy it to the schema directory (e.g., add the proper
+line in and restart Sites using the optional  on-line  configura-
+tion  supported  by OpenLDAP 2.3 and higher should apply the file
+instead.  attributetype ( 1.3.6.1.4.1.15953.9.1.1
+   NAME 'sudoUser'
+   DESC 'User(s) who may  run sudo'
+   EQUALITY caseExactMatch
+   SUBSTR caseExactSubstringsMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.2
+   NAME 'sudoHost'
+   DESC 'Host(s) who may run sudo'
+   EQUALITY caseExactIA5Match
+   SUBSTR caseExactIA5SubstringsMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.3
+   NAME 'sudoCommand'
+   DESC 'Command(s) to be executed by sudo'
+   EQUALITY caseExactIA5Match
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.4
+   NAME 'sudoRunAs'
+   DESC 'User(s) impersonated by sudo'
+   EQUALITY caseExactIA5Match
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.5
+   NAME 'sudoOption'
+   DESC 'Options(s) followed by sudo'
+   EQUALITY caseExactIA5Match
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.6
+   NAME 'sudoRunAsUser'
+   DESC 'User(s) impersonated by sudo'
+   EQUALITY caseExactMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.7
+   NAME 'sudoRunAsGroup'
+   DESC 'Group(s) impersonated by sudo'
+   EQUALITY caseExactMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.8
+   NAME 'sudoNotBefore'
+   DESC 'Start of time interval for which the entry is valid'
+   EQUALITY generalizedTimeMatch
+   ORDERING generalizedTimeOrderingMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.9
+   NAME 'sudoNotAfter'
+   DESC 'End of time interval for which the entry is valid'
+   EQUALITY generalizedTimeMatch
+   ORDERING generalizedTimeOrderingMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 )
+
+attributetype ( 1.3.6.1.4.1.15953.9.1.10
+   NAME 'sudoOrder'
+   DESC 'an integer to order the sudoRole entries'
+   EQUALITY integerMatch
+   ORDERING integerOrderingMatch
+   SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 )
+
+objectclass ( 1.3.6.1.4.1.15953.9.2.1  NAME  'sudoRole'  SUP  top
+STRUCTURAL
+   DESC 'Sudoer Entries'
+   MUST ( cn )
+   MAY  (  sudoUser  $  sudoHost  $ sudoCommand $ sudoRunAs $ su-
+doRunAsUser $
+         sudoRunAsGroup $ sudoOption $  sudoNotBefore  $  sudoNo-
+tAfter $
+         sudoOrder $ description )
+   ) Many people have worked on over the years; this version con-
+sists  of code written primarily by: See the CONTRIBUTORS.md file
+in the distribution (https://www.sudo.ws/about/contributors/) for
+an exhaustive list of people who have contributed  to  There  are
+differences  in  the  way  that  LDAP-based is parsed compared to
+file-based See the section for more information.  If you  believe
+you  have  found a bug in you can either file a bug report in the
+sudo bug database, https://bugzilla.sudo.ws/, or open an issue at
+https://github.com/sudo-project/sudo/issues.  If you would prefer
+to use email, messages may be sent to  the  sudo-workers  mailing
+list,  https://www.sudo.ws/mailman/listinfo/sudo-workers (public)
+or <sudo@sudo.ws> (private).  Please do not report security  vul-
+nerabilities  through  public  GitHub issues, Bugzilla or mailing
+lists.  Instead, report them via email to  <Todd.Miller@sudo.ws>.
+You  may  encrypt  your message with PGP if you would like, using
+the key found at https://www.sudo.ws/dist/PGPKEYS.  Limited  free
+support  is  available  via  the  sudo-users  mailing  list,  see
+https://www.sudo.ws/mailman/listinfo/sudo-users to  subscribe  or
+search the archives.  is provided and any express or implied war-
+ranties, including, but not limited to, the implied warranties of
+merchantability  and  fitness  for  a particular purpose are dis-
+claimed.   See  the   LICENSE.md   file   distributed   with   or
+https://www.sudo.ws/about/license/ for complete details.
+
+

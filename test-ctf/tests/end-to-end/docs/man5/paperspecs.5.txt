@@ -1,0 +1,44 @@
+PAPERSPECS(5)                  File Formats Manual                 PAPERSPECS(5)
+
+NAME
+     paperspecs - paper size specifications
+
+DESCRIPTION
+     A  CSV  format  list  of the paper size specifications used by paper.  Each
+     line contains the following fields:
+
+     NAME,WIDTH,HEIGHT,UNIT
+
+     Valid units are: pt (PostScript points), mm, in.
+
+     A size may be defined more than once. Only the first definition is normally
+     used. This means that the user's paperspecs file  overrides  sizes  in  the
+     system file (see below).
+
+     Multiple  definitions  are  also  used  to  allow inexact definitions to be
+     looked up by size. For example, the LC_PAPER mechanism  available  on  some
+     systems  defines paper sizes in whole numbers of millimetres, which results
+     in a definition for Letter size that does not exactly match the  definition
+     in inches.
+
+FILES
+     /etc/paperspecs
+            System list of paper sizes.
+
+     $XDG_CONFIG_HOME/paperspecs
+            User's list of paper sizes. This is prepended to the system list.
+
+BUGS
+     The  CSV format is restricted: quotes are not allowed; hence, fields cannot
+     be escaped.
+
+CREDITS
+     The original list of paper names came from Ghostscript 3.68's gs_stadt.ps.
+
+AUTHOR
+     Reuben Thomas <rrt@sc3d.org>
+
+SEE ALSO
+     paper(1)
+
+                                 11 January 2014                   PAPERSPECS(5)

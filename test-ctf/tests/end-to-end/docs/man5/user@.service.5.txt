@@ -1,0 +1,138 @@
+USER@.SERVICE(5)                  user@.service                 USER@.SERVICE(5)
+
+NAME
+     user@.service, user-runtime-dir@.service, systemd-user-runtime-dir - System
+     units to start the user manager
+
+SYNOPSIS
+     user@UID.service
+
+     user-runtime-dir@UID.service
+
+     /usr/lib/systemd/systemd-user-runtime-dir
+
+     user-UID.slice
+
+DESCRIPTION
+     The  systemd(1)  system  manager  (PID  1) starts user manager instances as
+     user@UID.service, with the user's numerical UID used as the instance  iden-
+     tifier.  These instances use the same executable as the system manager, but
+     running in a mode where it starts a different set of  units.  Each  systemd
+     --user  instance  manages  a  hierarchy of units specific to that user. See
+     systemd(1) for a discussion of units and systemd.special(7) for a  list  of
+     units that form the basis of the unit hierarchies of system and user units.
+
+     user@UID.service    is   accompanied   by   the   system   unit   user-run-
+     time-dir@UID.service,  which   creates   the   user's   runtime   directory
+     /run/user/UID  when  started,  and  removes  it when it is stopped. It also
+     might apply runtime quota settings on /tmp/ and/or /dev/shm/ for the  user.
+     user-runtime-dir@UID.service  executes  the systemd-user-runtime-dir binary
+     to do the actual work.
+
+     User processes may be started by the user@.service instance, in which  case
+     they  will  be  part of that unit in the system hierarchy. They may also be
+     started elsewhere, for example by sshd(8) or a display manager like gdm, in
+     which  case  they  form  a  .scope  unit   (see   systemd.scope(5)).   Both
+     user@UID.service   and   the   scope   units   are   collected   under  the
+     user-UID.slice.
+
+     Individual user-UID.slice slices are collected under user.slice,  see  sys-
+     temd.special(7).
+
+CONTROLLING RESOURCES FOR LOGGED-IN USERS
+     Options  that control resources available to logged-in users can be config-
+     ured at a few different levels.  As  described  in  the  previous  section,
+     user.slice  contains processes of all users, so any resource limits on that
+     slice apply to all users together. The usual way to configure them would be
+     through drop-ins, e.g.  /etc/systemd/system/user.slice.d/resources.conf.
+
+     The processes of a single user are collected under user-UID.slice. Resource
+     limits for that user can be configured through drop-ins for that unit, e.g.
+     /etc/systemd/system/user-1000.slice.d/resources.conf. If the limits  should
+     apply to all users instead, they may be configured through drop-ins for the
+     truncated  unit  name, user-.slice. For example, configuration in /etc/sys-
+     temd/system/user-.slice.d/resources.conf is included in all  user-UID.slice
+     units, see systemd.unit(5) for a discussion of the drop-in mechanism.
+
+     When  a user logs in and a .scope unit is created for the session (see pre-
+     vious section), the creation of the scope may be managed  through  pam_sys-
+     temd(8).  This PAM module communicates with systemd-logind(8) to create the
+     session scope and provide access to hardware resources. Resource limits for
+     the scope may be configured  through  the  PAM  module  configuration,  see
+     pam_systemd(8).  Configuring  them through the normal unit configuration is
+     also possible, but since the name of the slice  unit  is  generally  unpre-
+     dictable, this is less useful.
+
+     In  general  any resources that apply to units may be set for user@UID.ser-
+     vice and the slice units discussed above,  see  systemd.resource-control(5)
+     for an overview.
+
+EXAMPLES
+     Example 1. Hierarchy of control groups with two logged in users
+
+         $ systemd-cgls
+         Control group /:
+         -.slice
+         ^a^auser.slice
+         ^a ^a^auser-1000.slice
+         ^a ^a ^a^auser@1000.service
+         ^a ^a ^a ^a^apulseaudio.service
+         ^a ^a ^a ^a ^a^a2386 /usr/bin/pulseaudio --daemonize=no
+         ^a ^a ^a ^a^agnome-terminal-server.service
+         ^a ^a ^a   ^a^ainit.scope
+         ^a ^a ^a     ^a^a 4127 /usr/libexec/gnome-terminal-server
+         ^a ^a ^a     ^a^a 4198 zsh
+         ^a ^a ...
+         ^a ^a ^a^asession-4.scope
+         ^a ^a   ^a^a 1264 gdm-session-worker [pam/gdm-password]
+         ^a ^a   ^a^a 2339 /usr/bin/gnome-shell
+         ^a ^a   ...
+         ^a ^a ^a^asession-19.scope
+         ^a ^a   ^a^a6497 sshd: zbyszek [priv]
+         ^a ^a   ^a^a6502 sshd: zbyszek@pts/6
+         ^a ^a   ^a^a6509 -zsh
+         ^a ^a   ^a^a6602 systemd-cgls --no-pager
+         ^a ...
+         ^a ^a^auser-1001.slice
+         ^a   ^a^asession-20.scope
+         ^a   ^a ^a^a6675 sshd: guest [priv]
+         ^a   ^a ^a^a6708 sshd: guest@pts/6
+         ^a   ^a ^a^a6717 -bash
+         ^a   ^a^auser@1001.service
+         ^a     ^a^ainit.scope
+         ^a     ^a ^a^a6680 /usr/lib/systemd/systemd --user
+         ^a     ^a ^a^a6688 (sd-pam)
+         ^a     ^a^asleep.service
+         ^a       ^a^a6706 /usr/bin/sleep 30
+         ...
+
+     User  with  UID  1000  is  logged in using gdm (session-4.scope) and ssh(1)
+     (session-19.scope),  and  also  has  a  user   manager   instance   running
+     (user@1000.service).  User  with  UID  1001  is  logged  in using ssh (ses-
+     sion-20.scope) and also has a user manager instance running (user@1001.ser-
+     vice). Those are all (leaf) system units, and form part of the slice  hier-
+     archy,  with  user-1000.slice  and  user-1001.slice  below user.slice. User
+     units are visible below the  user@.service  instances  (pulseaudio.service,
+     gnome-terminal-server.service, init.scope, sleep.service).
+
+     Example 2. Default user resource limits
+
+         $ systemctl cat user-1000.slice
+         # /usr/lib/systemd/system/user-.slice.d/10-defaults.conf
+         # ...
+         [Unit]
+         Description=User Slice of UID %j
+         After=systemd-user-sessions.service
+
+         [Slice]
+         TasksMax=33%
+
+     The  user-UID.slice  units by default do not have a unit file. The resource
+     limits are set through a drop-in, which can be easily replaced or  extended
+     following standard drop-in mechanisms discussed in the first section.
+
+SEE ALSO
+     systemd(1),   systemd.service(5),  systemd.slice(5),  systemd.resource-con-
+     trol(5), systemd.exec(5), systemd.special(7), capsule@.service(5), pam(8)
+
+systemd 260.1                                                   USER@.SERVICE(5)

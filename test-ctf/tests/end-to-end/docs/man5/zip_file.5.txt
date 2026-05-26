@@ -1,0 +1,7 @@
+libzip  (-lzip) A represents a file inside an archive, opened for
+reading.  It is created with or Data is accessed with  or  It  is
+closed  with If the containing is closed, all further uses of the
+return an error.  It is a convenience wrapper around a as created
+by and
+
+

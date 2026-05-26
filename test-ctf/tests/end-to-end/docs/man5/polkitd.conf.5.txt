@@ -1,0 +1,28 @@
+POLKITD.CONF(5)                   polkitd.conf                   POLKITD.CONF(5)
+
+NAME
+     polkitd.conf - The polkit system daemon configuration file
+
+DESCRIPTION
+     The polkitd.conf file is the configuration file for the polkitd system dae-
+     mon.  The  configuration  format  is INI style, with sections and key=value
+     pairs.
+
+     The configuration file located at /etc/polkit-1/polkitd.conf has the  high-
+     est  precedence, if found. If not, /run/polkit-1/polkitd.conf will be used.
+     If neither file is found, /usr/lib/polkit-1/polkitd.conf will be  used.  If
+     no configuration file is found, default settings compiled into polkitd will
+     be used.
+
+[POLKITD] SECTION
+     The [Polkitd] section accepts the following keys.
+
+   ExpirationSeconds=
+     Specifies the default expiration time, in seconds, for temporary authoriza-
+     tions  granted by polkitd via interactive authentication. The default value
+     is 300 (5 minutes).
+
+SEE ALSO
+     polkitd(8), polkit(8),
+
+polkit                            October 2025                   POLKITD.CONF(5)

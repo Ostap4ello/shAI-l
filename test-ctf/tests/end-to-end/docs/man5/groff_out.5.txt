@@ -1,0 +1,615 @@
+groff_out(5)                   File Formats Manual                  groff_out(5)
+
+Name
+     groff_out - GNU roff device-independent page description language
+
+Description
+     The  fundamental  operation  of  the  GNU troff formatter, troff(1), is the
+     translation of the groff(7) input language into a  series  of  instructions
+     concerned  primarily  with  placing glyphs or geometric objects at specific
+     positions on a rectangular page.  In the  following  discussion,  the  term
+     command  refers  to  this  device-independent output language, never to the
+     language intended for use by document authors.   Device-independent  output
+     commands  comprise  several categories: glyph output; font, color, and text
+     size selection; motion of the drawing position; page  advancement;  drawing
+     of  geometric  primitives;  and  device extension commands, a catch-all for
+     other operations.  The last includes directives to start and  stop  output,
+     identify  the intended output device, and embed URL hyperlinks in supported
+     output formats.
+
+   Background
+     As groff(1) is a wrapper program around GNU troff and  automatically  calls
+     an  output  driver, users seldom encounter this format under normal circum-
+     stances.  groff offers the option -Z to inhibit  postprocessing  such  that
+     GNU troff's output is sent to the standard output stream just as it is when
+     running GNU troff directly.
+
+     The  purpose  of device-independent output is to facilitate the development
+     of postprocessors by providing a common programming interface for  all  de-
+     vices.   It is a distinct, and much simpler, language from that of the for-
+     matter, troff.  The device-independent output can be thought of as a  "page
+     description language".
+
+     In the following discussion, the term troff output describes what is output
+     by  GNU  troff, while page description denotes the language accepted by the
+     parser that interprets this output for the  output  drivers.   This  parser
+     handles  whitespace  more flexibly than AT&T troff's implementation, recog-
+     nizes a GNU extension to the language, and supports a legacy compressed en-
+     coding of a subset of commands for compatibility;  otherwise,  the  formats
+     are  the  same.   (The parser for device-independent output can be found in
+     the groff sources at src/libs/libdriver/input.cpp.)
+
+     When Brian Kernighan designed AT&T troff's device-independent page descrip-
+     tion language circa 1980, he had to balance readability and maintainability
+     against severe constraints on file size and transmission speed to the  out-
+     put  device.   A  decade  later,  when  James Clark wrote groff, these con-
+     straints were no longer as tight.
+
+   Syntax
+     roff's page description language is a  sequence  of  tokens:  single-letter
+     commands  or their arguments.  Some commands accept a subcommand as a first
+     argument, followed by one or more further arguments.
+
+     AT&T device-independent troff used whitespace minimally when producing out-
+     put.  GNU troff, in contrast, attempts to make its output more  human-read-
+     able.  The whitespace characters--tab, space, and newline--are always mean-
+     ingful.   They are never used to represent spacing in the document; that is
+     done with horizontal (h, H) and vertical (v, V) positioning commands.   Any
+     sequence  of  space  and/or tab characters is equivalent to a single space,
+     separating commands from arguments and arguments from each other.  Space is
+     required only where omitting it would cause ambiguity.  A line break  sepa-
+     rates  commands.  The comment character is a pound/hash sign (#), and marks
+     the remainder of the line as a comment.  A line comprising only  whitespace
+     after comment removal does nothing but separate input tokens.
+
+     For  example, the relative horizontal motion command (h) and the command to
+     write one glyph (c), each take a single argument; the former a signed inte-
+     ger, and the latter a printable ISO 646/"ASCII"  character.   A  series  of
+     such  commands could validly occur without spaces on an input line, but GNU
+     troff follows each with a newline.
+
+     Some commands have a more complex syntax; the GNU troff  extension  command
+     for  writing  glyph  sequences  (t) accepts a variable number of arguments.
+     Those that draw geometric objects (D) or control the device (x) furthermore
+     recognize subcommand arguments.  Such commands thus must end  with  a  new-
+     line.   In GNU troff, the device extension (sub)command "x X" uniquely sup-
+     ports a line continuation syntax; a single input line contains any other.
+
+   Argument units
+     Some commands accept integer arguments that represent measurements, but the
+     scaling units of the formatter's language are never  used.   Most  commands
+     assume  a  scaling  unit  of  "u" (basic units), and others use "s" (scaled
+     points).  These are defined by the parameters  specified  in  the  device's
+     DESC  file;  see groff_font(5) and, for more on scaling units, groff(7) and
+     Groff: The GNU Implementation of troff, the groff Texinfo  manual.   Color-
+     related commands use dimensionless integers.
+
+     Note  that  single characters can have the eighth bit set, as can the names
+     of fonts and special characters (this is, glyphs).  The names of glyphs and
+     fonts can be of arbitrary length.  A glyph that is to be printed  will  al-
+     ways be in the current font.
+
+     A  string  argument  is  always terminated by the next whitespace character
+     (space, tab, or newline); an embedded # character is regarded  as  part  of
+     the  argument, not as the beginning of a comment command.  An integer argu-
+     ment is already terminated by the next non-digit character, which  then  is
+     regarded as the first character of the next argument or command.
+
+   Output structure
+     Device-independent  troff output is organized into three parts: a header, a
+     body, and a trailer.
+
+     The task of the header is to set  general  device  parameters.   GNU  troff
+     guarantees that its header consists of the following three lines:
+
+            x T device
+            x res n h v
+            x init
+
+     with  the parameters n, h, and v set as outlined in subsection "Device Con-
+     trol Commands" below.  The parser for the device-independent page  descrip-
+     tion  language  format  is able to interpret additional whitespace and com-
+     ments as well even in the header.
+
+     The body contains the document's visible content.  Once  an  output  driver
+     interprets "x init", it prepares to handle commands in general.  Processing
+     terminates when a "x stop" command is encountered; the last line of any GNU
+     troff page description output always contains such a command.
+
+     Semantically,  the body is page-oriented.  The p command starts a new page.
+     Positioning, writing, and drawing commands are performed within a page,  so
+     they  cannot  occur  before the first p command.  The output driver reckons
+     absolute positioning (by the H and V commands) with respect to the  current
+     page's origin at the top left corner, and all other positioning relative to
+     the drawing position on the page.
+
+     The trailer advances the drawing position to the bottom of the page and in-
+     forms the device that the document (or "job") has ended.
+
+Command reference
+     This section describes all page description output commands, both from AT&T
+     troff as well as extension commands issued by GNU troff.
+
+   Comment command
+     #anything<line-break>
+            Apply  comment annotation.  Ignore any characters from the # charac-
+            ter up to the next newline.  Each comment can be preceded  by  arbi-
+            trary  syntactical  space,  and every command can be terminated by a
+            comment.
+
+   Simple commands
+     The commands in this subsection have a command code consisting of a  single
+     character,  taking  a fixed number of arguments.  Most of them are commands
+     for positioning and text writing.  These commands are  smart  about  white-
+     space.   Optionally,  syntactical  space can be inserted before, after, and
+     between the command letter and its arguments.  All of  these  commands  are
+     stackable,  i.e., they can be preceded by other simple commands or followed
+     by arbitrary other commands on the same  line.   A  separating  syntactical
+     space  is  necessary  only when two integer arguments would clash or if the
+     preceding argument ends with a string argument.
+
+     C id<white-space>
+            Typeset the glyph of the special character id.  Trailing syntactical
+            space is necessary to allow special  character  names  of  arbitrary
+            length.  The drawing position is not advanced.
+
+     c c    Typeset the glyph of the ordinary character c.  The drawing position
+            is not advanced.
+
+     f n    Select the font mounted at position n.  n cannot be negative.
+
+     H n    Horizontally  move  the  drawing  position to n basic units from the
+            left edge of the page.  n cannot be negative.
+
+     h n    Move the drawing position right n basic units.  AT&T  troff  allowed
+            negative n; GNU troff does not produce such values, but groff's out-
+            put driver library handles them.
+
+     m scheme [component ...]
+            Select  the  stroke  color  using  the components in the color space
+            scheme.  Each component is an integer  between  0  and  65536.   The
+            quantity  of  components  and  their meanings vary with each scheme.
+            This command is a groff extension.
+
+            mc cyan magenta yellow
+                   Use the CMY color scheme with components cyan,  magenta,  and
+                   yellow.
+
+            md     Use the default color (no components; black in most cases).
+
+            mg gray
+                   Use a grayscale color scheme with a component ranging between
+                   0 (black) and 65536 (white).
+
+            mk cyan magenta yellow black
+                   Use the CMYK color scheme with components cyan, magenta, yel-
+                   low, and black.
+
+            mr red green blue
+                   Use  the  RGB  color  scheme  with components red, green, and
+                   blue.
+
+     N n    Typeset the glyph with index n in the current font.  n is normally a
+            non-negative integer.  The drawing position is  not  advanced.   The
+            html  and  xhtml devices use this command with negative n to produce
+            unbreakable space; the absolute value of n is taken and  interpreted
+            in basic units.
+
+     n b a  Indicate a break.  No action is performed; the command is present to
+            make  the  output more easily parsed.  The integers b and a describe
+            the vertical space amounts before and after the break, respectively.
+            GNU troff issues this command but groff's output driver library  ig-
+            nores it.  See v and V.
+
+     p n    Begin  a  new  page, setting its number to n.  Each page is indepen-
+            dent, even from those using the same number.  The  vertical  drawing
+            position  is  set  to 0.  All positioning, writing, and drawing com-
+            mands are interpreted in the context of a page, so a p command  must
+            precede them.
+
+     s n    Set  type size to n scaled points (unit z in GNU troff).  AT&T troff
+            used unscaled points (p) instead; see section "Compatibility" below.
+
+     t xyz...<white-space>
+     t xyz... dummy-arg<white-space>
+            Typeset word xyz; that is, set a sequence of ordinary  glyphs  named
+            x,  y,  z, ..., terminated by a space or newline; an optional second
+            integer argument is ignored (this allows the formatter  to  generate
+            an  even  number  of  arguments).   Each glyph is set at the current
+            drawing position, and the position is then advanced horizontally  by
+            the  glyph's width.  A glyph's width is read from its metrics in the
+            font description file, scaled to the current type size, and  rounded
+            to  a  multiple of the horizontal motion quantum.  Use the C command
+            to emplace glyphs of special characters.  The t command is  a  groff
+            extension  and  is  output only for devices whose DESC file contains
+            the tcommand directive; see groff_font(5).
+
+     u n xyz...
+     u xyz... dummy-arg<white-space>
+            Typeset word xyz with track kerning.  As t, but after  placing  each
+            glyph,  the  drawing  position is further advanced horizontally by n
+            basic units.  The u command is a groff extension and is output  only
+            for  devices  whose  DESC  file contains the tcommand directive; see
+            groff_font(5).
+
+     V n    Vertically move the drawing position to n basic units from  the  top
+            edge of the page.  n cannot be negative.
+
+     v n    Move  the  drawing  position down n basic units.  AT&T troff allowed
+            negative n; GNU troff does not produce such values, but groff's out-
+            put driver library handles them.
+
+     w      Indicate an inter-word space.  No action is performed;  the  command
+            is  present  to make the output more easily parsed.  Only inter-word
+            spaces on an output line (be they breakable or  not)  are  thus  de-
+            scribed; those resulting from horizontal motion escape sequences are
+            not.   GNU  troff  issues this command but groff's output driver li-
+            brary ignores it.  See h and H.
+
+   Graphics commands
+     Each graphics or drawing command in the page  description  language  starts
+     with  the letter "D", followed by one or two characters that specify a sub-
+     command; this is followed by a fixed or variable number  of  integer  argu-
+     ments  that  are separated by a single space character.  A "D", command may
+     not be followed by another command on the same line (apart from a comment),
+     so each "D" command is terminated by a syntactical line break.
+
+     GNU troff output follows AT&T troff's output conventions (no space  between
+     command  and subcommand, all arguments are preceded by a single space char-
+     acter), but groff's parser allows optional space between the  command  let-
+     ters  and  makes  the  space before the first argument optional.  As usual,
+     each space can be any sequence of tab and space characters.
+
+     Some graphics commands can take a variable number of  arguments.   In  this
+     case, they are integers representing a size measured in basic units u.  The
+     h arguments stand for horizontal distances where positive means right, neg-
+     ative  left.   The  v arguments stand for vertical distances where positive
+     means down, negative up.  All these distances are offsets relative  to  the
+     current location.
+
+     Each  graphics  command directly corresponds to a troff \D escape sequence.
+     See subsection "Drawing commands" of groff(7).
+
+     Unless indicated otherwise, each graphics command directly corresponds to a
+     similar groff \D escape sequence; see groff(7).
+
+     Unknown D commands are assumed to be device-specific.   Its  arguments  are
+     parsed as strings; the whole information is then sent to the postprocessor.
+
+     In the following command reference, the syntax element <line-break> means a
+     syntactical line break as defined in subsection "Separation" above.
+
+     D~ h1 v1 h2 v2 ... hn vn<line-break>
+            Draw B-spline from current position to offset (h1, v1), then to off-
+            set  (h2, v2)  if  given, etc., up to (hn, vn). This command takes a
+            variable number of argument pairs; the current position is moved  to
+            the terminal point of the drawn curve.
+
+     Da h1 v1 h2 v2<line-break>
+            Draw  arc  from current position to (h1, v1)+(h2, v2) with center at
+            (h1, v1); then move the current position to the final point  of  the
+            arc.
+
+     DC d<line-break>
+     DC d dummy-arg<line-break>
+            Draw  a  solid  circle  using the current fill color with diameter d
+            (integer in basic units u) with leftmost point at the current  posi-
+            tion;  then  move the current position to the rightmost point of the
+            circle.  An optional second integer argument is ignored (this allows
+            the formatter to generate an even number of arguments).   This  com-
+            mand is a GNU extension.
+
+     Dc d<line-break>
+            Draw  circle  line  with  diameter d (integer in basic units u) with
+            leftmost point at the current position; then move the current  posi-
+            tion to the rightmost point of the circle.
+
+     DE h v<line-break>
+            Draw a solid ellipse in the current fill color with a horizontal di-
+            ameter  of  h  and  a vertical diameter of v (both integers in basic
+            units u) with the leftmost point at the current position; then  move
+            to the rightmost point of the ellipse.  This command is a GNU exten-
+            sion.
+
+     De h v<line-break>
+            Draw  an outlined ellipse with a horizontal diameter of h and a ver-
+            tical diameter of v (both integers in basic units u) with the  left-
+            most  point at current position; then move to the rightmost point of
+            the ellipse.
+
+     DF color-scheme [component ...]<line-break>
+            Set fill color for  solid  drawing  objects  using  different  color
+            schemes;  the  analogous command for setting the color of text, line
+            graphics, and the outline of graphic objects is m.  The color compo-
+            nents are specified as integer arguments between 0 and  65536.   The
+            number  of color components and their meaning vary for the different
+            color schemes.  These commands are generated by GNU  troff's  escape
+            sequences  "\D'F ...'" \M (with no other corresponding graphics com-
+            mands).  No position changing.  This command is a GNU extension.
+
+            DFc cyan magenta yellow<line-break>
+                   Set fill color for solid drawing objects using the CMY  color
+                   scheme, having the 3 color components cyan, magenta, and yel-
+                   low.
+
+            DFd <line-break>
+                   Set  fill color for solid drawing objects to the default fill
+                   color value (black in most cases).  No component arguments.
+
+            DFg gray<line-break>
+                   Set fill color for solid drawing objects to the shade of gray
+                   given by the argument, an integer between 0 (black) and 65536
+                   (white).
+
+            DFk cyan magenta yellow black<line-break>
+                   Set fill color for solid drawing objects using the CMYK color
+                   scheme, having the 4 color components cyan, magenta,  yellow,
+                   and black.
+
+            DFr red green blue<line-break>
+                   Set  fill color for solid drawing objects using the RGB color
+                   scheme, having the 3 color components red, green, and blue.
+
+     Df n<line-break>
+            The argument n must be an integer in the range -32767 to 32767.
+
+            0<=n<=1000
+                   Set the color for filling solid drawing objects to a shade of
+                   gray, where 0 corresponds to solid white, 1000 (the  default)
+                   to  solid black, and values in between to intermediate shades
+                   of gray; this command is superseded by "DFg".
+
+            n<0 or n>1000
+                   Set the filling color to the color that  is  currently  being
+                   used  for the text and the outline, see command m.  For exam-
+                   ple, the command sequence
+
+                          mg 0 0 65536
+                          Df -1
+
+                   sets all colors to blue.
+
+            This command is a GNU extension.
+
+     Dl h v<line-break>
+            Draw line from current position to offset (h, v) (integers in  basic
+            units u); then set current position to the end of the drawn line.
+
+     Dp h1 v1 h2 v2 ... hn vn<line-break>
+            Draw  a  polygon line from current position to offset (h1, v1), from
+            there to offset (h2, v2), etc., up  to  offset  (hn, vn),  and  from
+            there  back  to  the starting position.  For historical reasons, the
+            position is changed by adding the sum of all arguments with odd  in-
+            dex to the current horizontal position and the even ones to the ver-
+            tical  position.   Although  this  doesn't make sense it is kept for
+            compatibility.  This command is a groff extension.
+
+     DP h1 v1 h2 v2 ... hn vn<line-break>
+            The same macro as the corresponding Dp command with the  same  argu-
+            ments,  but  draws  a solid polygon in the current fill color rather
+            than an outlined polygon.  The position is changed in the  same  way
+            as with Dp.  This command is a GNU extension.
+
+     Dt n<line-break>
+            Set the current line thickness to n (an integer in basic units u) if
+            n>0; if n=0 select the smallest available line thickness; otherwise,
+            the  line  thickness is made proportional to the type size, which is
+            the default.  For historical reasons,  the  horizontal  position  is
+            changed  by  adding the argument to the current horizontal position,
+            while the vertical position is not changed.  Although  this  doesn't
+            make sense, it is kept for compatibility.  This command is a GNU ex-
+            tension.
+
+   Device control commands
+     Each device control command starts with the letter "x", followed by a space
+     character  (optional  or arbitrary space or tab in GNU troff) and a subcom-
+     mand letter or word; each argument (if any) must be preceded by a syntacti-
+     cal space.  All "x", commands are terminated by a syntactical  line  break;
+     no  device  control  command can be followed by another command on the same
+     line (except a comment).
+
+     The subcommand is basically a single letter, but to  increase  readability,
+     it can be written as a word, i.e., an arbitrary sequence of characters ter-
+     minated  by  the  next tab, space, or newline character.  All characters of
+     the subcommand word but the first are simply  ignored.   For  example,  GNU
+     troff  outputs the initialization command "x i" as "x init" and the resolu-
+     tion command "x r" as "x res".
+
+     In the following, the syntax element <line-break> means a syntactical  line
+     break as defined in subsection "Separation" above.
+
+     xF name<line-break>
+            (Filename control command)
+            Use name as the intended name for the current file in error reports.
+            This  is  useful  for  remembering the original file name when groff
+            uses its internal piping mechanism.  The input file is  not  changed
+            by this command.  This command is a GNU extension.
+
+     xf n s<line-break>
+            (font control command)
+            Mount  font position n (a non-negative integer) with font named s (a
+            text word); see groff_font(5).
+
+     xH n<line-break>
+            (Height control command)
+            Set character height to n (a positive integer in scaled  points  z).
+            Classical  troff used the unit points (p) instead; see section "Com-
+            patibility" below.
+
+     xi <line-break>
+            (init control command)
+            Initialize device.  This is the third command of the header.
+
+     xp <line-break>
+            (pause control command)
+            Parsed but ignored.  The classical documentation reads pause device,
+            can be restarted.
+
+     xr n h v<line-break>
+            (resolution control command)
+            Resolution is n, while h is the minimal horizontal motion, and v the
+            minimal vertical motion possible with this device; all arguments are
+            positive integers in basic units u per inch.   This  is  the  second
+            command of the header.
+
+     xS n<line-break>
+            (Slant control command)
+            Set slant to n degrees (an integer in basic units u).
+
+     xs <line-break>
+            (stop control command)
+            Terminates  the  processing  of the current file; issued as the last
+            command of device-independent troff output.
+
+     xt <line-break>
+            (trailer control command)
+            Generate trailer information, if any.  In groff, this  is  currently
+            ignored.
+
+     xT xxx<line-break>
+            (Typesetter control command)
+            Set  the  name of the output driver to xxx, a sequence of non-white-
+            space characters terminated by whitespace.  The possible names  cor-
+            respond to those of groff's -T option.  This is the first command of
+            the header.
+
+     xu n<line-break>
+            (underline control command)
+            Configure  underlining  of  spaces.  If n is 1, start underlining of
+            spaces; if n is 0, stop underlining of spaces.  This is  needed  for
+            the cu request in nroff mode and is ignored otherwise.  This command
+            is a GNU extension.
+
+     xX anything<line-break>
+            (X-escape control command)
+            Send  string anything uninterpreted to the device.  If the line fol-
+            lowing this command starts with a + character this  line  is  inter-
+            preted  as a continuation line in the following sense.  The + is ig-
+            nored, but a newline character is sent instead to  the  device,  the
+            rest  of  the  line  is sent uninterpreted.  The same applies to all
+            following lines until the first character of a line is not a + char-
+            acter.  This command is generated by the groff escape  sequence  \X.
+            Line continuation is a GNU extension.
+
+   Legacy compressed encoding
+     AT&T  troff  primarily emitted glyphs by writing two digits (a motion) fol-
+     lowed by a single character corresponding to a glyph.  This syntax is  less
+     a command itself than a compressed encoding of the c and h commands.
+
+     ddc    Move right dd (exactly two decimal digits) basic units u, then print
+            glyph with single-letter name c.
+
+            In groff, arbitrary syntactical space around and within this command
+            is  allowed  to be added.  Only when a preceding command on the same
+            line ends with an argument of variable length a separating space  is
+            obligatory.   In  classical troff, large clusters of these and other
+            commands were used, mostly without spaces; this made such output al-
+            most unreadable.
+
+     For modern high-resolution devices, this command is impractical because the
+     widths of the glyphs have a greater magnitude in basic units than two deci-
+     mal digits can represent.  In groff, it is used only for output to the X75,
+     X75-12, X100, and X100-12 devices.  For others, the commands t and  u  pro-
+     vide greater functionality and superior troubleshooting capacity.
+
+Compatibility
+     The  page  description  language  of  AT&T troff was first documented in "A
+     Typesetter-independent TROFF", by Brian Kernighan, and  by  1992  the  AT&T
+     troff manual was updated to incorporate a description of it.
+
+     groff's page description language is compatible with this specification ex-
+     cept in the following aspects.
+
+     *  AT&T device-independent troff's quasi-device independence is not yet im-
+        plemented.
+
+     *  The printing hardware of the early 1980s differed from today's.  groff's
+        output  device  names  also differ from those of AT&T troff For example,
+        the PostScript device in AT&T troff, post  (implemented  by  the  driver
+        command  dpost),  has  a resolution of only 720 units per inch, suitable
+        for printers of decades past.  groff's ps device  has  a  resolution  of
+        72000  units per inch.  In principle, by implementing a rescaling mecha-
+        nism, groff could come to emulate AT&T's post device.
+
+     *  While the B-spline command D~ is reliably interpreted  by  groff's  page
+        description language parser, some output drivers don't implement drawing
+        routines for it.
+
+     *  In  GNU  troff,  the argument to the commands s and x H uses an implicit
+        unit of scaled points z whereas AT&T troff uses spacing points p.   This
+        isn't an incompatibility, but a compatible extension, for both units co-
+        incide  for  any  device without a sizescale directive in its DESC file,
+        including all postprocessors from AT&T and groff's text (nroff-mode) de-
+        vices.  groff devices that use sizescale either do not  exist  for  AT&T
+        troff have a different name, or seem to have a different resolution.  So
+        conflicts are very unlikely.
+
+     *  The  drawing  position  after  the  commands  "Dp",  "DP", and "Dt", are
+        processed is illogical.  Since old versions of GNU troff had this  wart,
+        we've  retained  it  for compatibility, but may change it in the future.
+        Wrap these drawing commands with the \Z escape sequence to both overcome
+        the illogical positioning and keep your input working  consistently  re-
+        gardless of the wart's presence in the implementation.
+
+     The  differences  between  groff  and  classical  troff  are  documented in
+     groff_diff(7).
+
+Files
+     /usr/share/groff/1.24.1/font/devname/DESC
+            describes the output device name.
+
+Authors
+     James Clark wrote an early version of this document, which  described  only
+     the  differences  between  AT&T device-independent troff's page description
+     language and that of GNU troff.  It has since been expanded and revised  by
+     Bernd Warken and G. Branden Robinson.
+
+See also
+     Groff:  The GNU Implementation of troff, by Trent A. Fisher and Werner Lem-
+     berg, is the primary groff manual.  You can browse  it  interactively  with
+     "info groff".
+
+     "Troff  User's  Manual"  by  Joseph  F.  Ossanna, 1976 (revised by Brian W.
+     Kernighan, 1992), AT&T Bell Laboratories Computing Science Technical Report
+     No. 54, widely called simply "CSTR #54", documents the language, device and
+     font description file formats, and device-independent page description lan-
+     guage referred to collectively in groff documentation as "AT&T troff".
+
+     "A Typesetter-independent TROFF" by Brian W.  Kernighan,  1982,  AT&T  Bell
+     Laboratories  Computing  Science  Technical Report No. 97, (CSTR #97), pro-
+     vides additional insights into the device and font description file formats
+     and device-independent page description language.
+
+     groff(1)
+            documents the -Z option and contains pointers to further groff docu-
+            mentation.
+
+     groff(7)
+            describes the groff language, including  its  escape  sequences  and
+            system of units.
+
+     groff_font(5)
+            details the scaling parameters of DESC (device description) files.
+
+     troff(1)
+            generates the language documented here.
+
+     roff(7)
+            presents  historical  aspects and the general structure of roff sys-
+            tems.
+
+     groff_diff(7)
+            enumerates differences between the output of AT&T troff and that  of
+            GNU troff.
+
+     gxditview(1)
+            is a viewer for device-independent troff output.
+
+     Roff.js
+            is   a   viewer  for  device-independent  troff  output  written  in
+            JavaScript.
+
+     grodvi(1),  grohtml(1),  grolbp(1),  grolj4(1),  gropdf(1),  grops(1),  and
+     grotty(1) are groff postprocessors.
+
+groff 1.24.1                       2026-03-15                       groff_out(5)

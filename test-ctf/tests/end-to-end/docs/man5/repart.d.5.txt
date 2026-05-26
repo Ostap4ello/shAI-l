@@ -1,0 +1,1004 @@
+REPART.D(5)                         repart.d                         REPART.D(5)
+
+NAME
+     repart.d  - Partition Definition Files for Automatic Boot-Time Repartition-
+     ing
+
+SYNOPSIS
+         /etc/repart.d/*.conf
+         /run/repart.d/*.conf
+         /usr/local/lib/repart.d/*.conf
+         /usr/lib/repart.d/*.conf
+
+DESCRIPTION
+     repart.d/*.conf files describe basic properties of partitions of block  de-
+     vices  of  the  local  system. They may be used to declare types, names and
+     sizes of partitions that shall exist. The systemd-repart(8)  service  reads
+     these  files  and  attempts to add new partitions currently missing and en-
+     large existing partitions according to these definitions. Operation is gen-
+     erally incremental, i.e. when applied, what exists already is left  intact,
+     and partitions are never shrunk, moved or deleted.
+
+     These  definition files are useful for implementing operating system images
+     that are prepared and delivered with minimally sized  images  (for  example
+     lacking  any  state  or swap partitions), and which on first boot automati-
+     cally take possession of any remaining disk space  following  a  few  basic
+     rules.
+
+     Currently,  support  for partition definition files is only implemented for
+     GPT partition tables.
+
+     Partition files are generally matched against any partitions already exist-
+     ing on disk in a simple algorithm: the partition files are sorted by  their
+     filename  (ignoring  the  directory  prefix),  and  then  compared in order
+     against existing partitions matching the same partition type UUID. Specifi-
+     cally, the first existing partition with a specific partition type UUID  is
+     assigned  the  first definition file with the same partition type UUID, and
+     the second existing partition with a specific type UUID the  second  parti-
+     tion file with the same type UUID, and so on. Any left-over partition files
+     that  have  no matching existing partition are assumed to define new parti-
+     tion that shall be created. Such partitions are appended to the end of  the
+     partition  table,  in  the order defined by their names utilizing the first
+     partition slot greater than the highest slot number currently in  use.  Any
+     existing  partitions  that have no matching partition file are left as they
+     are.
+
+     Note that these definitions may only be used to create and  initialize  new
+     partitions  or  to grow existing ones. In the latter case, it will not grow
+     the contained files systems however; separate mechanisms, such as  systemd-
+     growfs(8)  may be used to grow the file systems inside of these partitions.
+     Partitions may also be marked for automatic growing via the GrowFileSystem=
+     setting, in which case the file system is grown on  first  mount  by  tools
+     that respect this flag. See below for details.
+
+[PARTITION] SECTION OPTIONS
+     Type=
+         The  GPT partition type UUID to match. This may be a GPT partition type
+         UUID such as 4f68bce3-e8cd-4db1-96e7-fbcaf984b709, or an identifier.
+
+         The supported identifiers are:
+
+         Table 1. GPT partition type identifiers allbox tab(:); lB lB.  T{ Iden-
+         tifier T}:T{ Explanation T} l l l l l l l l l l l l l l l l l l l l l l
+         l l l l l l l l l l l l l l l l l l l l l l l l l l l l l  l.   T{  esp
+         T}:T{  EFI  System  Partition T} T{ xbootldr T}:T{ Extended Boot Loader
+         Partition T} T{ swap  T}:T{  Swap  partition  T}  T{  home  T}:T{  Home
+         (/home/)  partition T} T{ srv T}:T{ Server data (/srv/) partition T} T{
+         var T}:T{ Variable data (/var/) partition T}  T{  tmp  T}:T{  Temporary
+         data (/var/tmp/) partition T} T{ linux-generic T}:T{ Generic Linux file
+         system  partition  T} T{ root T}:T{ Root file system partition type ap-
+         propriate for the local architecture (an alias for an architecture root
+         file system partition  type  listed  below,  e.g.  root-x86-64)  T}  T{
+         root-verity  T}:T{  Verity  data for the root file system partition for
+         the local architecture T} T{  root-verity-sig  T}:T{  Verity  signature
+         data  for  the root file system partition for the local architecture T}
+         T{ root-secondary T}:T{ Root file system partition of the secondary ar-
+         chitecture of the local architecture (usually the matching  32-bit  ar-
+         chitecture for the local 64-bit architecture) T} T{ root-secondary-ver-
+         ity  T}:T{  Verity  data for the root file system partition of the sec-
+         ondary architecture T} T{ root-secondary-verity-sig T}:T{ Verity signa-
+         ture data for the root file system partition of the secondary architec-
+         ture T} T{ root-{arch} T}:T{ Root file system partition  of  the  given
+         architecture    (such   as   root-x86-64   or   root-riscv64)   T}   T{
+         root-{arch}-verity T}:T{ Verity data for the root file system partition
+         of the given architecture T}  T{  root-{arch}-verity-sig  T}:T{  Verity
+         signature  data  for the root file system partition of the given archi-
+         tecture T} T{ usr T}:T{ /usr/ file system  partition  type  appropriate
+         for  the  local  architecture  (an alias for an architecture /usr/ file
+         system partition type listed below, e.g. usr-x86-64) T}  T{  usr-verity
+         T}:T{ Verity data for the /usr/ file system partition for the local ar-
+         chitecture  T}  T{  usr-verity-sig  T}:T{ Verity signature data for the
+         /usr/ file system partition for the local architecture T}  T{  usr-sec-
+         ondary  T}:T{ /usr/ file system partition of the secondary architecture
+         of the local architecture (usually the matching 32-bit architecture for
+         the local 64-bit architecture) T} T{ usr-secondary-verity T}:T{  Verity
+         data  for the /usr/ file system partition of the secondary architecture
+         T} T{ usr-secondary-verity-sig T}:T{  Verity  signature  data  for  the
+         /usr/  file  system  partition  of  the  secondary  architecture  T} T{
+         usr-{arch} T}:T{ /usr/ file system partition of the given  architecture
+         T}  T{  usr-{arch}-verity  T}:T{  Verity data for the /usr/ file system
+         partition of the given architecture T} T{  usr-{arch}-verity-sig  T}:T{
+         Verity  signature data for the /usr/ file system partition of the given
+         architecture T}
+
+         Architecture specific partition types can use one of these architecture
+         identifiers: alpha, arc, arm (32-bit),  arm64  (64-bit,  aka  aarch64),
+         ia64,  loongarch64,  mips-le,  mips64-le, parisc, ppc, ppc64, ppc64-le,
+         riscv32, riscv64, s390, s390x,  tilegx,  x86  (32-bit,  aka  i386)  and
+         x86-64 (64-bit, aka amd64).
+
+         Most of the partition type UUIDs listed above are defined in the UAPI.2
+         Discoverable Partitions Specification[1].
+
+         Added in version 245.
+
+     Label=
+         The  textual  label to assign to the partition if none is assigned yet.
+         Note that this setting is not used for matching. It is  also  not  used
+         when  a label is already set for an existing partition. It is thus only
+         used when a partition is newly created or when an existing one had a no
+         label set (that is: an empty label). If not specified, a label  derived
+         from  the partition type is automatically used. Simple specifier expan-
+         sion is supported, see below.
+
+         Added in version 245.
+
+     VolumeLabel=
+         The textual label to assign to the LUKS superblock  if  applicable.  If
+         not  specified  defaults to the same string as the partition label (see
+         Label= above), however prefixed with "luks-". This setting has  no  ef-
+         fect if encryption is not enabled for this partition.
+
+         Added in version 259.
+
+     UUID=
+         The  UUID to assign to the partition if none is assigned yet. Note that
+         this setting is not used for matching. It is also not used when a  UUID
+         is  already  set for an existing partition. It is thus only used when a
+         partition is newly created or when an existing one had a all-zero  UUID
+         set.  If set to "null", the UUID is set to all zeroes. If not specified
+         a UUID derived from the partition type is automatically used.
+
+         Added in version 246.
+
+     Priority=
+         A  numeric  priority  to  assign  to  this  partition,  in  the   range
+         -2147483648...2147483647,  with smaller values indicating higher prior-
+         ity, and higher values indicating smaller priority.  This  priority  is
+         used  in case the configured size constraints on the defined partitions
+         do not permit fitting all partitions onto the available disk space.  If
+         the  partitions  do  not fit, the highest numeric partition priority of
+         all defined partitions is determined, and all defined  partitions  with
+         this  priority  are  removed  from the list of new partitions to create
+         (which may be multiple, if the same priority is used for multiple  par-
+         titions).  The fitting algorithm is then tried again. If the partitions
+         still do not fit, the now highest numeric partition priority is  deter-
+         mined,  and  the matching partitions removed too, and so on. Partitions
+         of a priority of 0 or lower are never removed. If all partitions with a
+         priority above 0 are removed and the partitions still do not fit on the
+         device the operation fails. Note that this priority has  no  effect  on
+         ordering  partitions,  for that use the alphabetical order of the file-
+         names of the partition definition files. Defaults to 0.
+
+         Added in version 245.
+
+     Weight=
+         A numeric weight to assign to this partition in the range  0...1000000.
+         Available  disk  space  is assigned the defined partitions according to
+         their relative weights (subject to the size constraints configured with
+         SizeMinBytes=, SizeMaxBytes=), so that a  partition  with  weight  2000
+         gets  double  the  space  as one with weight 1000, and a partition with
+         weight 333 a third of that. Defaults to 1000.
+
+         The Weight= setting is used to distribute available disk  space  in  an
+         "elastic" fashion, based on the disk size and existing partitions. If a
+         partition  shall  have  a  fixed  size use both SizeMinBytes= and Size-
+         MaxBytes= with the same value in order to fixate the size to one value,
+         in which case the weight has no effect.
+
+         Added in version 245.
+
+     PaddingWeight=
+         Similar to Weight=, but sets a weight for the free space after the par-
+         tition (the "padding"). When distributing available space  the  weights
+         of all partitions and all defined padding is summed, and then each par-
+         tition and padding gets the fraction defined by its weight. Defaults to
+         0, i.e. by default no padding is applied.
+
+         Padding is useful if empty space shall be left for later additions or a
+         safety margin at the end of the device or between partitions.
+
+         Added in version 245.
+
+     SizeMinBytes=, SizeMaxBytes=
+         Specifies  minimum  and  maximum  size  constraints in bytes. Takes the
+         usual K, M, G, T, ... suffixes (to the base of 1024). If  SizeMinBytes=
+         is specified the partition is created at or grown to at least the spec-
+         ified  size.  If SizeMaxBytes= is specified the partition is created at
+         or grown to at most the specified size. The precise size is  determined
+         through  the  weight  value  configured  with  Weight=, see above. When
+         SizeMinBytes= is set equal to SizeMaxBytes= the configured  weight  has
+         no  effect  as the partition is explicitly sized to the specified fixed
+         value. Note that partitions are never created smaller than 4096  bytes,
+         and  since  partitions are never shrunk the previous size of the parti-
+         tion (in case the partition already exists) is also enforced  as  lower
+         bound  for the new size. The values should be specified as multiples of
+         4096 bytes, and are rounded upwards (in case of SizeMinBytes=) or down-
+         wards (in case of SizeMaxBytes=) otherwise. If the backing device  does
+         not  provide enough space to fulfill the constraints placing the parti-
+         tion will fail. For partitions that shall be created, depending on  the
+         setting of Priority= (see above) the partition might be dropped and the
+         placing  algorithm  restarted. By default, a minimum size constraint of
+         10M and no maximum size constraint is set.
+
+         If Format= is set, the minimum size is automatically raised to the min-
+         imum file system size for the selected  file  system  type,  if  known.
+         Moreover, for the ESP/XBOOTLDR partitions the minimum is raised to 100M
+         (for  512b sector images) or 260M (for 4K sector images) automatically,
+         if specified smaller.
+
+         Added in version 245.
+
+     PaddingMinBytes=, PaddingMaxBytes=
+         Specifies minimum and maximum size constraints in bytes  for  the  free
+         space  after  the  partition  (the "padding"). Semantics are similar to
+         SizeMinBytes= and SizeMaxBytes=, except  that  unlike  partition  sizes
+         free  space  can  be shrunk and can be as small as zero. By default, no
+         size constraints on padding are set, so that only PaddingWeight= deter-
+         mines the size of the padding applied.
+
+         Added in version 245.
+
+     CopyBlocks=
+         Takes a path to a regular file, block device node, char device node  or
+         directory,  or the special value "auto". If specified and the partition
+         is newly created, the data from the specified path is  written  to  the
+         newly  created  partition, on the block level. If a directory is speci-
+         fied, the backing block device of the file system the directory  is  on
+         is  determined,  and  the  data read directly from that. This option is
+         useful to efficiently replicate existing file systems onto  new  parti-
+         tions  on the block level -- for example to build a simple OS installer
+         or an OS image builder. Specify /dev/urandom as value to  initialize  a
+         partition with random data.
+
+         If  the  special  value "auto" is specified, the source to copy from is
+         automatically picked up from the running system (or the image specified
+         with --image= -- if used). A partition that matches both the configured
+         partition type (as declared with Type= described above), and  the  cur-
+         rently  mounted directory appropriate for that partition type is deter-
+         mined. For example, if the partition type is set to "root"  the  parti-
+         tion  backing  the root directory (/) is used as source to copy from --
+         if its partition type is set to "root" as well. If the declared type is
+         "usr" the partition backing /usr/ is used as source to copy blocks from
+         -- if its partition type is set to "usr" too. The logic is  capable  of
+         automatically  tracking  down  the backing partitions for encrypted and
+         Verity-enabled volumes.  "CopyBlocks=auto" is useful  for  implementing
+         "self-replicating" systems, i.e. systems that are their own installer.
+
+         The  file specified here must have a size that is a multiple of the ba-
+         sic block size 512 and not be empty. If this option is used,  the  size
+         allocation  algorithm  is slightly altered: the partition is created at
+         least as big as required to fit the data in, i.e. the data size  is  an
+         additional  minimum size value taken into consideration for the alloca-
+         tion algorithm, similar to and in addition to the  SizeMinBytes=  value
+         configured above.
+
+         This  option  has no effect if the partition it is declared for already
+         exists, i.e. existing data is never overwritten. Note that the data  is
+         copied in before the partition table is updated, i.e. before the parti-
+         tion  actually is persistently created. This provides robustness: it is
+         guaranteed that the partition either does not  exist  or  exists  fully
+         populated;  it  is not possible that the partition exists but is not or
+         only partially populated.
+
+         This option cannot be combined with Format= or CopyFiles=.
+
+         Added in version 246.
+
+     Format=
+         Takes a file system name,  such  as  "ext4",  "btrfs",  "xfs",  "vfat",
+         "erofs",  "squashfs"  or the special value "swap". If specified and the
+         partition is newly created it is formatted with the specified file sys-
+         tem (or as swap device). The file system UUID and label  are  automati-
+         cally  derived  from  the  partition  UUID and label. If this option is
+         used, the size allocation algorithm is slightly altered: the  partition
+         is  created  at least as big as required for the minimal file system of
+         the specified type (or 4KiB if the minimal size is not known).
+
+         This also takes a special meta value  "empty".  If  specified  this  is
+         equivalent to specifying "Label=_empty" and "NoAuto=1".
+
+         This option has no effect if the partition already exists.
+
+         Similarly to the behaviour of CopyBlocks=, the file system is formatted
+         before  the partition is created, ensuring that the partition only ever
+         exists with a fully initialized file system.
+
+         This option cannot be combined with CopyBlocks=.
+
+         Added in version 247.
+
+     CopyFiles=
+         Takes  a  colon-separated  triplet  in  the  form  "source[:target[:op-
+         tions]]".   source is an absolute path which refers to a source file or
+         directory on the host.  target is an absolute path in the  file  system
+         of the newly created partition and formatted file system.  options is a
+         comma-separated  list  of  options  where  each  option  is in the form
+         "key[=value]".
+
+         This setting may be used to copy files or  directories  from  the  host
+         into  the  file  system  that  is created due to the Format= option. If
+         CopyFiles= is used without Format= specified explicitly, "Format=" with
+         a  suitable  default  is  implied  (currently  "vfat"  for  "ESP"   and
+         "XBOOTLDR" partitions, and "ext4" otherwise, but this may change in the
+         future).  This option may be used multiple times to copy multiple files
+         or directories from host into the newly formatted file system.
+
+         The target path may be omitted in which case the source  path  is  also
+         used as the target path (relative to the root of the newly created file
+         system).  If  the source path refers to a directory it is copied recur-
+         sively.
+
+         The options may contain the following values:
+
+         fsverity=
+             May be set to the value "off" (the default if  the  option  is  not
+             present)  or  "copy". If set to "off" then no files copied into the
+             filesystem from this source will have fs-verity enabled. If set  to
+             "copy"  then the fs-verity information for each file will be copied
+             from the corresponding source file.
+
+             Added in version 258.
+
+         This option has no effect if the partition already exists: it cannot be
+         used to copy additional files into an existing partition, it  may  only
+         be used to populate a file system created anew.
+
+         The  copy operation is executed before the file system is registered in
+         the partition table, thus ensuring that a file  system  populated  this
+         way only ever exists fully initialized.
+
+         Note  that CopyFiles= will skip copying files that are not supported by
+         the target filesystem (e.g symlinks,  fifos,  sockets  and  devices  on
+         vfat).  When  an  unsupported  file type is encountered, systemd-repart
+         will skip copying this file and write a log message about it.
+
+         Note that systemd-repart does not change the UIDs/GIDs  of  any  copied
+         files  and  directories. When running systemd-repart as an unprivileged
+         user to build an image of files and directories owned by the same user,
+         you can run systemd-repart in a user namespace with  the  current  user
+         mapped  to  the root user to make sure the files and directories in the
+         image are owned by the root user.
+
+         This option cannot be combined with CopyBlocks=.
+
+         When systemd-repart(8) is invoked with the --copy-source= command  line
+         switch the file paths are taken relative to the specified directory. If
+         --copy-source=  is  not  used, but the --image= or --root= switches are
+         used, the source paths are taken relative to the specified root  direc-
+         tory or disk image root.
+
+         Note  that  when  CopyFiles=  is used with Format=xfs, xfsprogs 6.17 or
+         newer is required.
+
+         Added in version 247.
+
+     ExcludeFiles=, ExcludeFilesTarget=
+         Takes one or more absolute paths, separated by whitespace, each  refer-
+         ring  to  a  source  file or directory on the host. This setting may be
+         used to exclude files or directories from the host  from  being  copied
+         into  the  file system when CopyFiles= is used. This option may be used
+         multiple times to exclude multiple files or directories from host  from
+         being copied into the newly formatted file system.
+
+         If the path is a directory and ends with "/", only the directory's con-
+         tents  are  excluded but not the directory itself. If the path is a di-
+         rectory and does not end with "/", both the directory and its  contents
+         are excluded.
+
+         ExcludeFilesTarget=  is  like  ExcludeFiles= except that instead of ex-
+         cluding the path on the host from being copied into the  partition,  it
+         excludes  any  files  and  directories from being copied into the given
+         path in the partition.
+
+         When systemd-repart(8) is invoked with the --image= or --root=  command
+         line  switches  the paths specified are taken relative to the specified
+         root directory or disk image root.
+
+         Added in version 254.
+
+     MakeDirectories=
+         Takes one or more absolute paths, separated by whitespace, each declar-
+         ing a directory to create within the new file system. Behaviour is sim-
+         ilar to CopyFiles=, but instead of copying in a set of files this  just
+         creates  the  specified directories with the default mode of 0755 owned
+         by the root user and group, plus all their parent directories (with the
+         same ownership and access mode). To configure directories with  differ-
+         ent  ownership or access mode, use CopyFiles= and specify a source tree
+         to copy containing appropriately owned/configured directories. This op-
+         tion may be used more than once to create  multiple  directories.  When
+         CopyFiles= and MakeDirectories= are used together the former is applied
+         first.  If  a  directory listed already exists no operation is executed
+         (in particular, the ownership/access mode of the directories is left as
+         is).
+
+         The primary use case for this option is to create a minimal set of  di-
+         rectories that may be mounted over by other partitions contained in the
+         same  disk  image. For example, a disk image where the root file system
+         is formatted at first boot might want to automatically pre-create /usr/
+         in it this way, so that the "usr" partition may over-mount it.
+
+         Consider using systemd-tmpfiles(8) with its --image= option to pre-cre-
+         ate other, more complex directory hierarchies (as well as other inodes)
+         with fine-grained control of ownership, access modes and other file at-
+         tributes.
+
+         Added in version 249.
+
+     MakeSymlinks=
+         Takes one or more arguments, separated by whitespace, each declaring  a
+         symlink  to  create within the new file system. Each argument is a pair
+         of symlink source and target paths, separated by a colon.  This  option
+         may be used more than once to create multiple symlinks. When CopyFiles=
+         and MakeSymlinks= are used together the former is applied first.
+
+         The primary use case for this option is to create symlinks that need to
+         exist  before  systemd-tmpfiles(8) is executed. For example, when using
+         systemd-confext(8), this setting can be  used  to  create  symlinks  in
+         /var/lib/extensions.mutable to redirect writes to mutable confexts to a
+         custom location.
+
+         Consider using systemd-tmpfiles(8) with its --image= option to pre-cre-
+         ate  other symlinks (as well as other inodes) with fine-grained control
+         of ownership, access modes and other file attributes.
+
+         Added in version 257.
+
+     Subvolumes=
+         Takes one or more absolute paths, separated by whitespace, each declar-
+         ing a directory that should be a subvolume within the new file  system.
+         Each  path  may  optionally  be  followed  by  a  colon  and  a list of
+         comma-separated subvolume flags. The following flags are understood:
+
+         Table 2. Subvolume Flags allbox tab(:); lB lB.  T{ Flag  T}:T{  Purpose
+         T}  l  l l l.  T{ "ro" T}:T{ Make this subvolume read-only.  T} T{ "no-
+         datacow" T}:T{ Disable data CoW for this subvolume.  T}
+
+         Note that this option does not create the directories themselves,  that
+         can be configured with MakeDirectories= and CopyFiles=.
+
+         Note  that  this option only takes effect if the target filesystem sup-
+         ports subvolumes, such as btrfs(8).
+
+         Note that this option is  only  supported  in  combination  with  --of-
+         fline=yes since btrfs-progs 6.12 or newer.
+
+         Added in version 255.
+
+     DefaultSubvolume=
+         Takes  an absolute path specifying the default subvolume within the new
+         filesystem. Note that this setting does not create  the  subvolume  it-
+         self, that can be configured with Subvolumes=.
+
+         Note  that  this option only takes effect if the target filesystem sup-
+         ports subvolumes, such as btrfs(8).
+
+         Note that this option is  only  supported  in  combination  with  --of-
+         fline=yes since btrfs-progs 6.12 or newer.
+
+         Added in version 256.
+
+     Encrypt=
+         Takes  one  of  "off", "key-file", "tpm2" and "key-file+tpm2" (alterna-
+         tively, also accepts a boolean value, which is  mapped  to  "off"  when
+         false,  and  "key-file" when true). Defaults to "off". If not "off" the
+         partition will be formatted with a LUKS2 superblock, before the  blocks
+         configured with CopyBlocks= are copied in or the file system configured
+         with Format= is created.
+
+         The  LUKS2  UUID  is automatically derived from the partition UUID in a
+         stable fashion. If "key-file" or "key-file+tpm2"  is  used,  a  key  is
+         added to the LUKS2 superblock, configurable with the --key-file= option
+         to systemd-repart. If "tpm2" or "key-file+tpm2" is used, a key is added
+         to  the  LUKS2  superblock  that is enrolled to the local TPM2 chip, as
+         configured with the --tpm2-device= and  --tpm2-pcrs=  options  to  sys-
+         temd-repart.
+
+         When  used  this  slightly  alters the size allocation logic as the im-
+         plicit, minimal size limits of Format= and CopyBlocks= are increased by
+         the space necessary for the LUKS2 superblock (see above).
+
+         This option has no effect if the partition already exists.
+
+         Added in version 247.
+
+     Verity=
+         Takes one of "off", "data", "hash" or "signature". Defaults  to  "off".
+         If  set  to "off" or "data", the partition is populated with content as
+         specified by CopyBlocks= or CopyFiles=. If set to "hash", the partition
+         will be populated with verity hashes from the matching verity data par-
+         tition. If set to "signature", the partition will be populated  with  a
+         JSON  object  containing  a  signature  of  the verity root hash of the
+         matching verity hash partition.
+
+         A matching verity partition is a partition with the same  verity  match
+         key (as configured with VerityMatchKey=).
+
+         If  not explicitly configured, the data partition's UUID will be set to
+         the first 128 bits of the verity root hash. Similarly, if  not  config-
+         ured,  the  hash  partition's UUID will be set to the final 128 bits of
+         the verity root hash. The verity root hash itself will be  included  in
+         the output of systemd-repart.
+
+         This option has no effect if the partition already exists.
+
+         Usage of this option in combination with Encrypt= is not supported.
+
+         For  each  unique VerityMatchKey= value, a single verity data partition
+         ("Verity=data") and a single verity hash partition ("Verity=hash") must
+         be defined.
+
+         Added in version 252.
+
+     VerityMatchKey=
+         Takes a short, user-chosen identifier string. This setting is  used  to
+         find  sibling  verity  partitions for the current verity partition. See
+         the description for Verity=.
+
+         Added in version 252.
+
+     VerityDataBlockSizeBytes=
+         Configures the data block size of the generated verity hash  partition.
+         Must  be  between 512 and 4096 bytes and must be a power of 2. Defaults
+         to the sector size if configured explicitly, or  the  underlying  block
+         device sector size, or 4K if systemd-repart is not operating on a block
+         device.
+
+         Added in version 255.
+
+     VerityHashBlockSizeBytes=
+         Configures  the hash block size of the generated verity hash partition.
+         Must be between 512 and 4096 bytes and must be a power of  2.  Defaults
+         to  the  sector  size if configured explicitly, or the underlying block
+         device sector size, or 4K if systemd-repart is not operating on a block
+         device.
+
+         Added in version 255.
+
+     FactoryReset=
+         Takes a boolean argument. If specified the partition is marked for  re-
+         moval during a factory reset operation. This functionality is useful to
+         implement  schemes  where images can be reset into their original state
+         by removing partitions and creating them anew. Defaults to off.
+
+         Added in version 245.
+
+     Flags=
+         Configures the 64-bit GPT partition flags field to set for  the  parti-
+         tion  when  creating it. This option has no effect if the partition al-
+         ready exists. If not specified, the flags value is set to  all  zeroes,
+         except  for  the  three  bits  that can also be configured via NoAuto=,
+         ReadOnly= and GrowFileSystem=; see below for details  on  the  defaults
+         for  these three flags. Specify the flags value in hexadecimal (by pre-
+         fixing it with "0x"), binary (prefix "0b") or decimal (no prefix).
+
+         Added in version 249.
+
+     NoAuto=, ReadOnly=, GrowFileSystem=
+         Configures the No-Auto, Read-Only and Grow-File-System partition  flags
+         (bit  63,  60  and  59) of the partition table entry, as defined by the
+         UAPI.2 Discoverable Partitions  Specification[1].  Only  available  for
+         partition  types  supported  by  the  specification.  This  option is a
+         friendly way to set bits 63, 60 and 59 of  the  partition  flags  value
+         without  setting  any of the other bits, and may be set via Flags= too,
+         see above.
+
+         If Flags= is used in conjunction with  one  or  more  of  NoAuto=/Read-
+         Only=/GrowFileSystem=  the  latter  control  the  value of the relevant
+         flags, i.e. the high-level  settings  NoAuto=/ReadOnly=/GrowFileSystem=
+         override the relevant bits of the low-level setting Flags=.
+
+         Note  that the three flags affect only automatic partition mounting, as
+         implemented by systemd-gpt-auto-generator(8) or the --image= option  of
+         various  commands  (such as systemd-nspawn(1)). It has no effect on ex-
+         plicit mounts, such as those done via mount(8) or fstab(5).
+
+         If both bit 60 and 59 are set for a partition (i.e.  the  partition  is
+         marked both read-only and marked for file system growing) the latter is
+         typically  without  effect: the read-only flag takes precedence in most
+         tools reading these flags, and since growing the file  system  involves
+         writing to the partition it is consequently ignored.
+
+         NoAuto= defaults to off.  ReadOnly= defaults to on for Verity partition
+         types,  and off for all others.  GrowFileSystem= defaults to on for all
+         partition types that support it, except  if  the  partition  is  marked
+         read-only  (and  thus  effectively,  defaults  to off for Verity parti-
+         tions).
+
+         Added in version 249.
+
+     SplitName=
+         Configures the suffix to append to split artifacts when the --split op-
+         tion of systemd-repart(8) is used. Simple specifier expansion  is  sup-
+         ported,  see below. Defaults to "%t". To disable split artifact genera-
+         tion for a partition, set SplitName= to "-".
+
+         Added in version 252.
+
+     Minimize=
+         Takes one of "off", "best", and "guess" (alternatively, also accepts  a
+         boolean  value,  which  is  mapped to "off" when false, and "best" when
+         true). Defaults to "off". If set to "best", the partition will have the
+         minimal size required to store the sources configured with  CopyFiles=.
+         "best" is currently only supported for read-only filesystems and btrfs.
+         If set to "guess", the partition is created at least as big as required
+         to  store  the sources configured with CopyFiles=. Note that unless the
+         filesystem is a read-only filesystem or btrfs, systemd-repart will have
+         to populate the filesystem twice to guess the minimal required size, so
+         enabling this option might slow down repart when populating large  par-
+         titions.
+
+         Added in version 253.
+
+     MountPoint=
+         Specifies where and how the partition should be mounted. Takes at least
+         one  and  at  most  two  fields separated with a colon (":"). The first
+         field specifies where the partition should be mounted. The second field
+         specifies extra mount options to append to the default  mount  options.
+         These fields correspond to the second and fourth column of the fstab(5)
+         format.  As  a colon is used for separating fields, each field needs to
+         be quoted when it contains colons. E.g.
+
+             MountPoint="/path/with:colon":"zstd:1,noatime,lazytime"
+
+         This setting may be specified multiple times  to  mount  the  partition
+         multiple  times.  This can be used to add mounts for different btrfs(8)
+         subvolumes located on the same btrfs partition.
+
+         Note that this  setting  is  only  taken  into  account  when  --gener-
+         ate-fstab= is specified on the systemd-repart command line.
+
+         Added in version 256.
+
+     EncryptedVolume=
+         Specifies  how the encrypted partition should be set up. Takes at least
+         one and at most four fields separated with a  colon  (":").  The  first
+         field  specifies  the  encrypted volume name under /dev/mapper/. If not
+         specified, "luks-UUID" will be used where "UUID" is the LUKS UUID.  The
+         second  field specifies the keyfile to use following the same format as
+         specified in crypttab. The third field specifies a comma-delimited list
+         of crypttab options. These three fields correspond to the first,  third
+         and  fourth column of the crypttab(5) format. The fourth field contains
+         extra options, which are not directly reflected  to  crypttab  options.
+         Currently,  the  only supported extra option is fixate-volume-key. When
+         specified, the volume key hash will be taken upon LUKS  volume  format-
+         ting and the result will be added to the list of crypttab options, i.e.
+         fixate-volume-key=expected-hash  will  be added to the fourth column of
+         the generated crypttab.
+
+         Note that this  setting  is  only  taken  into  account  when  --gener-
+         ate-crypttab=  is  specified on the systemd-repart command line. As the
+         crypttab with the expected hashes can only be generated after LUKS vol-
+         umes are formatted, the crypttab itself cannot be put to the  generated
+         volume.
+
+         Added in version 256.
+
+     TPM2PCRs=
+         Configures  the  list  of PCRs to use for LUKS2 volumes configured with
+         the Encrypt=tpm2 setting in partition files. This option take the  same
+         parameters as the similarly named options to systemd-cryptenroll(1) and
+         have  the same effect on partitions where TPM2 enrollment is requested.
+         This option will be overridden by the global --tpm2-pcrs= option.
+
+         Added in version 259.
+
+     KeyFile=
+         Takes a file system path. This path must be absolute, otherwise the op-
+         tion is ignored. Configures the encryption key to use when  setting  up
+         LUKS2 volumes configured with the Encrypt=key-file setting in partition
+         files.  Please  refer  to the documentation of --key-file= for more de-
+         tails. This option will be overridden by the global --key-file= option.
+
+         Added in version 259.
+
+     Integrity=
+         Enable integrity checking for the partition. Currently, the  only  sup-
+         ported  option is Integrity=inline which enables authenticated disk en-
+         cryption for LUKS2 devices. The option requires  Encrypt=  setting  and
+         can  only  be  used  in online image build. Defaults to "off", i.e. in-
+         tegrity protection is disabled.
+
+         Note: authenticated  disk  encryption  is  considered  EXPERIMENTAL  by
+         cryptsetup.
+
+         Added in version 260.
+
+     IntegrityAlgorithm=
+         Specify  the integrity algorithm to be used for integrity verification.
+         For   Integrity=inline   the   supported   values   are:   "hmac-sha1",
+         "hmac-sha256"(default), and "hmac-sha512".
+
+         Added in version 260.
+
+     Compression=
+         Specifies  the  compression algorithm to use for the filesystem config-
+         ured with Format=. Takes a single argument specifying  the  compression
+         algorithm.
+
+         Note  that  this setting is only taken into account when the filesystem
+         configured with Format=  supports  compression  (  btrfs(8),  squashfs,
+         erofs(5)).  Here's  an  incomplete  list of compression algorithms sup-
+         ported by the filesystems known to systemd-repart:
+
+         Table 3. File System Compression Algorithms allbox tab(:);  lB  lB  lB.
+         T{  File System T}:T{ Compression Algorithms T}:T{ Documentation T} l l
+         l l l l l l l.  T{ squashfs T}:T{ gzip, lzo, lz4, xz, zstd, lzma  T}:T{
+         mksquashfs(1)  T} T{ erofs T}:T{ lz4, lz4hc, lzma, deflate, libdeflate,
+         zstd T}:T{ mkfs.erofs(1) T}  T{  btrfs  T}:T{  zlib,  lzo,  zstd  T}:T{
+         mkfs.btrfs(8) T}
+
+         Added in version 257.
+
+     CompressionLevel=
+         Specifies  the  compression  level to use for the filesystem configured
+         with Format=. Takes a single argument specifying the compression  level
+         to  use for the configured compression algorithm. The possible compres-
+         sion levels and their meaning are filesystem  specific  (refer  to  the
+         filesystem's  documentation  for the exact meaning of a particular com-
+         pression level).
+
+         Note that this setting is only taken into account when  the  filesystem
+         configured  with Format= supports compression and the Compression= set-
+         ting is configured explicitly.
+
+         Added in version 257.
+
+     SupplementFor=
+         Takes a partition definition name, such as "10-esp". If specified, sys-
+         temd-repart will avoid creating this partition and  instead  prefer  to
+         partially merge the two definitions. However, depending on the existing
+         layout of partitions on disk, systemd-repart may be forced to fall back
+         onto  un-merging  the definitions and using them as originally written,
+         potentially creating this partition. Specifically, systemd-repart  will
+         fall  back  if  this partition is found to already exist on disk, or if
+         the target partition already exists on disk but is too small, or if  it
+         cannot allocate space for the merged partition for some other reason.
+
+         The following fields are merged into the target definition in the spec-
+         ified  ways:  Weight= and PaddingWeight= are simply overwritten; SizeM-
+         inBytes= and PaddingMinBytes= use the larger of the two  values;  Size-
+         MaxBytes=  and  PaddingMaxBytes= use the smaller value; and CopyFiles=,
+         ExcludeFiles=, ExcludeFilesTarget=, MakeDirectories=,  and  Subvolumes=
+         are concatenated.
+
+         Usage of this option in combination with CopyBlocks=, Encrypt=, or Ver-
+         ity=  is not supported. The target definition cannot set these settings
+         either. A definition cannot simultaneously be a supplement and act as a
+         target for some other supplement definition. A target cannot have  more
+         than one supplement partition associated with it.
+
+         For  example,  distributions can use this to implement $BOOT as defined
+         in the UAPI.1 Boot Loader Specification[2]. Distributions may prefer to
+         use the ESP as $BOOT whenever possible,  but  to  adhere  to  the  spec
+         XBOOTLDR must sometimes be used instead. So, they should create two de-
+         finitions:  the first defining an ESP big enough to hold just the boot-
+         loader, and a second for the XBOOTLDR that's sufficiently large to hold
+         kernels and configured as a supplement for the ESP. Whenever  possible,
+         systemd-repart(8)  will  try to merge the two definitions to create one
+         large ESP, but if that's not allowable due to the  existing  conditions
+         on disk a small ESP and a large XBOOTLDR will be created instead.
+
+         As another example, distributions can also use this to seamlessly share
+         a  single /home partition in a multi-boot scenario, while preferring to
+         keep /home on the root partition by default. Having a  /home  partition
+         separated  from the root partition entails some extra complexity: some-
+         one has to decide how to split the space between the two partitions. On
+         the other hand, it allows a user to share their home area between  mul-
+         tiple  installed OSs (i.e. via systemd-homed.service(8)). Distributions
+         should create two definitions: the first  for  a  root  partition  that
+         takes  up  some relatively small percentage of the disk, and the second
+         as a supplement for the first to create a /home partition that takes up
+         all the remaining free space. On first boot, if systemd-repart finds an
+         existing /home partition on disk, it'll un-merge  the  definitions  and
+         create  just a small root partition. Otherwise, the definitions will be
+         merged and a single large root partition will be created.
+
+         Added in version 257.
+
+     AddValidateFS=
+         Takes  a  boolean  argument.  If  enabled  will  set   the   user.vali-
+         datefs.gpt_label,    user.validatefs.gpt_type_uuid    and    user.vali-
+         datefs.mount_point extended attributes on the root inode of the format-
+         ted file system to the partition labels, partition type UUIDs  and  the
+         intended  mount point for the file system. Defaults to on if Format= is
+         used and the specified argument is neither "swap" nor "vfat".
+
+         These extended attributes are  read  by  systemd-validatefs@.service(8)
+         and  may  encode  constraints on mounted file systems that must be ful-
+         filled for the system to successfully boot. This is  particular  impor-
+         tant  in  systemd-gpt-auto-generator(8)  scenarios, which puts together
+         the mount hierarchy from untrusted data from the GPT  partition  table.
+         As  these  extended  attributes are stored inside the file system, they
+         are typically authenticated as part of the file system (assuming it  is
+         contained  in  protected volume; i.e. LUKS or dm-verity), and hence may
+         be used to securely validate the matching partition table fields.
+
+         Added in version 258.
+
+     FileSystemSectorSize=
+         Controls the sector size for any file system,  LUKS  volume  or  Verity
+         volume  formatted on this partition. Expects a power of 2 as value, and
+         must be equal or larger than 512. Typically it's recommended to set the
+         file system sector size to 4096, even on 512 sector disks (and in  par-
+         ticular  for images that are only ever intended to be stored as file on
+         disks), in order to optimize performance.  However,  for  compatibility
+         with foreign operating systems or firmware it might be advisable to use
+         the native sector size of the backing disk.
+
+         If  unspecified and operating on a block device, defaults to the native
+         sector size of the device. If unspecified and operating on a disk image
+         file defaults to 4096.
+
+         Regardless of what is configured here, or which default is picked,  the
+         file  system sector size is always increased to be equal or larger than
+         the disk sector size.
+
+         Added in version 258.
+
+SPECIFIERS
+     Specifiers may be used in the Label=, CopyBlocks=, CopyFiles=, MakeDirecto-
+     ries=, SplitName= settings. The following expansions are understood:
+
+     Table 4. Specifiers available allbox tab(:); lB lB lB.  T{ Specifier  T}:T{
+     Meaning  T}:T{ Details T} l l l l l l l l l l l l l l l l l l l l l l l l l
+     l l l l l l l l l l l l l l l l l l l l l l l.  T{ "%a" T}:T{  Architecture
+     T}:T{  A  short  string identifying the architecture of the local system. A
+     string such as x86, x86-64 or arm64. See the architectures defined for Con-
+     ditionArchitecture= in systemd.unit(5) for a full list.  T} T{  "%A"  T}:T{
+     Operating  system  image  version  T}:T{ The operating system image version
+     identifier of the running system, as read from the IMAGE_VERSION= field  of
+     /etc/os-release. If not set, resolves to an empty string. See os-release(5)
+     for  more  information.   T} T{ "%b" T}:T{ Boot ID T}:T{ The boot ID of the
+     running system, formatted as string. See random(4)  for  more  information.
+     T} T{ "%B" T}:T{ Operating system build ID T}:T{ The operating system build
+     identifier  of  the  running  system,  as  read from the BUILD_ID= field of
+     /etc/os-release. If not set, resolves to an empty string. See os-release(5)
+     for more information.  T} T{ "%H" T}:T{ Host name T}:T{ The hostname of the
+     running system.  T} T{ "%l" T}:T{ Short host name T}:T{ The hostname of the
+     running system, truncated at the first dot to remove any domain  component.
+     T}  T{  "%m"  T}:T{  Machine ID T}:T{ The machine ID of the running system,
+     formatted as string. See machine-id(5) for more information.   T}  T{  "%M"
+     T}:T{  Operating  system  image identifier T}:T{ The operating system image
+     identifier of the running system, as  read  from  the  IMAGE_ID=  field  of
+     /etc/os-release. If not set, resolves to an empty string. See os-release(5)
+     for more information.  T} T{ "%o" T}:T{ Operating system ID T}:T{ The oper-
+     ating  system  identifier of the running system, as read from the ID= field
+     of /etc/os-release. See os-release(5) for more  information.   T}  T{  "%q"
+     T}:T{  Pretty host name T}:T{ The pretty hostname of the running system, as
+     read from the PRETTY_HOSTNAME= field of /etc/machine-info. If not set,  re-
+     solves to the short hostname. See machine-info(5) for more information.  T}
+     T{  "%v"  T}:T{  Kernel  release T}:T{ Identical to uname -r output.  T} T{
+     "%w" T}:T{ Operating system version ID T}:T{ The operating  system  version
+     identifier  of  the  running  system, as read from the VERSION_ID= field of
+     /etc/os-release. If not set, resolves to an empty string. See os-release(5)
+     for more information.  T} T{ "%W" T}:T{ Operating system variant  ID  T}:T{
+     The operating system variant identifier of the running system, as read from
+     the  VARIANT_ID= field of /etc/os-release. If not set, resolves to an empty
+     string. See os-release(5) for more information.  T} T{ "%T" T}:T{ Directory
+     for temporary files T}:T{ This  is  either  /tmp  or  the  path  "$TMPDIR",
+     "$TEMP"  or  "$TMP"  are  set to. (Note that the directory may be specified
+     without a trailing slash.)  T} T{ "%V" T}:T{ Directory for larger and  per-
+     sistent  temporary  files  T}:T{  This is either /var/tmp or the path "$TM-
+     PDIR", "$TEMP" or "$TMP" are set to. (Note that the directory may be speci-
+     fied without a trailing slash.)  T} T{ "%%" T}:T{ Single percent sign T}:T{
+     Use "%%" in place of "%" to specify a single percent sign.  T}
+
+
+     Additionally, for the SplitName= setting, the following specifiers are also
+     understood:
+
+     Table 5. Specifiers available allbox tab(:); lB lB lB.  T{ Specifier  T}:T{
+     Meaning  T}:T{ Details T} l l l l l l l l l l l l.  T{ "%T" T}:T{ Partition
+     Type UUID T}:T{ The partition type UUID, as configured  with  Type=  T}  T{
+     "%t"  T}:T{  Partition  Type Identifier T}:T{ The partition type identifier
+     corresponding to the partition type UUID T} T{ "%U"  T}:T{  Partition  UUID
+     T}:T{  The partition UUID, as configured with UUID= T} T{ "%n" T}:T{ Parti-
+     tion Number T}:T{ The partition number assigned to the partition T}
+
+
+ENVIRONMENT
+     Extra filesystem formatting options can be provided  using  filesystem-spe-
+     cific   environment  variables:  $SYSTEMD_REPART_MKFS_OPTIONS_BTRFS,  $SYS-
+     TEMD_REPART_MKFS_OPTIONS_XFS,   $SYSTEMD_REPART_MKFS_OPTIONS_VFAT,    $SYS-
+     TEMD_REPART_MKFS_OPTIONS_EROFS,  and $SYSTEMD_REPART_MKFS_OPTIONS_SQUASHFS.
+     Each variable accepts valid  mkfs.filesystem  command-line  arguments.  The
+     content of those variables is passed as-is to the command, without any ver-
+     ification.
+
+EXAMPLES
+     Example 1. Grow the root partition to the full disk size at first boot
+
+     With  the  following  file the root partition is automatically grown to the
+     full disk if possible during boot.
+
+         # /usr/lib/repart.d/50-root.conf
+         [Partition]
+         Type=root
+
+
+     Example 2. Create a swap and home partition automatically on boot, if miss-
+     ing
+
+     The home partition gets all available disk space while the  swap  partition
+     gets  1G at most and 64M at least. We set a priority > 0 on the swap parti-
+     tion to ensure the swap partition is not used if not enough space is avail-
+     able. For every three bytes assigned to the home partition the swap  parti-
+     tion gets assigned one.
+
+         # /usr/lib/repart.d/60-home.conf
+         [Partition]
+         Type=home
+
+         # /usr/lib/repart.d/70-swap.conf
+         [Partition]
+         Type=swap
+         SizeMinBytes=64M
+         SizeMaxBytes=1G
+         Priority=1
+         Weight=333
+
+
+     Example 3. Create B partitions in an A/B Verity setup, if missing
+
+     Let's say the vendor intends to update OS images in an A/B setup, i.e. with
+     two root partitions (and two matching Verity partitions) that shall be used
+     alternatingly  during  upgrades. To minimize image sizes the original image
+     is shipped only with one root and one Verity partition (the "A"  set),  and
+     the  second  root  and  Verity partitions (the "B" set) shall be created on
+     first boot on the free space on the medium.
+
+         # /usr/lib/repart.d/50-root.conf
+         [Partition]
+         Type=root
+         SizeMinBytes=512M
+         SizeMaxBytes=512M
+
+         # /usr/lib/repart.d/60-root-verity.conf
+         [Partition]
+         Type=root-verity
+         SizeMinBytes=64M
+         SizeMaxBytes=64M
+
+     The definitions above cover the "A" set of root partition (of a fixed  512M
+     size)  and  Verity  partition for the root partition (of a fixed 64M size).
+     Let's use symlinks to create the "B" set of  partitions,  since  after  all
+     they shall have the same properties and sizes as the "A" set.
+
+         # ln -s 50-root.conf /usr/lib/repart.d/70-root-b.conf
+         # ln -s 60-root-verity.conf /usr/lib/repart.d/80-root-verity-b.conf
+
+
+     Example 4. Create a data partition and corresponding verity partitions from
+     a OS tree
+
+     Assuming  we have an OS tree at /var/tmp/os-tree that we want to package in
+     a root partition together with matching verity partitions, we can do so  as
+     follows:
+
+         # 50-root.conf
+         [Partition]
+         Type=root
+         CopyFiles=/var/tmp/os-tree
+         Verity=data
+         VerityMatchKey=root
+         Minimize=guess
+
+         # 60-root-verity.conf
+         [Partition]
+         Type=root-verity
+         Verity=hash
+         VerityMatchKey=root
+         # Explicitly set the hash and data block size to 4K
+         VerityDataBlockSizeBytes=4096
+         VerityHashBlockSizeBytes=4096
+         Minimize=best
+
+         # 70-root-verity-sig.conf
+         [Partition]
+         Type=root-verity-sig
+         Verity=signature
+         VerityMatchKey=root
+
+
+SEE ALSO
+     systemd(1), systemd-repart(8), sfdisk(8), systemd-cryptenroll(1)
+
+NOTES
+      1. UAPI.2 Discoverable Partitions Specification
+         https://uapi-group.org/specifications/specs/discoverable_partitions_specification
+
+      2. UAPI.1 Boot Loader Specification
+         https://uapi-group.org/specifications/specs/boot_loader_specification/
+
+systemd 260.1                                                        REPART.D(5)

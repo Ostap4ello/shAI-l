@@ -1,0 +1,58 @@
+SYSCTL.CONF(5)                 File Formats Manual                SYSCTL.CONF(5)
+
+NAME
+     sysctl.conf - Linux kernel configuration parameters
+
+DESCRIPTION
+     sysctl.conf  is a set of configuration files that contain Linux kernel con-
+     figuration parameters to be read and set by sysctl(8).
+
+     This man page describes the configuration files for procps sysctl.  If  you
+     are  using  systemd-sysctl(8),  refer to sysctl.d(5) and note that it won't
+     use the file /etc/sysctl.conf.
+
+   Configuration Format
+     Each line of a file read by procps sysctl describes a kernel  parameter  in
+     the following format.
+
+            token = value
+
+     There  is  no need to use quotation marks for value, even if the value is a
+     list of items.
+
+     Blank lines and lines that start with "#" or ";" are ignored.
+
+     If a line begins with a single "-", a failing attempt to set the  value  is
+     ignored.
+
+FILES
+     procps sysctl, when run with the --system option, reads files from directo-
+     ries in the order shown below.
+
+            /etc/sysctl.d/*.conf
+            /run/sysctl.d/*.conf
+            /usr/local/lib/sysctl.d/*.conf
+            /usr/lib/sysctl.d/*.conf
+            /lib/sysctl.d/*.conf
+
+     Finally,  procps  sysctl  reads /etc/sysctl.conf.  This file is not used by
+     systemd-sysctl, which means that some kernel parameters are not set depend-
+     ing on the implementation of sysctl that is installed.
+
+BUGS
+     The maximum supported length of value is 4096 characters due to  a  limita-
+     tion on /proc entry length in the Linux kernel.
+
+EXAMPLES
+     #
+     #
+     kernel.domainname = example.com
+     ; A value containing a space is written to the sysctl.
+     kernel.modprobe = /sbin/mod probe
+     # A list of items for the value
+     net.ipv4.ip_local_reserved_ports=8080,9148
+
+SEE ALSO
+     sysctl.d(5), sysctl(8), systemd-sysctl(8)
+
+procps-ng                          2025-05-29                     SYSCTL.CONF(5)

@@ -1,0 +1,74 @@
+PASSWD(5)                File Formats and Configuration                PASSWD(5)
+
+NAME
+     passwd - the password file
+
+DESCRIPTION
+     /etc/passwd  contains one line for each user account, with seven fields de-
+     limited by colons (":"). These fields are:
+
+     *   login name
+
+     *   optional encrypted password
+
+     *   numerical user ID
+
+     *   numerical group ID
+
+     *   user name or comment field
+
+     *   user home directory
+
+     *   optional user command interpreter
+
+     If the password field is a lower-case "x", then the encrypted  password  is
+     actually  stored in the shadow(5) file instead; there must be a correspond-
+     ing line in the /etc/shadow file, or else the user account is invalid.
+
+     The encrypted password field may be empty, in which case no password is re-
+     quired to authenticate as the specified login name. However, some  applica-
+     tions  which  read the /etc/passwd file may decide not to permit any access
+     at all if the password field is blank.
+
+     A password field which starts with an exclamation mark means that the pass-
+     word is locked. The remaining characters on the line represent the password
+     field before the password was locked.
+
+     Refer to crypt(3) for details on how this string is interpreted.
+
+     If the password field contains some string that is not a  valid  result  of
+     crypt(3),  for  instance  !  or  *, the user will not be able to use a unix
+     password to log in (but the user may log in the system by other means).
+
+     The comment field, also known as the gecos field, is used by various system
+     utilities, such as finger(1). The use of an ampersand here will be replaced
+     by the capitalised login name when the field is used or displayed  by  such
+     system utilities.
+
+     The  home  directory  field provides the name of the initial working direc-
+     tory. The login program uses this information to set the value of the $HOME
+     environmental variable.
+
+     The command interpreter field provides the name of the user's command  lan-
+     guage interpreter, or the name of the initial program to execute. The login
+     program  uses this information to set the value of the $SHELL environmental
+     variable. If this field is empty, it defaults to the value /bin/sh.
+
+FILES
+     /etc/passwd
+         User account information.
+
+     /etc/shadow
+         optional encrypted password file
+
+     /etc/passwd-
+         Backup file for /etc/passwd.
+
+         Note that this file is used by the tools of the shadow  toolsuite,  but
+         not by all user and password management tools.
+
+SEE ALSO
+     crypt(3),  getent(1), getpwnam(3), login(1), passwd(1), pwck(8), pwconv(8),
+     pwunconv(8), shadow(5), su(1), sulogin(8).
+
+shadow-utils 4.18.0                06/27/2025                          PASSWD(5)

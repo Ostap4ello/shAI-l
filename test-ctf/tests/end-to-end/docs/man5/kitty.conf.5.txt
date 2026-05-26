@@ -1,0 +1,4628 @@
+kitty.conf(5)                         kitty                        kitty.conf(5)
+
+Name
+     kitty.conf - Configuration file for kitty
+
+Overview
+     kitty  is  highly customizable, everything from keyboard shortcuts, to ren-
+     dering frames-per-second. See below for an overview  of  all  customization
+     possibilities.
+
+     You can open the config file within kitty by pressing ctrl+shift+f2 (^a+, on
+     macOS). A kitty.conf with commented default configurations and descriptions
+     will be created if the file does not exist.  You can reload the config file
+     within  kitty  by  pressing ctrl+shift+f5 (^a+^a+, on macOS) or sending kitty
+     the SIGUSR1 signal with kill -SIGUSR1 $KITTY_PID. You can also display  the
+     current configuration by pressing ctrl+shift+f6 (^a+^a+, on macOS).
+
+     kitty looks for a config file in the OS config directories (usually ~/.con-
+     fig/kitty/kitty.conf) but you can pass a specific path via the kitty --con-
+     fig  <#cmdoption-kitty-config>  option or use the KITTY_CONFIG_DIRECTORY <#
+     envvar-KITTY_CONFIG_DIRECTORY> environment variable. See kitty --config  <#
+     cmdoption-kitty-config> for full details.
+
+     Comments can be added to the config file as lines starting with the # char-
+     acter.  This  works  only  if the # character is the first character in the
+     line.
+
+     Lines can be split by starting the next line with  the  \  character.   All
+     leading whitespace and the \ character are removed.
+
+     You  can  include  secondary config files via the include directive. If you
+     use a relative path for include, it is resolved with respect to  the  loca-
+     tion  of  the  current config file. Note that environment variables are ex-
+     panded, so ${USER}.conf becomes name.conf if USER=name. A special  environ-
+     ment variable KITTY_OS <#envvar-KITTY_OS> is available, to detect the oper-
+     ating  system. It is linux, macos or bsd.  Also, you can use globinclude to
+     include files matching a shell glob pattern and envinclude to include  con-
+     figuration  from environment variables. Finally, you can dynamically gener-
+     ate configuration by running a program using geninclude. For example:
+
+        # Include other.conf
+        include other.conf
+        # Include *.conf files from all subdirs of kitty.d inside the kitty config dir
+        globinclude kitty.d/**/*.conf
+        # Include the *contents* of all env vars starting with KITTY_CONF_
+        envinclude KITTY_CONF_*
+        # Run the script dynamic.py placed in the same directory as this config file
+        # and include its :file:`STDOUT`. Note that Python scripts are fastest
+        # as they use the embedded Python interpreter, but any executable script
+        # or program is supported, in any language. Remember to mark the script
+        # file executable.
+        geninclude dynamic.py
+
+Fonts
+     kitty has very powerful font management. You can configure individual  font
+     faces and even specify special fonts for particular characters.
+
+     font_family, bold_font, italic_font, bold_italic_font
+
+        font_family      monospace
+        bold_font        auto
+        italic_font      auto
+        bold_italic_font auto
+
+     You  can  specify different fonts for the bold/italic/bold-italic variants.
+     The easiest way to select fonts is to run the kitten  choose-fonts  command
+     which will present a nice UI for you to select the fonts you want with pre-
+     views  and  support  for selecting variable fonts and font features. If you
+     want to learn to select fonts manually, read the font specification  syntax
+     <#font-spec-syntax>.
+
+     font_size
+
+        font_size 11.0
+
+     Font size (in pts).
+
+     force_ltr
+
+        force_ltr no
+
+     kitty does not support BIDI (bidirectional text), however, for RTL scripts,
+     words are automatically displayed in RTL. That is to say, in an RTL script,
+     the  words  "HELLO WORLD" display in kitty as "WORLD HELLO", and if you try
+     to select a substring of an RTL-shaped string, you will get  the  character
+     that  would be there had the string been LTR. For example, assuming the He-
+     brew word xx"xx(C)xxx, selecting the character that on the  screen  appears
+     to  be x actually writes into the selection buffer the character x. kitty's
+     default behavior is useful in conjunction with a filter to reverse the word
+     order, however, if you wish to manipulate RTL glyphs, it can be very  chal-
+     lenging  to  work with, so this option is provided to turn it off. Further-
+     more, this option can be used with the command  line  program  GNU  FriBidi
+     <https://github.com/fribidi/fribidi#executable>  to  get  BIDI support, be-
+     cause it will force kitty to always treat the text as  LTR,  which  FriBidi
+     expects for terminals.
+
+     symbol_map
+
+     Has no default values. Example values are shown below:
+
+        symbol_map U+E0A0-U+E0A3,U+E0C0-U+E0C7 PowerlineSymbols
+
+     Map  the  specified  Unicode codepoints to a particular font. Useful if you
+     need special rendering for some symbols, such as for Powerline. Avoids  the
+     need  for  patched  fonts. Each Unicode code point is specified in the form
+     U+<code point in hexadecimal>. You can specify multiple code points,  sepa-
+     rated  by commas and ranges separated by hyphens. This option can be speci-
+     fied multiple times. The syntax is:
+
+        symbol_map codepoints Font Family Name
+
+     narrow_symbols
+
+     Has no default values. Example values are shown below:
+
+        narrow_symbols U+E0A0-U+E0A3,U+E0C0-U+E0C7 1
+
+     Usually, for Private Use Unicode characters and some symbol/dingbat charac-
+     ters, if the character is followed by one or more spaces,  kitty  will  use
+     those  extra  cells to render the character larger, if the character in the
+     font has a wide aspect ratio. Using this option you can force kitty to  re-
+     strict the specified code points to render in the specified number of cells
+     (defaulting to one cell).  This option can be specified multiple times. The
+     syntax is:
+
+        narrow_symbols codepoints [optionally the number of cells]
+
+     disable_ligatures
+
+        disable_ligatures never
+
+     Choose  how you want to handle multi-character ligatures. The default is to
+     always render them. You can tell kitty to not render them when  the  cursor
+     is  over  them  by using cursor to make editing easier, or have kitty never
+     render them at all by using always, if you don't like  them.  The  ligature
+     strategy can be set per-window either using the kitty remote control facil-
+     ity or by defining shortcuts for it in kitty.conf, for example:
+
+        map alt+1 disable_ligatures_in active always
+        map alt+2 disable_ligatures_in all never
+        map alt+3 disable_ligatures_in tab cursor
+
+     Note that this refers to programming ligatures, typically implemented using
+     the  calt  OpenType  feature.  For  disabling  general  ligatures,  use the
+     font_features option.
+
+     font_features
+
+     Has no default values. Example values are shown below:
+
+        font_features none
+
+     Choose exactly which OpenType features to enable or disable. Note that  for
+     the main fonts, features can be specified when selecting the font using the
+     choose-fonts kitten.  This setting is useful for fallback fonts.
+
+     Some  fonts might have features worthwhile in a terminal. For example, Fira
+     Code includes a discretionary feature, zero, which in that font changes the
+     appearance of the zero (0), to make it more easily distinguishable from  ~A.
+     Fira  Code  also  includes  other discretionary features known as Stylistic
+     Sets which have the tags ss01 through ss20.
+
+     For the exact syntax to use for individual features, see the HarfBuzz docu-
+     mentation              <https://harfbuzz.github.io/harfbuzz-hb-common.html#
+     hb-feature-from-string>.
+
+     Note that this code is indexed by PostScript name, and not the font family.
+     This  allows you to define very precise feature settings; e.g. you can dis-
+     able a feature in the italic font but not in the regular font.
+
+     On Linux, font features are first read from  the  FontConfig  database  and
+     then this option is applied, so they can be configured in a single, central
+     place.
+
+     To  get the PostScript name for a font, use the fc-scan file.ttf command on
+     Linux or the Font  Book  tool  on  macOS  <https://apple.stackexchange.com/
+     questions/79875/how-can-i-get-the-postscript-name-of-a-ttf-font-installed-
+     in-os-x>.
+
+     Enable alternate zero and oldstyle numerals:
+
+        font_features FiraCode-Retina +zero +onum
+
+     Enable only alternate zero in the bold font:
+
+        font_features FiraCode-Bold +zero
+
+     Disable  the  normal  ligatures,  but  keep the calt feature which (in this
+     font) breaks up monotony:
+
+        font_features TT2020StyleB-Regular -liga +calt
+
+     In conjunction with force_ltr, you may want to disable Arabic  shaping  en-
+     tirely,  and  only  look at their isolated forms if they show up in a docu-
+     ment.  You can do this with e.g.:
+
+        font_features UnifontMedium +isol -medi -fina -init
+
+     modify_font
+
+     Modify font characteristics such as the position or thickness of the under-
+     line and strikethrough. The modifications can have the suffix px for pixels
+     or % for percentage of original value. No suffix means use pts.  For  exam-
+     ple:
+
+        modify_font underline_position -2
+        modify_font underline_thickness 150%
+        modify_font strikethrough_thickness 200%
+        modify_font strikethrough_position 2px
+
+     Additionally,  you can modify the size of the cell in which each font glyph
+     is rendered and the baseline at which the glyph is placed in the cell.  For
+     example:
+
+        modify_font cell_width 80%
+        modify_font cell_height -2px
+        modify_font baseline 3
+
+     Note that modifying the baseline will automatically  adjust  the  underline
+     and  strikethrough  positions  by  the same amount. Increasing the baseline
+     raises glyphs inside the cell and decreasing it lowers them. Decreasing the
+     cell size might cause rendering artifacts, so use with care.
+
+     box_drawing_scale
+
+        box_drawing_scale 0.001, 1, 1.5, 2
+
+     The sizes of the lines used for the box drawing Unicode  characters.  These
+     values  are  in  pts. They will be scaled by the monitor DPI to arrive at a
+     pixel value.  There must be four  values  corresponding  to  thin,  normal,
+     thick, and very thick lines.
+
+     undercurl_style
+
+        undercurl_style thin-sparse
+
+     The  style  with  which undercurls are rendered. This option takes the form
+     (thin|thick)-(sparse|dense). Thin and thick control the  thickness  of  the
+     undercurl.  Sparse  and  dense  control how often the curl oscillates. With
+     sparse the curl will peak once per character, with  dense  twice.  Changing
+     this option dynamically via reloading the config or remote control is unde-
+     fined.
+
+     underline_exclusion
+
+        underline_exclusion 1
+
+     By  default kitty renders gaps in underlines when they overlap with descen-
+     ders (the parts of letters below the baseline, such as for y, q,  p  etc.).
+     This option controls the thickness of the gaps. It can be either a unitless
+     number  in which case it is a fraction of the underline thickness as speci-
+     fied in the font or it can have a suffix of px for pixels or pt for points.
+     Set to zero to disable the gaps. Changing this option dynamically  via  re-
+     loading the config or remote control is undefined.
+
+     text_composition_strategy
+
+        text_composition_strategy platform
+
+     Control how kitty composites text glyphs onto the background color. The de-
+     fault  value  of platform tries for text rendering as close to "native" for
+     the platform kitty is running on as possible.
+
+     A value of legacy uses the old (pre kitty 0.28) strategy for how glyphs are
+     composited. This will make dark text on light backgrounds look thicker  and
+     light text on dark backgrounds thinner. It might also make some text appear
+     like the strokes are uneven.
+
+     You  can  fine tune the actual contrast curve used for glyph composition by
+     specifying up to two space-separated numbers for this setting.
+
+     The first number is the gamma adjustment, which controls the  thickness  of
+     dark  text on light backgrounds. Increasing the value will make text appear
+     thicker.  The default value for this is 1.0 on  Linux  and  1.7  on  macOS.
+     Valid  values  are  0.01 and above. The result is scaled based on the lumi-
+     nance difference between the background and the foreground.  Dark  text  on
+     light backgrounds receives the full impact of the curve while light text on
+     dark backgrounds is affected very little.
+
+     The  second number is an additional multiplicative contrast. It is percent-
+     age ranging from 0 to 100. The default value is 0 on Linux and 30 on macOS.
+
+     If you wish to achieve similar looking thickness in light and dark  themes,
+     a  good  way to experiment is start by setting the value to 1.0 0 and use a
+     dark theme.  Then adjust the second parameter until  it  looks  good.  Then
+     switch  to a light theme and adjust the first parameter until the perceived
+     thickness matches the dark theme.
+
+     text_fg_override_threshold
+
+        text_fg_override_threshold 0
+
+     A setting to prevent low contrast between foreground and background colors.
+     Useful when working with applications that use colors that do not  contrast
+     well  with your preferred color scheme. The default value is 0, which means
+     no color overriding is performed.  There are two modes of operation:
+
+     A value with the suffix ratio represents the minimum accepted contrast  ra-
+     tio  between  the  foreground  and background color.  Possible values range
+     from 0.0 ratio to 21.0 ratio.  For example, to meet WCAG level AA <https://
+     en.wikipedia.org/wiki/Web_Content_Accessibility_Guidelines> a value of  4.5
+     ratio  can be provided.  The algorithm is implemented using HSLuv <https://
+     www.hsluv.org/> which enables it to change the  perceived  lightness  of  a
+     color  just  as  much as needed without really changing its hue and satura-
+     tion.
+
+     A value with the suffix % represents the minimum accepted difference in lu-
+     minance between the foreground and background color, below which kitty will
+     override the foreground color.  It is percentage ranging from 0 % to 100 %.
+     If the difference in luminance of the foreground and  background  is  below
+     this threshold, the foreground color will be set to white if the background
+     is dark or black if the background is light.
+
+     WARNING: Some programs use characters (such as block characters) for graph-
+     ics  display and may expect to be able to set the foreground and background
+     to the same color (or similar colors). If you see unexpected stripes, dots,
+     lines, incorrect color, no color where you expect color,  or  any  kind  of
+     graphic  display problem try setting text_fg_override_threshold to 0 to see
+     if this is the cause of the problem or consider using the ratio mode of op-
+     eration described above instead of the % mode of operation.
+
+Text cursor customization
+     cursor
+
+        cursor #cccccc
+
+     Default text cursor color. If set to the special value none the cursor will
+     be rendered with a "reverse video" effect. Its color will be the  color  of
+     the  text  in  the  cell  it is over and the text will be rendered with the
+     background color of the cell. Note that if the program running in the  ter-
+     minal  sets  a cursor color, this takes precedence. Also, the cursor colors
+     are modified if the cell background and foreground  colors  have  very  low
+     contrast.  Note that some themes set this value, so if you want to override
+     it, place your value after the lines where the theme file is included.
+
+     cursor_text_color
+
+        cursor_text_color #111111
+
+     The color of text under the cursor. If you want it rendered with the  back-
+     ground color of the cell underneath instead, use the special keyword: back-
+     ground.  Note  that  if  cursor is set to none then this option is ignored.
+     Note that some themes set this value, so if you want to override it,  place
+     your value after the lines where the theme file is included.
+
+     cursor_shape
+
+        cursor_shape block
+
+     The  cursor shape can be one of block, beam, underline.  Note that when re-
+     loading the config this will be changed only if the cursor  shape  has  not
+     been set by the program running in the terminal. This sets the default cur-
+     sor shape, applications running in the terminal can override it. In partic-
+     ular, shell integration <#shell-integration> in kitty sets the cursor shape
+     to  beam  at shell prompts. You can avoid this by setting shell_integration
+     to no-cursor.
+
+     cursor_shape_unfocused
+
+        cursor_shape_unfocused hollow
+
+     Defines the text cursor shape when the OS window is not focused. The  unfo-
+     cused  cursor  shape  can  be one of block, beam, underline, hollow and un-
+     changed (leave the cursor shape as it is).
+
+     cursor_beam_thickness
+
+        cursor_beam_thickness 1.5
+
+     The thickness of the beam cursor (in pts).
+
+     cursor_underline_thickness
+
+        cursor_underline_thickness 2.0
+
+     The thickness of the underline cursor (in pts).
+
+     cursor_blink_interval
+
+        cursor_blink_interval -1
+
+     The interval to blink the cursor (in  seconds).  Set  to  zero  to  disable
+     blinking.   Negative  values mean use system default. Note that the minimum
+     interval will be limited to repaint_delay. You can also animate the  cursor
+     blink  by  specifying an easing function <#term-easing-function>. For exam-
+     ple, setting this to option to 0.5 ease-in-out will cause the cursor  blink
+     to  be  animated  over a second, in the first half of the second it will go
+     from opaque to transparent and then back again over the next half. You  can
+     specify different easing functions for the two halves, for example: -1 lin-
+     ear  ease-out.  kitty  supports  all  the  CSS  easing  functions <https://
+     developer.mozilla.org/en-US/docs/Web/CSS/easing-function>.  Note that turn-
+     ing on animations uses extra power as it means the screen is redrawn multi-
+     ple times per blink interval. See  also,  cursor_stop_blinking_after.  This
+     setting  also controls blinking text, which blinks in exact rhythm with the
+     cursor.
+
+     cursor_stop_blinking_after
+
+        cursor_stop_blinking_after 15.0
+
+     Stop blinking cursor after the specified number of seconds of keyboard  in-
+     activity.  Set  to  zero to never stop blinking. This setting also controls
+     blinking text, which blinks in exact rhythm with the cursor.
+
+     cursor_trail
+
+        cursor_trail 0
+
+     Set this to a value larger than zero to enable a "cursor trail"  animation.
+     This  is  an  animation  that shows a "trail" following the movement of the
+     text cursor.  It makes it easy to follow large cursor jumps and makes for a
+     cool visual effect of the cursor zooming  around  the  screen.  The  actual
+     value of this option controls when the animation is triggered. It is a num-
+     ber  of  milliseconds.  The  trail animation only follows cursors that have
+     stayed in their position for longer than the specified number of  millisec-
+     onds.  This  prevents trails from appearing for cursors that rapidly change
+     their positions during  UI  updates  in  complex  applications.   See  cur-
+     sor_trail_decay    to    control    the    animation    speed    and   cur-
+     sor_trail_start_threshold to control when a cursor trail is started.
+
+     cursor_trail_decay
+
+        cursor_trail_decay 0.1 0.4
+
+     Controls the decay times for the cursor trail effect when the  cursor_trail
+     is  enabled.  This  option accepts two positive float values specifying the
+     fastest and slowest decay times in seconds. The first value corresponds  to
+     the  fastest  decay time (minimum), and the second value corresponds to the
+     slowest decay time (maximum). The second value must be equal to or  greater
+     than the first value. Smaller values result in a faster decay of the cursor
+     trail.   Adjust  these values to control how quickly the cursor trail fades
+     away.
+
+     cursor_trail_start_threshold
+
+        cursor_trail_start_threshold 2
+
+     Set the distance threshold for starting the cursor trail. This  option  ac-
+     cepts  a positive integer value that represents the minimum number of cells
+     the cursor must move before the trail is started.  When  the  cursor  moves
+     less than this threshold, the trail is skipped, reducing unnecessary cursor
+     trail animation.
+
+     cursor_trail_color
+
+        cursor_trail_color none
+
+     Set  the color of the cursor trail when cursor_trail is enabled.  If set to
+     'none' (the default), the cursor trail will  use  the  cursor's  background
+     color.  Otherwise, specify a color value (e.g., #ff0000 for red, or a named
+     color like 'red'). This allows you to customize the appearance of the  cur-
+     sor trail independently of the cursor color.
+
+Scrollback
+     scrollback_lines
+
+        scrollback_lines 2000
+
+     Number  of lines of history to keep in memory for scrolling back. Memory is
+     allocated on demand. Negative numbers are  (effectively)  infinite  scroll-
+     back.   Note  that using very large scrollback is not recommended as it can
+     slow down performance of the terminal and also use large  amounts  of  RAM.
+     Instead,  consider using scrollback_pager_history_size. Note that on config
+     reload if this is changed it will only affect newly  created  windows,  not
+     existing ones.
+
+     scrollbar
+
+        scrollbar scrolled
+
+     Control when the scrollbar is displayed.
+
+     scrolled
+            means when the scrolling backwards has started.
+
+     hovered
+            means when the mouse is hovering on the right edge of the window.
+
+     scrolled-and-hovered
+            means  when  the  mouse  is  over the scrollbar region and scrolling
+            backwards has started.
+
+     always
+            means whenever any scrollback is present
+
+     never  means disable the scrollbar.
+
+     scrollbar_interactive
+
+        scrollbar_interactive yes
+
+     If disabled, the scrollbar will not be controllable via the mouse  and  all
+     mouse events will pass through the scrollbar.
+
+     scrollbar_jump_on_click
+
+        scrollbar_jump_on_click yes
+
+     When enabled clicking in the scrollbar track will cause the scroll position
+     to  jump  to  the clicked location, otherwise the scroll position will only
+     move towards the position by a single screenful, which is  how  traditional
+     scrollbars behave.
+
+     scrollbar_width
+
+        scrollbar_width 0.5
+
+     The width of the scroll bar in units of cell width.
+
+     scrollbar_hover_width
+
+        scrollbar_hover_width 1
+
+     The width of the scroll bar when the mouse is hovering over it, in units of
+     cell width.
+
+     scrollbar_handle_opacity
+
+        scrollbar_handle_opacity 0.5
+
+     The  opacity of the scrollbar handle, 0 being fully transparent and 1 being
+     full opaque.
+
+     scrollbar_radius
+
+        scrollbar_radius 0.3
+
+     The radius (curvature) of the scrollbar handle  in  units  of  cell  width.
+     Should be less than scrollbar_width.
+
+     scrollbar_gap
+
+        scrollbar_gap 0.1
+
+     The gap between the scrollbar and the window edge in units of cell width.
+
+     scrollbar_min_handle_height
+
+        scrollbar_min_handle_height 1
+
+     The  minimum  height  of the scrollbar handle in units of cell height. Pre-
+     vents the handle from becoming too small when there is a lot of scrollback.
+
+     scrollbar_hitbox_expansion
+
+        scrollbar_hitbox_expansion 0.25
+
+     The extra area around the handle to allow easier grabbing of  the  scollbar
+     in units of cell width.
+
+     scrollbar_track_opacity
+
+        scrollbar_track_opacity 0
+
+     The  opacity  of the scrollbar track, 0 being fully transparent and 1 being
+     full opaque.
+
+     scrollbar_track_hover_opacity
+
+        scrollbar_track_hover_opacity 0.1
+
+     The opacity of the scrollbar track when the mouse is over the scrollbar,  0
+     being fully transparent and 1 being full opaque.
+
+     scrollbar_handle_color
+
+        scrollbar_handle_color foreground
+
+     The  color  of the scrollbar handle. A value of foreground means to use the
+     current foreground text color, a value of selection_background means to use
+     the current selection background color. Also,  you  can  use  an  arbitrary
+     color, such as #12af59 or red.
+
+     scrollbar_track_color
+
+        scrollbar_track_color foreground
+
+     The  color  of  the scrollbar track. A value of foreground means to use the
+     current foreground text color, a value of selection_background means to use
+     the current selection background color. Also,  you  can  use  an  arbitrary
+     color, such as #12af59 or red.
+
+     scrollback_pager
+
+        scrollback_pager less --chop-long-lines --RAW-CONTROL-CHARS +INPUT_LINE_NUMBER
+
+     Program  with  which  to  view  scrollback  in a new window. The scrollback
+     buffer is passed as STDIN to this program. If you change it, make sure  the
+     program  you  use can handle ANSI escape sequences for colors and text for-
+     matting.  INPUT_LINE_NUMBER in the command line above will be  replaced  by
+     an integer representing which line should be at the top of the screen. Sim-
+     ilarly CURSOR_LINE and CURSOR_COLUMN will be replaced by the current cursor
+     position  or  set to 0 if there is no cursor, for example, when showing the
+     last command output.
+
+     If you would rather use neovim to view the scrollback, use  something  like
+     this:
+
+        scrollback_pager nvim --cmd 'set eventignore=FileType' +'nnoremap q ZQ' +'call nvim_open_term(0, {})' +'set nomodified nolist' +'$' -
+
+     The above works for neovim 0.12 and newer. There is also a dedicated plugin
+     kitty-scrollback.nvim      <https://github.com/mikesmithgh/kitty-scrollback
+     .nvim> you can use with more features that works with older neovim as well.
+
+     scrollback_pager_history_size
+
+        scrollback_pager_history_size 0
+
+     Separate scrollback history size  (in  MB),  used  only  for  browsing  the
+     scrollback buffer with pager. This separate buffer is not available for in-
+     teractive  scrolling  but  will  be piped to the pager program when viewing
+     scrollback buffer in a separate window. The current  implementation  stores
+     the  data  in UTF-8, so approximately 10000 lines per megabyte at 100 chars
+     per line, for pure ASCII, unformatted text. A value of zero  or  less  dis-
+     ables  this  feature.  The maximum allowed size is 4GB. Note that on config
+     reload if this is changed it will only affect newly  created  windows,  not
+     existing ones.
+
+     scrollback_fill_enlarged_window
+
+        scrollback_fill_enlarged_window no
+
+     Fill new space with lines from the scrollback buffer after enlarging a win-
+     dow.
+
+     wheel_scroll_multiplier
+
+        wheel_scroll_multiplier 5.0
+
+     Multiplier  for  the number of lines scrolled by the mouse wheel. Note that
+     this is only used for low precision scrolling devices, not for high  preci-
+     sion scrolling devices on platforms such as macOS and Wayland. Use negative
+     numbers to change scroll direction. See also wheel_scroll_min_lines.
+
+     wheel_scroll_min_lines
+
+        wheel_scroll_min_lines 1
+
+     The  minimum number of lines scrolled by the mouse wheel. The scroll multi-
+     plier only takes effect after it reaches this number.  Note  that  this  is
+     only  used  for low precision scrolling devices like wheel mice that scroll
+     by very small amounts when using the wheel. With  a  negative  number,  the
+     minimum number of lines will always be added.
+
+     touch_scroll_multiplier
+
+        touch_scroll_multiplier 1.0
+
+     Multiplier  for  the number of lines scrolled by a touchpad. Note that this
+     is only used for high precision scrolling devices on platforms such as  ma-
+     cOS and Wayland. Use negative numbers to change scroll direction.
+
+     pixel_scroll
+
+        pixel_scroll yes
+
+     Enable per-pixel scrolling, in the kitty scrollback buffer, when using high
+     precision  input devices (for example touchpads). When enabled, kitty's own
+     scrollback will move by sub-line increments instead of  only  whole  lines.
+     This  does not affect applications running inside the terminal (for example
+     full-screen TUIs) that handle scrolling themselves.
+
+     momentum_scroll
+
+        momentum_scroll 0.96
+
+     The amount of friction to apply to slow down momentum (inertial) scrolling.
+     A number from 0 to 1, with 0 meaning no momentum scrolling  and  1  meaning
+     infinite  scrolling.  Note that this setting only applies on platforms such
+     as Wayland, that do not provide native momentum scrolling.  On  macOS,  the
+     native  OS based momentum scrolling is used.  Also, momentum scrolling only
+     applies to "finger" based  devices  such  as  touchpads  and  touchscreens.
+     Changes to this setting only take effect after a kitty restart.
+
+Mouse
+     mouse_hide_wait
+
+        mouse_hide_wait 3.0
+
+     Hide  mouse  cursor  after the specified number of seconds of the mouse not
+     being used. Set to zero to disable mouse cursor hiding. Set to  a  negative
+     value  to  hide  the mouse cursor immediately when typing text. Disabled by
+     default on macOS as getting it to work robustly with the ever-changing  sea
+     of bugs that is Cocoa is too much effort.
+
+     By  default,  once  the cursor is hidden, it is immediately unhidden on any
+     further mouse events.
+
+     Two formats are supported:
+
+            * <hide-wait>
+
+            * <hide-wait> <unhide-wait> <unhide-threshold> <scroll-unhide>
+
+     To change the unhide behavior, the optional parameters <unhide-wait>,  <un-
+     hide-threshold>, and <scroll-unhide> may be set.
+
+     <unhide-wait>
+            Waits  for the specified number of seconds after mouse events before
+            unhiding the mouse cursor. Set to zero to unhide mouse cursor  imme-
+            diately on mouse activity.  This is useful to prevent the mouse cur-
+            sor from unhiding on accidental swipes on the trackpad.
+
+     <unhide-threshold>
+            Sets  the  threshold  of mouse activity required to unhide the mouse
+            cursor,  when  the  <unhide-wait>  option  is  non-zero.  When  <un-
+            hide-wait> is zero, this has no effect.
+
+            For  example,  if <unhide-threshold> is 40 and <unhide-wait> is 2.5,
+            when kitty detects a mouse event, it records  the  number  of  mouse
+            events  in the next 2.5 seconds, and checks if that exceeds 40 * 2.5
+            = 100. If it does, then the  mouse  cursor  is  unhidden,  otherwise
+            nothing happens.
+
+     <scroll-unhide>
+            Controls  what mouse events may unhide the mouse cursor. If enabled,
+            both scroll and movement events may unhide the cursor. If  disabled,
+            only mouse movements can unhide the cursor.
+
+     Examples of valid values:
+
+            * 0.0
+
+            * 1.0
+
+            * -1.0
+
+            * 0.1 3.0 40 yes
+
+     url_color, url_style
+
+        url_color #0087bd
+        url_style curly
+
+     The  color  and style for highlighting URLs on mouse-over. url_style can be
+     one of: none, straight, double, curly, dotted, dashed.
+
+     open_url_with
+
+        open_url_with default
+
+     The program to open clicked URLs. The special value default will first look
+     for any URL handlers defined via the Scripting the mouse click <>  facility
+     and  if  non are found, it will use the Operating System's default URL han-
+     dler (open on macOS and xdg-open on Linux).
+
+     url_prefixes
+
+        url_prefixes file ftp ftps gemini git gopher http https irc ircs kitty mailto news sftp ssh
+
+     The set of URL prefixes to look for when detecting a URL  under  the  mouse
+     cursor.
+
+     detect_urls
+
+        detect_urls yes
+
+     Detect  URLs  under the mouse. Detected URLs are highlighted with an under-
+     line and the mouse cursor becomes a hand over them. Even if this option  is
+     disabled,  URLs  are still clickable. See also the underline_hyperlinks op-
+     tion to control how hyperlinks (as opposed to plain  text  URLs)  are  dis-
+     played.
+
+     url_excluded_characters
+
+     Additional characters to be disallowed from URLs, when detecting URLs under
+     the mouse cursor. By default, all characters that are legal in URLs are al-
+     lowed.   Additionally,  newlines are allowed (but stripped). This is to ac-
+     commodate programs such as mutt that add hard line breaks even for  contin-
+     ued  lines.   \n can be added to this option to disable this behavior. Spe-
+     cial characters can be specified using  backslash  escapes,  to  specify  a
+     backslash use a double backslash.
+
+     show_hyperlink_targets
+
+        show_hyperlink_targets no
+
+     When  the  mouse hovers over a terminal hyperlink, show the actual URL that
+     will be activated when the hyperlink is clicked.
+
+     underline_hyperlinks
+
+        underline_hyperlinks hover
+
+     Control how hyperlinks are underlined. They can  either  be  underlined  on
+     mouse hover, always (i.e. permanently underlined) or never which means that
+     kitty  will  not  apply  any underline styling to hyperlinks. Note that the
+     value of always only applies to real (OSC 8) hyperlinks not  text  that  is
+     detected to be a URL on mouse hover.  Uses the url_style and url_color set-
+     tings  for the underline style. Note that reloading the config and changing
+     this value to/from always will only affect text  subsequently  received  by
+     kitty.
+
+     copy_on_select
+
+        copy_on_select no
+
+     Copy  to  clipboard  or  a private buffer on select. With this set to clip-
+     board, selecting text with the mouse will cause the text to  be  copied  to
+     clipboard.  Useful  on platforms such as macOS that do not have the concept
+     of primary selection. You can instead specify a name such as a1 to copy  to
+     a private kitty buffer. Map a shortcut with the paste_from_buffer action to
+     paste from this private buffer.  For example:
+
+        copy_on_select a1
+        map shift+cmd+v paste_from_buffer a1
+
+     Note that copying to the clipboard is a security risk, as all programs, in-
+     cluding  websites  open in your browser can read the contents of the system
+     clipboard.
+
+     clear_selection_on_clipboard_loss
+
+        clear_selection_on_clipboard_loss no
+
+     When the contents of the clipboard no longer reflect the current selection,
+     clear it.  This is primarily useful on platforms such as  Linux  where  se-
+     lecting text automatically copies it to a special "primary selection" clip-
+     board or if you have copy_on_select set to clipboard.
+
+     Note that on macOS the system does not provide notifications when the clip-
+     board  owner  is changed, so there, copying to clipboard in a non-kitty ap-
+     plication will not clear selections even if copy_on_select is enabled.
+
+     paste_actions
+
+        paste_actions quote-urls-at-prompt,confirm
+
+     A comma separated list of actions to take when  pasting  or  dropping  text
+     into the terminal.  The supported paste actions are:
+
+     quote-urls-at-prompt:
+            If  the  text  being  pasted  is  a URL and the cursor is at a shell
+            prompt, automatically quote the URL (needs shell_integration).
+
+     replace-dangerous-control-codes
+            Replace dangerous control codes from pasted text, without  confirma-
+            tion.
+
+     replace-newline
+            Replace  the  newline  character from pasted text, without confirma-
+            tion.
+
+     confirm:
+            Confirm the paste if the text to be  pasted  contains  any  terminal
+            control codes as this can be dangerous, leading to code execution if
+            the  shell/program  running in the terminal does not properly handle
+            these.
+
+     confirm-if-large
+            Confirm the paste if it is very large (larger than 16KB) as  pasting
+            large amounts of text into shells can be very slow.
+
+     filter:
+            Run  the  filter_paste()  function from the file paste-actions.py in
+            the kitty config directory on the pasted text. The text returned  by
+            the function will be actually pasted.
+
+     no-op:
+            Has no effect.
+
+     strip_trailing_spaces
+
+        strip_trailing_spaces never
+
+     Remove  spaces  at  the  end of lines when copying to clipboard. A value of
+     smart will do it when using normal selections,  but  not  rectangle  selec-
+     tions. A value of always will always do it.
+
+     select_by_word_characters
+
+        select_by_word_characters @-./_~?&=%+#
+
+     Characters  considered  part of a word when double clicking. In addition to
+     these characters any character that is marked as an alphanumeric  character
+     in the Unicode database will be matched.
+
+     select_by_word_characters_forward
+
+     Characters  considered  part of a word when extending the selection forward
+     on double clicking. In addition to these characters any character  that  is
+     marked  as  an  alphanumeric  character  in  the  Unicode  database will be
+     matched.
+
+     If empty (default) select_by_word_characters will be used for  both  direc-
+     tions.
+
+     click_interval
+
+        click_interval -1.0
+
+     The  interval  between successive clicks to detect double/triple clicks (in
+     seconds). Negative numbers will use the system default instead,  if  avail-
+     able, or fallback to 0.5.
+
+     focus_follows_mouse
+
+        focus_follows_mouse no
+
+     Set  the  active window to the window under the mouse when moving the mouse
+     around.  On macOS, this will also cause the OS Window under the mouse to be
+     focused automatically when the mouse enters it.
+
+     pointer_shape_when_grabbed
+
+        pointer_shape_when_grabbed arrow
+
+     The shape of the mouse pointer when the program  running  in  the  terminal
+     grabs the mouse.
+
+     default_pointer_shape
+
+        default_pointer_shape beam
+
+     The default shape of the mouse pointer.
+
+     pointer_shape_when_dragging
+
+        pointer_shape_when_dragging beam crosshair
+
+     The  default  shape of the mouse pointer when dragging across text. The op-
+     tional second value sets the shape when dragging in  rectangular  selection
+     mode.
+
+   Mouse actions
+     Mouse buttons can be mapped to perform arbitrary actions. The syntax is:
+
+        mouse_map button-name event-type modes action
+
+     Where  button-name is one of left, middle, right, b1 ... b8 with added key-
+     board  modifiers.  For  example:  ctrl+shift+left  refers  to  holding  the
+     Ctrl+Shift keys while clicking with the left mouse button. The value b1 ...
+     b8 can be used to refer to up to eight buttons on a mouse.
+
+     event-type  is one of press, release, doublepress, triplepress, click, dou-
+     bleclick.  modes indicates whether the action is performed when  the  mouse
+     is  grabbed  by the program running in the terminal, or not. The values are
+     grabbed or ungrabbed or a comma separated  combination  of  them.   grabbed
+     refers  to  when  the  program  running in the terminal has requested mouse
+     events. Note that the click  and  double  click  events  have  a  delay  of
+     click_interval to disambiguate from double and triple presses.
+
+     You     can     run    kitty    with    the    kitty    --debug-input    <#
+     cmdoption-kitty-debug-input> command line option to see mouse  events.  See
+     the builtin actions below to get a sense of what is possible.
+
+     If  you  want to unmap a button, map it to nothing. For example, to disable
+     opening of URLs with a plain click:
+
+        mouse_map left click ungrabbed
+
+     See all the mappable actions including mouse actions here <>.
+
+     Note:
+        Once a selection is started, releasing the button that started  it  will
+        automatically end it and no release event will be dispatched.
+
+     clear_all_mouse_actions
+
+        clear_all_mouse_actions no
+
+     Remove all mouse action definitions up to this point. Useful, for instance,
+     to remove the default mouse actions.
+
+     Click the link under the mouse or move the cursor
+
+        mouse_map left click ungrabbed mouse_handle_click selection link prompt
+
+     First  check for a selection and if one exists do nothing. Then check for a
+     link under the mouse cursor and if one exists, click it. Finally  check  if
+     the  click  happened at the current shell prompt and if so, move the cursor
+     to the click  location.  Note  that  this  requires  shell  integration  <#
+     shell-integration> to work.
+
+     Click the link under the mouse or move the cursor even when grabbed
+
+        mouse_map shift+left click grabbed,ungrabbed mouse_handle_click selection link prompt
+
+     Same  as  above, except that the action is performed even when the mouse is
+     grabbed by the program running in the terminal.
+
+     Click the link under the mouse cursor
+
+        mouse_map ctrl+shift+left release grabbed,ungrabbed mouse_handle_click link
+
+     Variant with Ctrl+Shift is present because the simple click  based  version
+     has  an  unavoidable  delay  of click_interval, to disambiguate clicks from
+     double clicks.
+
+     Discard press event for link click
+
+        mouse_map ctrl+shift+left press grabbed discard_event
+
+     Prevent this press event from being sent to the program  that  has  grabbed
+     the mouse, as the corresponding release event is used to open a URL.
+
+     Paste from the primary selection
+
+        mouse_map middle release ungrabbed paste_from_selection
+
+     Start selecting text
+
+        mouse_map left press ungrabbed mouse_selection normal
+
+     Start selecting text in a rectangle
+
+        mouse_map ctrl+alt+left press ungrabbed mouse_selection rectangle
+
+     Select a word
+
+        mouse_map left doublepress ungrabbed mouse_selection word
+
+     Select a line
+
+        mouse_map left triplepress ungrabbed mouse_selection line
+
+     Select line from point
+
+        mouse_map ctrl+alt+left triplepress ungrabbed mouse_selection line_from_point
+
+     Select  from the clicked point to the end of the line. If you would like to
+     select the word at the point and then extend  to  the  rest  of  the  line,
+     change line_from_point to word_and_line_from_point.
+
+     Extend the current selection
+
+        mouse_map right press ungrabbed mouse_selection extend
+
+     If  you want only the end of the selection to be moved instead of the near-
+     est boundary, use move-end instead of extend.
+
+     Extend the current selection with shift
+
+        mouse_map shift+left press ungrabbed mouse_selection extend
+
+     If you want only the end of the selection to be moved instead of the  near-
+     est boundary, use move-end instead of extend.
+
+     Paste from the primary selection even when grabbed
+
+        mouse_map shift+middle release ungrabbed,grabbed paste_selection
+        mouse_map shift+middle press grabbed discard_event
+
+     Start selecting text even when grabbed
+
+        mouse_map shift+left press grabbed mouse_selection normal
+
+     Start selecting text in a rectangle even when grabbed
+
+        mouse_map ctrl+shift+alt+left press ungrabbed,grabbed mouse_selection rectangle
+
+     Select a word even when grabbed
+
+        mouse_map shift+left doublepress ungrabbed,grabbed mouse_selection word
+
+     Select a line even when grabbed
+
+        mouse_map shift+left triplepress ungrabbed,grabbed mouse_selection line
+
+     Select line from point even when grabbed
+
+        mouse_map ctrl+shift+alt+left triplepress ungrabbed,grabbed mouse_selection line_from_point
+
+     Select  from the clicked point to the end of the line even when grabbed. If
+     you would like to select the word at the point and then extend to the  rest
+     of the line, change line_from_point to word_and_line_from_point.
+
+     Extend the current selection even when grabbed
+
+        mouse_map shift+right press ungrabbed,grabbed mouse_selection extend
+
+     Show clicked command output in pager
+
+        mouse_map ctrl+shift+right press ungrabbed mouse_show_command_output
+
+     Requires shell integration <#shell-integration> to work.
+
+Performance tuning
+     repaint_delay
+
+        repaint_delay 10
+
+     Delay  between  screen  updates (in milliseconds). Decreasing it, increases
+     frames-per-second (FPS) at the cost of more CPU usage.  The  default  value
+     yields  ~100  FPS which is more than sufficient for most uses. Note that to
+     actually achieve 100 FPS, you have to either set sync_to_monitor to  no  or
+     use  a  monitor  with  a  high refresh rate. Also, to minimize latency when
+     there is pending input to be processed, this option is ignored.
+
+     input_delay
+
+        input_delay 3
+
+     Delay before input from the program running in the  terminal  is  processed
+     (in  milliseconds).  Note  that decreasing it will increase responsiveness,
+     but also increase CPU usage and might cause flicker in full screen programs
+     that redraw the entire screen on each loop, because kitty is so  fast  that
+     partial  screen updates will be drawn. This setting is ignored when the in-
+     put buffer is almost full.
+
+     sync_to_monitor
+
+        sync_to_monitor yes
+
+     Sync screen updates to the refresh  rate  of  the  monitor.  This  prevents
+     screen    tearing    <https://en.wikipedia.org/wiki/Screen_tearing>    when
+     scrolling. However, it limits the rendering speed to the  refresh  rate  of
+     your  monitor.  With a very high speed mouse/high keyboard repeat rate, you
+     may notice some slight input latency. If so, set this to no.
+
+Terminal bell
+     enable_audio_bell
+
+        enable_audio_bell yes
+
+     The audio bell. Useful to disable it in environments that require silence.
+
+     visual_bell_duration
+
+        visual_bell_duration 0.0
+
+     The visual bell duration (in seconds). Flash the screen when a bell  occurs
+     for  the  specified number of seconds. Set to zero to disable. The flash is
+     animated, fading in and out over the specified duration. The  easing  func-
+     tion  <#term-easing-function>  used  for the fading can be controlled.  For
+     example, 2.0 linear will casuse the flash to fade in and out linearly.  The
+     default  if  unspecified  is  to  use ease-in-out which fades slowly at the
+     start, middle and end.  You can specify different easing functions for  the
+     fade-in  and  fade-out parts, like this: 2.0 ease-in linear. kitty supports
+     all the CSS easing functions <https://developer.mozilla.org/en-US/docs/Web/
+     CSS/easing-function>.
+
+     visual_bell_color
+
+        visual_bell_color none
+
+     The color used by visual bell. Set to none  will  fall  back  to  selection
+     background  color.  If you feel that the visual bell is too bright, you can
+     set it to a darker color.
+
+     window_alert_on_bell
+
+        window_alert_on_bell yes
+
+     Request window attention on bell. Makes the dock icon bounce  on  macOS  or
+     the taskbar flash on Linux.
+
+     bell_on_tab
+
+        bell_on_tab " "
+
+     Some  text  or  a  Unicode symbol to show on the tab if a window in the tab
+     that does not have focus has a bell. If you want to use leading or trailing
+     spaces, surround the text with quotes. See tab_title_template for how  this
+     is rendered.
+
+     For backwards compatibility, values of yes, y and true are converted to the
+     default  bell  symbol  and no, n, false and none are converted to the empty
+     string.
+
+     command_on_bell
+
+        command_on_bell none
+
+     Program  to  run   when   a   bell   occurs.   The   environment   variable
+     KITTY_CHILD_CMDLINE  <#envvar-KITTY_CHILD_CMDLINE>  can  be used to get the
+     program running in the window in which the bell occurred.
+
+     macos_dock_badge_on_bell
+
+        macos_dock_badge_on_bell yes
+
+     Show a badge on kitty's dock icon when a bell occurs and kitty is  not  the
+     active  application  (macOS  only). The badge is automatically cleared when
+     kitty regains focus.
+
+     bell_path
+
+        bell_path none
+
+     Path to a sound file to play as the bell sound. If set to none, the  system
+     default  bell sound is used. Must be in a format supported by the operating
+     systems sound API, such as WAV or OGA on Linux (libcanberra) or  AIFF,  MP3
+     or  WAV on macOS (NSSound). Relative paths are resolved with respect to the
+     kitty config directory.
+
+     linux_bell_theme
+
+        linux_bell_theme __custom
+
+     The XDG Sound Theme kitty will use to play the  bell  sound.   On  Wayland,
+     when  the  compositor  supports  it, it is asked to play the system default
+     bell sound, and this setting has no effect. Note that  Hyprland  claims  to
+     support  this  protocol, but does not actually play a sound <https://github
+     .com/hyprwm/Hyprland/issues/10488>.  This setting defaults  to  the  custom
+     theme  name  specified  in  the  XDG  Sound  theme  specification <https://
+     specifications.freedesktop.org/sound-theme-spec/latest/sound_lookup.html>
+     with the contents:
+        [Sound Theme]
+
+        Inherits=name-of-the-sound-theme-you-want-to-use
+
+     Replace name-of-the-sound-theme-you-want-to-use with the actual theme name.
+     Now all compliant applications should use sounds from this theme.
+
+Window layout
+     remember_window_size, initial_window_width, initial_window_height
+
+        remember_window_size  yes
+        initial_window_width  640
+        initial_window_height 400
+
+     If enabled, the OS Window <#term-os_window> size will be remembered so that
+     new instances of kitty will have the same size as  the  previous  instance.
+     If  disabled, the OS Window <#term-os_window> will initially have size con-
+     figured by initial_window_width/height, in pixels. You can use a suffix  of
+     "c"  on the width/height values to have them interpreted as number of cells
+     instead of pixels.
+
+     remember_window_position
+
+        remember_window_position no
+
+     If enabled, the OS Window <#term-os_window> position will be remembered  so
+     that new instances of kitty will have the same position as the previous in-
+     stance.  If disabled, the OS Window <#term-os_window> will be placed by the
+     window manager.  Note that remembering of position only works if the under-
+     lying  desktop  environment/window  manager  supports it. It never works on
+     Wayland. See also kitty --position <#cmdoption-kitty-position>  to  specify
+     the position when launching kitty.
+
+     enabled_layouts
+
+        enabled_layouts *
+
+     The  enabled  window  layouts.  A comma separated list of layout names. The
+     special value all means all layouts. The first listed layout will  be  used
+     as the startup layout. Default configuration is all layouts in alphabetical
+     order. For a list of available layouts, see the Layouts <#layouts>.
+
+     window_resize_step_cells, window_resize_step_lines
+
+        window_resize_step_cells 2
+        window_resize_step_lines 2
+
+     The  step  size  (in  units of cell width/cell height) to use when resizing
+     kitty windows in a layout with the shortcut ctrl+shift+r. The  cells  value
+     is  used  for horizontal resizing, and the lines value is used for vertical
+     resizing.
+
+     window_border_width
+
+        window_border_width 0.5pt
+
+     The width of window borders. Can be either in pixels (px) or pts (pt). Val-
+     ues in pts will be rounded to the nearest number of pixels based on  screen
+     resolution.   If  not  specified,  the unit is assumed to be pts. Note that
+     borders are displayed only when more than one window is visible.  They  are
+     meant to separate multiple windows.
+
+     draw_minimal_borders
+
+        draw_minimal_borders yes
+
+     Draw only the minimum borders needed. This means that only the borders that
+     separate the window from a neighbor are drawn. Note that setting a non-zero
+     window_margin_width overrides this and causes all borders to be drawn.
+
+     draw_window_borders_for_single_window
+
+        draw_window_borders_for_single_window no
+
+     Draw  borders around a window even when there is only a single window visi-
+     ble. When enabled and there is only a single window, full borders are drawn
+     around it (as if draw_minimal_borders is false). The border  will  show  in
+     the  active  color  when the window is focused and the OS window has focus,
+     and in the inactive color when the OS window loses focus. This  provides  a
+     clear  visual  indicator of whether the kitty window is focused. When there
+     are multiple windows visible, this option has no effect and  normal  border
+     drawing rules apply.
+
+     window_margin_width
+
+        window_margin_width 0
+
+     The  window margin (in pts) (blank area outside the border). A single value
+     sets all four sides. Two values set  the  vertical  and  horizontal  sides.
+     Three  values  set  top, horizontal and bottom. Four values set top, right,
+     bottom and left.
+
+     single_window_margin_width
+
+        single_window_margin_width -1
+
+     The window margin to use when only a single window  is  visible  (in  pts).
+     Negative  values will cause the value of window_margin_width to be used in-
+     stead. A single value sets all four sides. Two values set the vertical  and
+     horizontal  sides. Three values set top, horizontal and bottom. Four values
+     set top, right, bottom and left.
+
+     window_padding_width
+
+        window_padding_width 0
+
+     The window padding (in pts) (blank area between the  text  and  the  window
+     border).   A  single value sets all four sides. Two values set the vertical
+     and horizontal sides. Three values set top,  horizontal  and  bottom.  Four
+     values set top, right, bottom and left.
+
+     single_window_padding_width
+
+        single_window_padding_width -1
+
+     The  window  padding  to use when only a single window is visible (in pts).
+     Negative values will cause the value of window_padding_width to be used in-
+     stead. A single value sets all four sides. Two values set the vertical  and
+     horizontal  sides. Three values set top, horizontal and bottom. Four values
+     set top, right, bottom and left.
+
+     placement_strategy
+
+        placement_strategy center
+
+     When the window size is not an exact multiple of the cell  size,  the  cell
+     area  of the terminal window will have some extra padding on the sides. You
+     can control how that padding is distributed with this option. Using a value
+     of center means the cell area will be placed centrally. A value of top-left
+     means the padding will be only at the bottom and right  edges.   The  value
+     can  be one of: top-left, top, top-right, left, center, right, bottom-left,
+     bottom, bottom-right.
+
+     active_border_color
+
+        active_border_color #00ff00
+
+     The color for the border of the active window. Set this to none to not draw
+     borders around the active window.
+
+     inactive_border_color
+
+        inactive_border_color #cccccc
+
+     The color for the border of inactive windows.
+
+     bell_border_color
+
+        bell_border_color #ff5a00
+
+     The color for the border of inactive windows in which a bell has occurred.
+
+     inactive_text_alpha
+
+        inactive_text_alpha 1.0
+
+     Fade the text in inactive windows by the specified amount (a number between
+     zero and one, with zero being fully faded).
+
+     hide_window_decorations
+
+        hide_window_decorations no
+
+     Hide the window decorations (title-bar and window borders) with yes. On ma-
+     cOS, titlebar-only and titlebar-and-corners can be used to  only  hide  the
+     titlebar and the rounded corners.
+
+     On  Wayland,  titlebar-only  can be used to hide the titlebar while keeping
+     the window shadow for resizing. On compositors that have server-side  deco-
+     rations  (such  as  anything  but  GNOME), both yes and titlebar-only force
+     client-side decoration mode.
+
+     Whether this works and exactly what effect it has  depends  on  the  window
+     manager/operating  system.  Note  that  the effects of changing this option
+     when reloading config are undefined. When using titlebar-only on macOS,  it
+     is useful to also set window_margin_width and placement_strategy to prevent
+     the rounded corners from clipping text. Or use titlebar-and-corners.
+
+     window_logo_path
+
+        window_logo_path none
+
+     Path  to  a logo image. Must be in PNG/JPEG/WEBP/GIF/TIFF/BMP format. Rela-
+     tive paths are interpreted relative to the kitty config directory. The logo
+     is displayed in a corner of every kitty window. The position is  controlled
+     by window_logo_position.  Individual windows can be configured to have dif-
+     ferent  logos either using the launch <#action-launch> action or the remote
+     control <> facility.
+
+     window_logo_position
+
+        window_logo_position bottom-right
+
+     Where to position the window logo in the window. The value can be  one  of:
+     top-left,  top,  top-right,  left, center, right, bottom-left, bottom, bot-
+     tom-right.
+
+     window_logo_alpha
+
+        window_logo_alpha 0.5
+
+     The amount the logo should be faded into the background.  With  zero  being
+     fully faded and one being fully opaque.
+
+     window_logo_scale
+
+        window_logo_scale 0
+
+     The  percentage  (0-100] of the window size to which the logo should scale.
+     Using a single number means the logo is scaled to that  percentage  of  the
+     shortest window dimension, while preserving aspect ratio of the logo image.
+
+     Using  two numbers means the width and height of the logo are scaled to the
+     respective percentage of the window's width and height.
+
+     Using zero as the percentage disables scaling in that dimension.  A  single
+     zero (the default) disables all scaling of the window logo.
+
+     resize_debounce_time
+
+        resize_debounce_time 0.1 0.5
+
+     The time to wait (in seconds) before asking the program running in kitty to
+     resize and redraw the screen during a live resize of the OS window, when no
+     new  resize  events have been received, i.e. when resizing is either paused
+     or finished.  On platforms such as macOS, where the operating system  sends
+     events corresponding to the start and end of a live resize, the second num-
+     ber  is  used  for redraw-after-pause since kitty can distinguish between a
+     pause and end of resizing. On such systems the first number is ignored  and
+     redraw  is  immediate  after end of resize. On other systems only the first
+     number is used so that kitty is "ready" quickly after the end of  resizing,
+     while not also continuously redrawing, to save energy.
+
+     resize_in_steps
+
+        resize_in_steps no
+
+     Resize  the  OS  window in steps as large as the cells, instead of with the
+     usual pixel accuracy. Combined with initial_window_width  and  initial_win-
+     dow_height  in number of cells, this option can be used to keep the margins
+     as small as possible when resizing the OS window. Note that this  does  not
+     currently work on Wayland.
+
+     visual_window_select_characters
+
+        visual_window_select_characters 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+     The  list  of  characters for visual window selection. For example, for se-
+     lecting a window to focus on with ctrl+shift+f7. The value should be a  se-
+     ries  of  unique  numbers  or  alphabets,  case  insensitive,  from the set
+     0-9A-Z`-=[];',./\.  Specify your preference as a string of characters.
+
+     confirm_os_window_close
+
+        confirm_os_window_close -1
+
+     Ask for confirmation when closing an OS window or a tab with at least  this
+     number  of  kitty windows in it by window manager (e.g. clicking the window
+     close button or pressing the operating system shortcut to close windows) or
+     by the close_tab <#action-close_tab> action. A value of zero disables  con-
+     firmation.  This  confirmation  also applies to requests to quit the entire
+     application (all OS windows, via the quit <#action-quit> action).  Negative
+     values  are converted to positive ones, however, with shell_integration en-
+     abled, using negative values means windows sitting at a  shell  prompt  are
+     not  counted, only windows where some command is currently running. You can
+     also have backgrounded jobs prevent closing, by adding count-background  to
+     the  setting, for example: -1 count-background.  Note that if you want con-
+     firmation when closing individual  windows,  you  can  map  the  close_win-
+     dow_with_confirmation <#action-close_window_with_confirmation> action.
+
+     window_drag_tolerance
+
+        window_drag_tolerance 2
+
+     Control dragging window borders to resize kitty windows. This is the toler-
+     ance  in  pts  for the region around window borders where pressing the left
+     mouse button will start the dragging of window borders. Use a  large  nega-
+     tive  value  such as -200 to disable dragging of borders. Note that because
+     kitty uses layouts, dragging borders does not actually  resize  the  window
+     itself, but instead, the layout row/column/slot, which can result in multi-
+     ple windows getting resized.
+
+     window_title_bar
+
+        window_title_bar top
+
+     Control  the  position  of the window title bar relative to the window con-
+     tent.  Use window_title_bar_min_windows to  control  when  title  bars  are
+     shown.  Use window_title_template to format the displayed window title.
+
+     window_title_bar_min_windows
+
+        window_title_bar_min_windows 0
+
+     The minimum number of visible windows in a tab before window title bars are
+     shown.  A value of 0 means never show. 1 means always show. 2 or more means
+     show only  when  at  least  that  many  windows  are  visible.  Similar  to
+     tab_bar_min_tabs for the tab bar.
+
+     window_title_template
+
+        window_title_template "{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.window}{progress_percent}{title}"
+
+     A template to render the window title bar text. Uses the same template syn-
+     tax as tab_title_template. Available variables include: {title}, {bell_sym-
+     bol},  {activity_symbol}, {progress_percent}, {custom}, {fmt}, {is_active}.
+     You can also provide a  custom  draw_window_title(data)  function  in  win-
+     dow_title_bar.py in the kitty config directory, exposed as {custom}.
+
+     active_window_title_template
+
+        active_window_title_template none
+
+     Template  to  use  for  the  active window title bar. If not set (the value
+     none), the window_title_template is used.
+
+     window_title_bar_active_foreground
+
+        window_title_bar_active_foreground none
+
+     Foreground color for the active window title bar. Defaults  to  the  corre-
+     sponding tab bar color (active_tab_foreground) when set to none.
+
+     window_title_bar_active_background
+
+        window_title_bar_active_background none
+
+     Background  color  for  the active window title bar. Defaults to the corre-
+     sponding tab bar color (active_tab_background) when set to none.
+
+     window_title_bar_inactive_foreground
+
+        window_title_bar_inactive_foreground none
+
+     Foreground color for inactive window title bars.  Defaults  to  the  corre-
+     sponding tab bar color (inactive_tab_foreground) when set to none.
+
+     window_title_bar_inactive_background
+
+        window_title_bar_inactive_background none
+
+     Background  color  for  inactive  window title bars. Defaults to the corre-
+     sponding tab bar color (inactive_tab_background) when set to none.
+
+     window_title_bar_align
+
+        window_title_bar_align center
+
+     Horizontal alignment of the text in window title bars.
+
+Tab bar
+     tab_bar_edge
+
+        tab_bar_edge bottom
+
+     The edge to show the tab bar on, top or bottom.
+
+     tab_bar_margin_width
+
+        tab_bar_margin_width 0.0
+
+     The margin to the left and right of the tab bar (in pts).
+
+     tab_bar_margin_height
+
+        tab_bar_margin_height 0.0 0.0
+
+     The margin above and below the tab bar (in pts). The first  number  is  the
+     margin between the edge of the OS Window and the tab bar. The second number
+     is the margin between the tab bar and the contents of the current tab.
+
+     tab_bar_style
+
+        tab_bar_style fade
+
+     The tab bar style, can be one of:
+
+     fade   Each tab's edges fade into the background color. (See also tab_fade)
+
+     slant  Tabs look like the tabs in a physical file.
+
+     separator
+            Tabs  are separated by a configurable separator. (See also tab_sepa-
+            rator)
+
+     powerline
+            Tabs are shown as a continuous line with "fancy"  separators.   (See
+            also tab_powerline_style)
+
+     custom
+            A  user-supplied  Python function called draw_tab is loaded from the
+            file tab_bar.py in the kitty config directory. For examples  of  how
+            to write such a function, see the functions named draw_tab_with_* in
+            kitty's  source  code:  kitty/tab_bar.py.  See  also this discussion
+            <https://github.com/kovidgoyal/kitty/discussions/4447> for  examples
+            from kitty users.
+
+     hidden
+            The  tab  bar is hidden. If you use this, you might want to create a
+            mapping  for  the  select_tab  <#action-select_tab>   action   which
+            presents  you with a list of tabs and allows for easy switching to a
+            tab.
+
+     tab_bar_filter
+
+     A search expression <#search-syntax>. Only tabs that match this  expression
+     will be shown in the tab bar. The currently active tab is always shown, re-
+     gardless  of whether it matches or not. When using this option, the tab bar
+     may be displayed with less tabs  than  specified  in  tab_bar_min_tabs,  as
+     evaluating  the  filter is expensive and is done only at display time. This
+     is most useful when using sessions <#sessions>. An expression of  session:~
+     or  session:^$ will show only tabs that belong to the current session or no
+     session.  The  various  tab  navigation  actions  such   as   goto_tab   <#
+     action-goto_tab>,     next_tab    <#action-next_tab>,    previous_tab    <#
+     action-previous_tab>, etc.  are automatically restricted to  work  only  on
+     matching tabs.
+
+     tab_bar_align
+
+        tab_bar_align left
+
+     The  horizontal  alignment  of  the  tab  bar, can be one of: left, center,
+     right.
+
+     tab_bar_min_tabs
+
+        tab_bar_min_tabs 2
+
+     The minimum number of tabs that must exist before the tab bar is shown.
+
+     tab_switch_strategy
+
+        tab_switch_strategy previous
+
+     The algorithm to use when switching to  a  tab  when  the  current  tab  is
+     closed.  The  default of previous will switch to the last used tab. A value
+     of left will switch to the tab to the left of the closed tab.  A  value  of
+     right  will  switch  to  the tab to the right of the closed tab. A value of
+     last will switch to the right-most tab.
+
+     tab_fade
+
+        tab_fade 0.25 0.5 0.75 1
+
+     Control how each tab fades into the background  when  using  fade  for  the
+     tab_bar_style. Each number is an alpha (between zero and one) that controls
+     how  much the corresponding cell fades into the background, with zero being
+     no fade and one being full fade. You can change the number of cells used by
+     adding/removing entries to this list.
+
+     tab_separator
+
+        tab_separator " ^a"
+
+     The separator between tabs in the tab  bar  when  using  separator  as  the
+     tab_bar_style.
+
+     tab_powerline_style
+
+        tab_powerline_style angled
+
+     The powerline separator style between tabs in the tab bar when using power-
+     line as the tab_bar_style, can be one of: angled, slanted, round.
+
+     tab_activity_symbol
+
+        tab_activity_symbol none
+
+     Some  text  or  a  Unicode symbol to show on the tab if a window in the tab
+     that does not have focus has some activity. If you want to use  leading  or
+     trailing  spaces, surround the text with quotes. See tab_title_template for
+     how this is rendered.
+
+     tab_title_max_length
+
+        tab_title_max_length 0
+
+     The maximum number of cells that can be used to render the text in  a  tab.
+     A value of zero means that no limit is applied.
+
+     tab_title_template
+
+        tab_title_template "{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}{tab.last_focused_progress_percent}{title}"
+
+     A template to render the tab title. The default just renders the title with
+     optional  symbols for bell and activity. If you wish to include the tab-in-
+     dex as well, use something like: {index}:{title}. Useful if you have short-
+     cuts mapped for goto_tab N. If you prefer to see  the  index  as  a  super-
+     script, use {sup.index}. All data available is:
+
+     title  The current tab title.
+
+     index  The tab index usable with goto_tab N <#action-goto_tab> shortcuts.
+
+     layout_name
+            The current layout name.
+
+     session_name
+            The  name of the kitty session file from which this tab was created,
+            if any.
+
+     active_session_name
+            The name of the kitty session file from which the active  window  in
+            this tab was created, if any.
+
+     num_windows
+            The number of windows in the tab.
+
+     num_window_groups
+            The  number  of window groups (a window group is a window and all of
+            its overlay windows) in the tab.
+
+     tab.active_wd
+            The working directory of the currently active window in the tab (ex-
+            pensive, requires syscall). Use tab.active_oldest_wd to get the  di-
+            rectory of the oldest foreground process rather than the newest.
+
+     tab.active_exe
+            The  name  of  the  executable running in the foreground of the cur-
+            rently active window in the tab (expensive, requires  syscall).  Use
+            tab.active_oldest_exe for the oldest foreground process.
+
+     max_title_length
+            The maximum title length available.
+
+     keyboard_mode
+            The name of the current keyboard mode <#modal-mappings> or the empty
+            string if no keyboard mode is active.
+
+     tab.last_focused_progress_percent
+            If  a  command  running in a window reports the progress for a task,
+            show this progress as a percentage from the  most  recently  focused
+            window in the tab. Empty string if no progress is reported.
+
+     tab.progress_percent
+            If  a  command  running in a window reports the progress for a task,
+            show this progress as a percentage from all windows in the tab,  av-
+            eraged. Empty string is no progress is reported.
+
+     custom
+            This  will  call  a  function  named  draw_title(data) from the file
+            tab_bar.py placed in the kitty config directory. The  function  will
+            be  passed  a  dictionary of data, the same data that can be used in
+            this template. It can then perform  arbitrarily  complex  processing
+            and  return  a  string.   For example: tab_title_template "{custom}"
+            will use the output of the function as the  tab  title.   Any  print
+            statements in the draw_title() will print to the STDOUT of the kitty
+            process, useful for debugging.
+
+     Note  that  formatting  is done by Python's string formatting machinery, so
+     you can use, for instance, {layout_name[:2].upper()} to show only the first
+     two letters of the layout name, upper-cased. If you want to style the text,
+     you      can      use      styling      directives,      for       example:
+     {fmt.fg.red}red{fmt.fg.tab}normal{fmt.bg._00FF00}greenbg{fmt.bg.tab}.  Sim-
+     ilarly,     for    bold    and    italic:    {fmt.bold}bold{fmt.nobold}nor-
+     mal{fmt.italic}italic{fmt.noitalic}.  The 256 eight terminal colors can  be
+     used as fmt.fg.color0 through fmt.fg.color255.  Note that for backward com-
+     patibility,  if  {bell_symbol}  or {activity_symbol} are not present in the
+     template, they are prepended to it.
+
+     active_tab_title_template
+
+        active_tab_title_template none
+
+     Template to use for active tabs. If not specified  falls  back  to  tab_ti-
+     tle_template.
+
+     active_tab_foreground, active_tab_background, active_tab_font_style, inac-
+     tive_tab_foreground, inactive_tab_background, inactive_tab_font_style
+
+        active_tab_foreground   #000
+        active_tab_background   #eee
+        active_tab_font_style   bold-italic
+        inactive_tab_foreground #444
+        inactive_tab_background #999
+        inactive_tab_font_style normal
+
+     Tab bar colors and styles.
+
+     tab_bar_background
+
+        tab_bar_background none
+
+     Background color for the tab bar. Defaults to using the terminal background
+     color.
+
+     tab_bar_margin_color
+
+        tab_bar_margin_color none
+
+     Color  for  the  tab  bar margin area. Defaults to using the terminal back-
+     ground color for margins above and below the tab bar. For side margins  the
+     default  color  is  chosen to match the background color of the neighboring
+     tab, unless the window is translucent, in which case the default background
+     is used as it looks better.
+
+     tab_bar_drag_threshold
+
+        tab_bar_drag_threshold 5
+
+     Control when dragging of tabs to re-order them happens.  The value  is  the
+     drag  threshold  in  pixels, the distance the mouse must move before a drag
+     begins. A value of zero disables tab dragging entirely.  Dragging a tab  to
+     another  kitty window moves it there, while dragging outside any kitty win-
+     dow detaches it into a new OS window.
+
+     Note that on Wayland, because of  poor  design  <https://gitlab.freedesktop
+     .org/wayland/wayland/-/issues/140>  cancelling  a drag will detach the tab.
+     This is  worked  around  for  compositors  that  support  xdg-toplevel-drag
+     <https://wayland.app/protocols/xdg-toplevel-drag-v1>.
+
+Color scheme
+     foreground, background
+
+        foreground #dddddd
+        background #000000
+
+     The foreground and background colors.
+
+     background_opacity
+
+        background_opacity 1.0
+
+     The  opacity  of  the  terminal background color. A number between zero and
+     one, where one is opaque and zero is fully transparent. This will only work
+     if supported by the OS (for instance, when using a compositor  under  X11).
+     Note  that  it  only sets the background color's opacity in cells that have
+     the same background color as  the  default  terminal  background,  so  that
+     things like the status bar in vim, powerline prompts, etc. still look good.
+     But  it means that if you use a color theme with a background color in your
+     editor, it will not be rendered as transparent. Instead you  should  change
+     the  default background color in your kitty config and not use a background
+     color in the editor color scheme. Or use the escape codes to set the termi-
+     nals default colors in a shell script  to  launch  your  editor.  See  also
+     transparent_background_colors.   Be  aware that using a value less than 1.0
+     is a (possibly significant) performance hit. When using  a  low  value  for
+     this  setting, it is desirable that you set the background color to a color
+     the matches the general color of the desktop background, for best text ren-
+     dering. Note also, that this setting does not apply to  the  background_im-
+     age,  if any. The background image can itself have transparency via its al-
+     pha channel if desired, and that will be respected.
+
+     If you  want  to  dynamically  change  transparency  of  windows,  set  dy-
+     namic_background_opacity to yes (this is off by default as it has a perfor-
+     mance  cost). Changing this option when reloading the config will only work
+     if dynamic_background_opacity was enabled in the original config.
+
+     background_blur
+
+        background_blur 0
+
+     Set to a positive value to enable background blur (blurring of the  visuals
+     behind  a  transparent window) on platforms that support it. Only takes ef-
+     fect when background_opacity is less than one. On  macOS,  this  will  also
+     control  the  blur  radius  (amount  of blurring). Setting it to too high a
+     value will cause severe  performance  issues  and/or  rendering  artifacts.
+     Usually,  values up to 64 work well. Note that this might cause performance
+     issues, depending on how the platform implements it, so use with care. Cur-
+     rently supported on macOS and Wayland, when  the  compositor  supports  the
+     background blur extension.
+
+     transparent_background_colors
+
+     A  space separated list of upto 7 colors, with opacity. When the background
+     color of a cell matches one of these colors, it is rendered  semi-transpar-
+     ent using the specified opacity.
+
+     Useful  in  more  complex UIs like editors where you could want more than a
+     single background color to be rendered as transparent, for instance, for  a
+     cursor highlight line background or a highlighted block.  Terminal applica-
+     tions can set this color using The kitty color control <#id1> escape code.
+
+     The syntax for specifying colors is: color@opacity, where the @opacity part
+     is optional. When unspecified, the value of background_opacity is used. For
+     example:
+
+        transparent_background_colors red@0.5 #00ff00@0.3
+
+     Note that you must also set background_opacity to something less than 1 for
+     this setting to work properly.
+
+     dynamic_background_opacity
+
+        dynamic_background_opacity no
+
+     Allow changing of the background_opacity dynamically, using either keyboard
+     shortcuts  (ctrl+shift+a>m and ctrl+shift+a>l) or the remote control facil-
+     ity. Changing this option by reloading the config is not supported.
+
+     background_image
+
+        background_image none
+
+     Path to a background image. Must be in  PNG/JPEG/WEBP/TIFF/GIF/BMP  format.
+     Note that when using Change color themes automatically when the OS switches
+     between  light  and  dark <#auto-color-scheme> this option is overridden by
+     the color scheme file and must be set inside it to take effect.
+
+     background_image_layout
+
+        background_image_layout tiled
+
+     Whether to tile, scale or clamp the background image. The value can be  one
+     of  tiled,  mirror-tiled,  scaled, clamped, centered or cscaled. The scaled
+     and cscaled values scale the image to the window size,  with  cscaled  pre-
+     serving  the  image aspect ratio.  Note that when using Change color themes
+     automatically  when  the  OS   switches   between   light   and   dark   <#
+     auto-color-scheme>  this  option is overridden by the color scheme file and
+     must be set inside it to take effect.
+
+     background_image_linear
+
+        background_image_linear no
+
+     When background image is scaled, whether  linear  interpolation  should  be
+     used.  Note  that  when using Change color themes automatically when the OS
+     switches between light and dark <#auto-color-scheme> this option  is  over-
+     ridden by the color scheme file and must be set inside it to take effect.
+
+     background_tint
+
+        background_tint 0.0
+
+     How  much to tint the background image by the background color. This option
+     makes it easier to read the text. Tinting is done using the  current  back-
+     ground  color for each window. This option applies only if background_image
+     is set.  Note that when using Change color themes automatically when the OS
+     switches between light and dark <#auto-color-scheme> this option  is  over-
+     ridden by the color scheme file and must be set inside it to take effect.
+
+     background_tint_gaps
+
+        background_tint_gaps 1.0
+
+     How  much to tint the background image at the window gaps by the background
+     color, after applying background_tint. Since this  is  multiplicative  with
+     background_tint,  it  can  be used to lighten the tint over the window gaps
+     for a separated look.  Note that when using Change color  themes  automati-
+     cally when the OS switches between light and dark <#auto-color-scheme> this
+     option  is overridden by the color scheme file and must be set inside it to
+     take effect.
+
+     dim_opacity
+
+        dim_opacity 0.4
+
+     How much to dim text that has the DIM/FAINT attribute  set.  One  means  no
+     dimming and zero means fully dimmed (i.e. invisible).
+
+     selection_foreground, selection_background
+
+        selection_foreground #000000
+        selection_background #fffacd
+
+     The foreground and background colors for text selected with the mouse. Set-
+     ting  both  of these to none will cause a "reverse video" effect for selec-
+     tions, where the selection will be the cell text color and  the  text  will
+     become the cell background color. Setting only selection_foreground to none
+     will  cause the foreground color to be used unchanged. Note that these col-
+     ors can be overridden by the program running in the terminal.
+
+   The color table
+     The 256 terminal colors. There are 8 basic colors, each color  has  a  dull
+     and  bright version, for the first 16 colors. You can set the remaining 240
+     colors as color16 to color255.
+
+     color0, color8
+
+        color0 #000000
+        color8 #767676
+
+     black
+
+     color1, color9
+
+        color1 #cc0403
+        color9 #f2201f
+
+     red
+
+     color2, color10
+
+        color2  #19cb00
+        color10 #23fd00
+
+     green
+
+     color3, color11
+
+        color3  #cecb00
+        color11 #fffd00
+
+     yellow
+
+     color4, color12
+
+        color4  #0d73cc
+        color12 #1a8fff
+
+     blue
+
+     color5, color13
+
+        color5  #cb1ed1
+        color13 #fd28ff
+
+     magenta
+
+     color6, color14
+
+        color6  #0dcdcd
+        color14 #14ffff
+
+     cyan
+
+     color7, color15
+
+        color7  #dddddd
+        color15 #ffffff
+
+     white
+
+     mark1_foreground
+
+        mark1_foreground black
+
+     Color for marks of type 1
+
+     mark1_background
+
+        mark1_background #98d3cb
+
+     Color for marks of type 1 (light steel blue)
+
+     mark2_foreground
+
+        mark2_foreground black
+
+     Color for marks of type 2
+
+     mark2_background
+
+        mark2_background #f2dcd3
+
+     Color for marks of type 1 (beige)
+
+     mark3_foreground
+
+        mark3_foreground black
+
+     Color for marks of type 3
+
+     mark3_background
+
+        mark3_background #f274bc
+
+     Color for marks of type 3 (violet)
+
+   Wide gamut color formats
+     kitty supports modern wide gamut color formats including OKLCH and CIE  LAB
+     for precise color specification. These formats can be used anywhere a color
+     value is accepted (foreground, background, color0-color255, etc.).
+
+     For  detailed  documentation on wide gamut color formats, syntax, and exam-
+     ples, see Wide gamut color formats <>.
+
+Advanced
+     shell
+
+        shell .
+
+     The shell program to execute. The default value of . means to use the value
+     of of the SHELL <#envvar-SHELL> environment variable or if unset,  whatever
+     shell  is set as the default shell for the current user. Note that on macOS
+     if you change this, you might need to add --login and --interactive to  en-
+     sure  that  the  shell  starts in interactive mode and reads its startup rc
+     files. Environment variables are expanded in this setting.
+
+     editor
+
+        editor .
+
+     The terminal based text editor (such as vim or nano) to  use  when  editing
+     the kitty config file or similar tasks.
+
+     The  default  value  of  . means to use the environment variables VISUAL <#
+     envvar-VISUAL> and EDITOR <#envvar-EDITOR> in that order.  If  these  vari-
+     ables aren't set, kitty will run your shell ($SHELL -l -i -c env) to see if
+     your  shell  startup  rc  files  set  VISUAL  <#envvar-VISUAL> or EDITOR <#
+     envvar-EDITOR>. If that doesn't work,  kitty  will  cycle  through  various
+     known editors (vim, emacs, etc.) and take the first one that exists on your
+     system.
+
+     close_on_child_death
+
+        close_on_child_death no
+
+     Close the window when the child process (usually the shell) exits. With the
+     default  value  no,  the  terminal will remain open when the child exits as
+     long as there are still other processes outputting to the terminal (for ex-
+     ample disowned or backgrounded processes). When enabled with yes, the  win-
+     dow  will close as soon as the child process exits. Note that setting it to
+     yes means that any background processes still using the terminal  can  fail
+     silently because their stdout/stderr/stdin no longer work.
+
+     remote_control_password
+
+     Allow  other  programs to control kitty using passwords. This option can be
+     specified multiple times to add multiple passwords.  If  no  passwords  are
+     present  kitty  will  ask the user for permission if a program tries to use
+     remote control with a password. A password can also optionally  be  associ-
+     ated with a set of allowed remote control actions. For example:
+
+        remote_control_password "my passphrase" get-colors set-colors focus-window focus-tab
+
+     Only  the specified actions will be allowed when using this password.  Glob
+     patterns can be used too, for example:
+
+        remote_control_password "my passphrase" set-tab-* resize-*
+
+     To get a list of available actions, run:
+
+        kitten @ --help
+
+     A set of actions to be allowed when no password is sent can be specified by
+     using an empty password. For example:
+
+        remote_control_password "" *-colors
+
+     Finally, the path to a python module can be specified that provides a func-
+     tion is_cmd_allowed that is used to check  every  remote  control  command.
+     For example:
+
+        remote_control_password "my passphrase" my_rc_command_checker.py
+
+     Relative  paths  are  resolved from the kitty configuration directory.  See
+     Customizing authorization with your own program <#rc-custom-auth>  for  de-
+     tails.
+
+     allow_remote_control
+
+        allow_remote_control no
+
+     Allow  other programs to control kitty. If you turn this on, other programs
+     can control all aspects of kitty, including sending text to kitty  windows,
+     opening  new windows, closing windows, reading the content of windows, etc.
+     Note that this even works over SSH connections. The default setting  of  no
+     prevents any form of remote control. The meaning of the various values are:
+
+     password
+            Remote  control  requests  received over both the TTY device and the
+            socket are confirmed based on  passwords,  see  remote_control_pass-
+            word.
+
+     socket-only
+            Remote control requests received over a socket are accepted uncondi-
+            tionally. Requests received over the TTY are denied.  See listen_on.
+
+     socket
+            Remote control requests received over a socket are accepted uncondi-
+            tionally.  Requests  received  over  the  TTY are confirmed based on
+            password.
+
+     no     Remote control is completely disabled.
+
+     yes    Remote control requests are always accepted.
+
+     listen_on
+
+        listen_on none
+
+     Listen to the specified socket for remote control  connections.  Note  that
+     this  will  apply to all kitty instances. It can be overridden by the kitty
+     --listen-on <#cmdoption-kitty-listen-on>  command  line  option.  For  UNIX
+     sockets, such as unix:${TEMP}/mykitty or unix:@mykitty (on Linux). Environ-
+     ment variables are expanded and relative paths are resolved with respect to
+     the  temporary directory. If {kitty_pid} is present, then it is replaced by
+     the PID of the kitty process, otherwise the PID of the kitty process is ap-
+     pended to the value, with a hyphen. For TCP sockets such as tcp:localhost:0
+     a random port is always used even if a non-zero port number  is  specified.
+     See  the  help  for kitty --listen-on <#cmdoption-kitty-listen-on> for more
+     details. Note that this will be ignored unless allow_remote_control is  set
+     to  either:  yes, socket or socket-only.  Changing this option by reloading
+     the config is not supported.
+
+     env
+
+     Specify the environment variables to be set in all child  processes.  Using
+     the  name  with  an  equal  sign  (e.g.  env VAR=) will set it to the empty
+     string.  Specifying only the name (e.g. env VAR) will remove  the  variable
+     from  the  child  process' environment. Note that environment variables are
+     expanded recursively, for example:
+
+        env VAR1=a
+        env VAR2=${HOME}/${VAR1}/b
+
+     The value of VAR2 will be <path to home directory>/a/b.
+
+     Use the special value read_from_shell to  have  kitty  read  the  specified
+     variables  from  your  login  shell  configuration.   Useful  if your shell
+     startup files setup a bunch of environment variables that you  want  avail-
+     able  to kitty and in kitty session files. Each variable name is treated as
+     a glob pattern to match. For example: env  read_from_shell=PATH  LANG  LC_*
+     XDG_* EDITOR VISUAL. Note that these variables are only read after the con-
+     figuration  is  fully  processed, thus they are not available for recursive
+     expansion and they will override any variables set by other env directives.
+
+     filter_notification
+
+     Specify rules to filter out notifications sent by applications  running  in
+     kitty.   Can be specified multiple times to create multiple filter rules. A
+     rule specification is of the form field:regexp. A filter rule can match  on
+     any  of  the fields: title, body, app, type.  The special value of all fil-
+     ters out all notifications. Rules can be combined using Boolean  operators.
+     Some examples:
+
+        filter_notification title:hello or body:"abc.*def"
+        # filter out notification from vim except for ones about updates, (?i)
+        # makes matching case insensitive.
+        filter_notification app:"[ng]?vim" and not body:"(?i)update"
+        # filter out all notifications
+        filter_notification all
+
+     The  field  app is the name of the application sending the notification and
+     type is the type of the notification. Not all applications will send  these
+     fields,  so  you  can  also match on the title and body of the notification
+     text. More sophisticated programmatic filtering and custom actions on noti-
+     fications can be done by creating a notifications.py file in the kitty con-
+     fig directory (~/.config/kitty). An annotated sample is available <https://
+     github.com/kovidgoyal/kitty/blob/master/docs/notifications.py>.
+
+     watcher
+
+     Path to python file which will be loaded for Watching launched  windows  <#
+     watchers>.  Can  be specified more than once to load multiple watchers. The
+     watchers will be added to every kitty window. Relative paths  are  resolved
+     relative to the kitty config directory. Note that reloading the config will
+     only affect windows created after the reload.
+
+     exe_search_path
+
+     Control where kitty finds the programs to run. The default search order is:
+     First  search  the  system wide PATH, then ~/.local/bin and ~/bin. If still
+     not found, the PATH defined in the  login  shell  after  sourcing  all  its
+     startup  files is tried. Finally, if present, the PATH specified by the env
+     option is tried.
+
+     This option allows you to prepend, append, or remove paths from this search
+     order. It can be specified multiple times for multiple paths. A simple path
+     will be prepended to the search order. A path that starts with the  +  sign
+     will  be  append to the search order, after ~/bin above. A path that starts
+     with the - sign will be removed from the entire search order.  For example:
+
+        exe_search_path /some/prepended/path
+        exe_search_path +/some/appended/path
+        exe_search_path -/some/excluded/path
+
+     update_check_interval
+
+        update_check_interval 24
+
+     The interval to periodically check if an update to kitty is  available  (in
+     hours). If an update is found, a system notification is displayed informing
+     you of the available update. The default is to check every 24 hours, set to
+     zero  to  disable.  Update  checking  is  only  done by the official binary
+     builds. Distro packages or source builds do not do update checking.  Chang-
+     ing this option by reloading the config is not supported.
+
+     startup_session
+
+        startup_session none
+
+     Path to a session file to use for all kitty instances. Can be overridden by
+     using the kitty --session <#cmdoption-kitty-session> =none command line op-
+     tion  for individual instances. See Sessions <#sessions> in the kitty docu-
+     mentation for details. Note that relative paths are  interpreted  with  re-
+     spect to the kitty config directory.  Environment variables in the path are
+     expanded.  Changing  this  option by reloading the config is not supported.
+     Note that if kitty is invoked with command line arguments specifying a com-
+     mand to run, this option is ignored.
+
+     clipboard_control
+
+        clipboard_control write-clipboard write-primary read-clipboard-ask read-primary-ask
+
+     Allow programs running in kitty to read and write from the  clipboard.  You
+     can  control  exactly  which actions are allowed. The possible actions are:
+     write-clipboard, read-clipboard,  write-primary,  read-primary,  read-clip-
+     board-ask,  read-primary-ask.  The default is to allow writing to the clip-
+     board and primary selection and to ask for permission when a program  tries
+     to  read from the clipboard. Note that disabling the read confirmation is a
+     security risk as it means that any program, even the ones running on a  re-
+     mote server via SSH can read your clipboard. See also clipboard_max_size.
+
+     clipboard_max_size
+
+        clipboard_max_size 512
+
+     The  maximum  size (in MB) of data from programs running in kitty that will
+     be stored for writing to the system clipboard. A value  of  zero  means  no
+     size limit is applied. See also clipboard_control.
+
+     file_transfer_confirmation_bypass
+
+     The  password  that  can be supplied to the file transfer kitten <> to skip
+     the transfer confirmation prompt. This should only be used when  initiating
+     transfers from trusted computers, over trusted networks or encrypted trans-
+     ports,  as  it  allows  any  programs  running  on  the  remote  machine to
+     read/write to the local filesystem, without permission.
+
+     allow_hyperlinks
+
+        allow_hyperlinks yes
+
+     Process hyperlink <#term-hyperlinks> escape sequences (OSC 8). If  disabled
+     OSC  8 escape sequences are ignored. Otherwise they become clickable links,
+     that you can click with the mouse or by using the  hints  kitten  <>.   The
+     special value of ask means that kitty will ask before opening the link when
+     clicked.
+
+     shell_integration
+
+        shell_integration enabled
+
+     Enable shell integration on supported shells. This enables features such as
+     jumping to previous prompts, browsing the output of the previous command in
+     a  pager, etc. on supported shells. Set to disabled to turn off shell inte-
+     gration, completely. It is also possible to  disable  individual  features,
+     set  to a space separated list of these values: no-rc, no-cursor, no-title,
+     no-cwd, no-prompt-mark, no-complete, no-sudo.   See  Shell  integration  <#
+     shell-integration> for details.
+
+     allow_cloning
+
+        allow_cloning ask
+
+     Control whether programs running in the terminal can request new windows to
+     be  created. The canonical example is clone-in-kitty <#clone-shell>. By de-
+     fault, kitty will ask for  permission  for  each  clone  request.  Allowing
+     cloning  unconditionally  gives programs running in the terminal (including
+     over SSH) permission to execute arbitrary code, as the user who is  running
+     the terminal, on the computer that the terminal is running on.
+
+     clone_source_strategies
+
+        clone_source_strategies venv,conda,env_var,path
+
+     Control what shell code is sourced when running clone-in-kitty in the newly
+     cloned window. The supported strategies are:
+
+     venv   Source  the  file  $VIRTUAL_ENV/bin/activate.  This  is  used by the
+            Python stdlib venv module and allows cloning venvs automatically.
+
+     conda  Run conda activate $CONDA_DEFAULT_ENV. This supports the virtual en-
+            vironments created by conda.
+
+     env_var
+            Execute    the    contents    of    the     environment     variable
+            KITTY_CLONE_SOURCE_CODE <#envvar-KITTY_CLONE_SOURCE_CODE> with eval.
+
+     path   Source   the   file   pointed   to   by   the  environment  variable
+            KITTY_CLONE_SOURCE_PATH <#envvar-KITTY_CLONE_SOURCE_PATH>.
+
+     This option must be a comma separated list of the above  values.  Only  the
+     first valid match, in the order specified, is sourced.
+
+     notify_on_cmd_finish
+
+        notify_on_cmd_finish never
+
+     Show  a  desktop  notification  when a long-running command finishes (needs
+     shell_integration).  The possible values are:
+
+     never  Never send a notification.
+
+     unfocused
+            Only send a notification when the window does not have keyboard  fo-
+            cus.
+
+     invisible
+            Only  send  a notification when the window both is unfocused and not
+            visible to the user, for example, because it is in an  inactive  tab
+            or its OS window is not currently visible (on platforms that support
+            OS  window  visibility  querying this considers an OS Window visible
+            iff it is active).
+
+     always
+            Always send a notification, regardless of window state.
+
+     There are two optional arguments:
+
+     First, the minimum duration for what is considered a long running  command.
+     The  default  is  5 seconds. Specify a second argument to set the duration.
+     For example: invisible 15.  Do not set the value  too  small,  otherwise  a
+     command that launches a new OS Window and exits will spam a notification.
+
+     Second,  the  action to perform. The default is notify. The possible values
+     are:
+
+     notify
+            Send a desktop notification. The subsequent arguments  are  optional
+            and  specify when the notification is automatically cleared. The set
+            of possible events when the notification is cleared are:  focus  and
+            next.  focus means that when the notification policy is unfocused or
+            invisible the notification is automatically cleared when the  window
+            regains  focus.  The value of next means that the previous notifica-
+            tion is cleared when the next notification  is  shown.  The  default
+            when no arguments are specified is: focus next.
+
+     bell   Ring the terminal bell.
+
+     notify-bell
+            Send  a  desktop notification and ring the terminal bell.  The argu-
+            ments are the same as for notify.
+
+     command
+            Run a custom command. All subsequent arguments are  the  cmdline  to
+            run.
+
+     Some more examples:
+
+        # Send a notification when a command takes more than 5 seconds in an unfocused window
+        notify_on_cmd_finish unfocused
+        # Send a notification when a command takes more than 10 seconds in a invisible window
+        notify_on_cmd_finish invisible 10.0
+        # Ring a bell when a command takes more than 10 seconds in a invisible window
+        notify_on_cmd_finish invisible 10.0 bell
+        # Run 'notify-send' when a command takes more than 10 seconds in a invisible window
+        # Here %c is replaced by the current command line and %s by the job exit code
+        notify_on_cmd_finish invisible 10.0 command notify-send "job finished with status: %s" %c
+        # Do not clear previous notification when next command finishes or window regains focus
+        notify_on_cmd_finish invisible 5.0 notify
+
+     term
+
+        term xterm-kitty
+
+     The  value of the TERM <#envvar-TERM> environment variable to set. Changing
+     this can break many terminal programs, only change it if you know what  you
+     are  doing,  not because you read some advice on "Stack Overflow" to change
+     it. The TERM <#envvar-TERM> variable is used by various programs to get in-
+     formation about the capabilities and  behavior  of  the  terminal.  If  you
+     change it, depending on what programs you run, and how different the termi-
+     nal  you are changing it to is, various things from key-presses, to colors,
+     to various advanced features may not work. Changing this option by  reload-
+     ing the config will only affect newly created windows.
+
+     terminfo_type
+
+        terminfo_type path
+
+     The  value  of the TERMINFO <#envvar-TERMINFO> environment variable to set.
+     This variable is used by programs running in the  terminal  to  search  for
+     terminfo  databases.  The default value of path causes kitty to set it to a
+     filesystem location containing the kitty terminfo database. A value of  di-
+     rect  means  put the entire database into the env var directly. This can be
+     useful when connecting to containers, for example. But, note that  not  all
+     software supports this. A value of none means do not touch the variable.
+
+     forward_stdio
+
+        forward_stdio no
+
+     Forward STDOUT and STDERR of the kitty process to child processes.  This is
+     useful  for debugging as it allows child processes to print to kitty's STD-
+     OUT directly. For example, echo hello world >&$KITTY_STDIO_FORWARDED  in  a
+     shell  will  print  to the parent kitty's STDOUT. Sets the KITTY_STDIO_FOR-
+     WARDED=fdnum environment variable so child processes know  about  the  for-
+     warding.  Note that on macOS this prevents the shell from being run via the
+     login utility so getlogin() will not work in programs run in this session.
+
+     menu_map
+
+     Specify entries for various menus  in  kitty.  Currently  only  the  global
+     menubar on macOS is supported. For example:
+
+        menu_map global "Actions::Launch something special" launch --hold --type=os-window sh -c "echo hello world"
+
+     This  will  create a menu entry named "Launch something special" in an "Ac-
+     tions" menu in the macOS global  menubar.   Sub-menus  can  be  created  by
+     adding more levels separated by the :: characters.
+
+Os specific tweaks
+     wayland_titlebar_color
+
+        wayland_titlebar_color system
+
+     The  color  of  the  kitty window's titlebar on Wayland systems with client
+     side window decorations such as GNOME. A value of system means to  use  the
+     default  system  colors,  a value of background means to use the background
+     color of the currently active kitty window and finally you can use an arbi-
+     trary color, such as #12af59 or red.
+
+     macos_titlebar_color
+
+        macos_titlebar_color system
+
+     The color of the kitty window's titlebar on macOS. A value of system  means
+     to  use  the default system color, light or dark can also be used to set it
+     explicitly. A value of background means to use the background color of  the
+     currently active window and finally you can use an arbitrary color, such as
+     #12af59 or red.
+
+     macos_option_as_alt
+
+        macos_option_as_alt no
+
+     Use  the Option key as an Alt key on macOS. With this set to no, kitty will
+     use the macOS native Option+Key to enter Unicode character  behavior.  This
+     will  break  any  Alt+Key keyboard shortcuts in your terminal programs, but
+     you can use the macOS Unicode input technique.  You  can  use  the  values:
+     left, right or both to use only the left, right or both Option keys as Alt,
+     instead.  Note that kitty itself always treats Option the same as Alt. This
+     means you cannot use this option to configure different kitty shortcuts for
+     Option+Key vs. Alt+Key. Also, any kitty shortcuts using Option/Alt+Key will
+     take priority, so that any such key presses will not be passed to  terminal
+     programs running inside kitty. Changing this option by reloading the config
+     is not supported.
+
+     macos_hide_from_tasks
+
+        macos_hide_from_tasks no
+
+     Hide  the  kitty  window  from running tasks on macOS (^a+Tab and the Dock).
+     Changing this option by reloading the config is not supported.
+
+     macos_quit_when_last_window_closed
+
+        macos_quit_when_last_window_closed no
+
+     Have kitty quit when all the top-level windows are closed on macOS. By  de-
+     fault,  kitty  will  stay running, even with no open windows, as is the ex-
+     pected behavior on macOS.
+
+     macos_window_resizable
+
+        macos_window_resizable yes
+
+     Disable this if you want kitty top-level OS windows to not be resizable  on
+     macOS.
+
+     macos_thicken_font
+
+        macos_thicken_font 0
+
+     Draw an extra border around the font with the given width, to increase leg-
+     ibility at small font sizes on macOS. For example, a value of 0.75 will re-
+     sult  in  rendering  that looks similar to sub-pixel antialiasing at common
+     font sizes. Note that in modern kitty, this option  is  obsolete  (although
+     still supported). Consider using text_composition_strategy instead.
+
+     macos_traditional_fullscreen
+
+        macos_traditional_fullscreen no
+
+     Use  the macOS traditional full-screen transition, that is faster, but less
+     pretty.
+
+     macos_show_window_title_in
+
+        macos_show_window_title_in all
+
+     Control where the window title is displayed on macOS.  A  value  of  window
+     will  show the title of the currently active window at the top of the macOS
+     window. A value of menubar will show the title of the currently active win-
+     dow in the macOS global menu bar, making use of otherwise wasted  space.  A
+     value  of all will show the title in both places, and none hides the title.
+     See macos_menubar_title_max_length for how to control the length of the ti-
+     tle in the menu bar.
+
+     macos_menubar_title_max_length
+
+        macos_menubar_title_max_length 0
+
+     The maximum number of characters from the window title to show in the macOS
+     global menu bar. Values less than one means that there is no maximum limit.
+
+     macos_custom_beam_cursor
+
+        macos_custom_beam_cursor no
+
+     Use a custom mouse cursor for macOS that is easier to see on both light and
+     dark backgrounds. Nowadays, the default macOS cursor already comes  with  a
+     white  border. WARNING: this might make your mouse cursor invisible on dual
+     GPU machines. Changing this option by reloading  the  config  is  not  sup-
+     ported.
+
+     macos_colorspace
+
+        macos_colorspace srgb
+
+     The  colorspace  in which to interpret terminal colors. The default of srgb
+     will cause colors to match those seen in web browsers. The value of default
+     will use whatever the native colorspace of the display is.   The  value  of
+     displayp3  will use Apple's special snowflake display P3 color space, which
+     will result in over saturated (brighter) colors with some color shift.  Re-
+     loading configuration will change this value only for newly created OS win-
+     dows.
+
+     linux_display_server
+
+        linux_display_server auto
+
+     Choose between Wayland and X11 backends. By default, an appropriate backend
+     based on the system state is chosen automatically. Set it to x11 or wayland
+     to  force  the  choice. Changing this option by reloading the config is not
+     supported.
+
+     wayland_enable_ime
+
+        wayland_enable_ime yes
+
+     Enable Input Method Extension on Wayland. This is typically  used  for  in-
+     putting  text  in East Asian languages. However, its implementation in Way-
+     land is often buggy and introduces latency into the input loop, so  disable
+     this  if  you  know you dont need it. Changing this option by reloading the
+     config is not supported, it will not have any effect.
+
+Keyboard shortcuts
+     Keys are identified simply by their lowercase Unicode characters. For exam-
+     ple: a for the A key, [ for the left square bracket key,  etc.   For  func-
+     tional  keys,  such as Enter or Escape, the names are present at Functional
+     key definitions <#functional>. For modifier keys, the names are ctrl  (con-
+     trol, ^a), shift (^a), alt (opt, option, ^a), super (cmd, command, ^a).
+
+     Simple shortcut mapping is done with the map directive. For full details on
+     advanced  mapping including modal and per application maps, see Making your
+     keyboard dance <>.  Some quick examples to illustrate common tasks:
+
+        # unmap a keyboard shortcut, passing it to the program running in kitty
+        map kitty_mod+space
+        # completely ignore a keyboard event
+        map ctrl+alt+f1 discard_event
+        # combine multiple actions
+        map kitty_mod+e combine : new_window : next_layout
+        # multi-key shortcuts
+        map ctrl+x>ctrl+y>z action
+
+     You can browse and trigger these actions by pressing ctrl+shift+f3  to  run
+     the  command  palette.  The  full list of actions that can be mapped to key
+     presses is available here <>.
+
+     kitty_mod
+
+        kitty_mod ctrl+shift
+
+     Special modifier key alias for default shortcuts. You can change the  value
+     of this option to alter all default shortcuts that use kitty_mod.
+
+     clear_all_shortcuts
+
+        clear_all_shortcuts no
+
+     Remove  all shortcut definitions up to this point. Useful, for instance, to
+     remove the default shortcuts.
+
+     map_timeout
+
+        map_timeout 0.0
+
+     The default timeout (in seconds) for multi-key mappings and modal  keyboard
+     modes.   If  you  press  the  first key(s) of a multi-key mapping and don't
+     press the next key within this timeout, the mapping is  cancelled  and  the
+     mode  is exited. A value of zero disables the timeout. This can be overrid-
+     den for specific modes using the --timeout option when creating a  keyboard
+     mode with --new-mode.  For example:
+
+        # 2 second timeout for all mappings
+        map_timeout 2.0
+
+        # This mode will have a 5 second timeout (overrides the global 2 second timeout)
+        map --new-mode resize --timeout 5.0 kitty_mod+r
+
+     action_alias
+
+     Has no default values. Example values are shown below:
+
+        action_alias launch_tab launch --type=tab --cwd=current
+
+     Define  action aliases to avoid repeating the same options in multiple map-
+     pings.  Aliases can be defined for any action and will be  expanded  recur-
+     sively.  For  example,  the  above  alias  allows you to create mappings to
+     launch a new tab in the current working directory without duplication:
+
+        map f1 launch_tab vim
+        map f2 launch_tab emacs
+
+     Similarly, to alias kitten invocation:
+
+        action_alias hints kitten hints --hints-offset=0
+
+     kitten_alias
+
+     Has no default values. Example values are shown below:
+
+        kitten_alias hints hints --hints-offset=0
+
+     Like action_alias above, but specifically for kittens. Generally, prefer to
+     use action_alias. This option is a legacy version,  present  for  backwards
+     compatibility.  It  causes all invocations of the aliased kitten to be sub-
+     stituted. So the example above will cause all invocations of the hints kit-
+     ten         to         have         the         --hints-offset=0         <#
+     cmdoption-kitty-kitten-hints-hints-offset> option applied.
+
+   Clipboard
+     Copy to clipboard
+
+        map ctrl+shift+c copy_to_clipboard
+
+     There  is  also a copy_or_interrupt <#action-copy_or_interrupt> action that
+     can be optionally mapped to Ctrl+C. It will copy only if there is a  selec-
+     tion  and  send an interrupt otherwise. Similarly, copy_and_clear_or_inter-
+     rupt <#action-copy_and_clear_or_interrupt> will copy and clear  the  selec-
+     tion  or  send  an interrupt if there is no selection.  The copy_or_noop <#
+     action-copy_or_noop> action will copy if there is a selection and pass  the
+     key  through  to the application running in the terminal if there is no se-
+     lection.
+
+     Copy to clipboard or pass through
+
+        map cmd+c copy_or_noop
+
+     Paste from clipboard
+
+        map ctrl+shift+v paste_from_clipboard
+        map cmd+v paste_from_clipboard
+
+     Paste from selection
+
+        map ctrl+shift+s paste_from_selection
+        map shift+insert paste_from_selection
+
+     Pass selection to program
+
+        map ctrl+shift+o pass_selection_to_program
+
+     You can also pass the contents of the current selection to any program with
+     pass_selection_to_program <#action-pass_selection_to_program>. By  default,
+     the system's open program is used, but you can specify your own, the selec-
+     tion will be passed as a command line argument to the program. For example:
+
+        map kitty_mod+o pass_selection_to_program firefox
+
+     You  can  pass the current selection to a terminal program running in a new
+     kitty window, by using the @selection placeholder:
+
+        map kitty_mod+y new_window less @selection
+
+   Scrolling
+     Scroll line up
+
+        map ctrl+shift+up scroll_line_up
+        map ctrl+shift+k scroll_line_up
+        map opt+cmd+page_up scroll_line_up
+        map cmd+up scroll_line_up
+
+     Scroll line down
+
+        map ctrl+shift+down scroll_line_down
+        map ctrl+shift+j scroll_line_down
+        map opt+cmd+page_down scroll_line_down
+        map cmd+down scroll_line_down
+
+     Scroll page up
+
+        map ctrl+shift+page_up scroll_page_up
+        map cmd+page_up scroll_page_up
+
+     Scroll page down
+
+        map ctrl+shift+page_down scroll_page_down
+        map cmd+page_down scroll_page_down
+
+     Scroll to top
+
+        map ctrl+shift+home scroll_home
+        map cmd+home scroll_home
+
+     Scroll to bottom
+
+        map ctrl+shift+end scroll_end
+        map cmd+end scroll_end
+
+     Scroll to previous shell prompt
+
+        map ctrl+shift+z scroll_to_prompt -1
+
+     Use a parameter of 0  for  scroll_to_prompt  <#action-scroll_to_prompt>  to
+     scroll  to  the last jumped to or the last clicked position. Requires shell
+     integration <#shell-integration> to work.
+
+     Scroll to next shell prompt
+
+        map ctrl+shift+x scroll_to_prompt 1
+
+     Browse scrollback buffer in pager
+
+        map ctrl+shift+h show_scrollback
+
+     You can pipe the contents of the current screen and history buffer as STDIN
+     to    an    arbitrary    program    using    launch    --stdin-source    <#
+     cmdoption-launch-stdin-source>.   For  example,  the  following  opens  the
+     scrollback buffer in less in an overlay <#term-overlay> window:
+
+        map f1 launch --stdin-source=@screen_scrollback --stdin-add-formatting --type=overlay less +G -R
+
+     For more details on piping screen and buffer contents to external programs,
+     see The launch command <>.
+
+     Browse output of the last shell command in pager
+
+        map ctrl+shift+g show_last_command_output
+
+     You can also define additional shortcuts to get the  command  output.   For
+     example, to get the first command output on screen:
+
+        map f1 show_first_command_output_on_screen
+
+     To  get  the  command output that was last accessed by a keyboard action or
+     mouse action:
+
+        map f1 show_last_visited_command_output
+
+     You can pipe the output of the last command run  in  the  shell  using  the
+     launch <#action-launch> action. For example, the following opens the output
+     in less in an overlay <#term-overlay> window:
+
+        map f1 launch --stdin-source=@last_cmd_output --stdin-add-formatting --type=overlay less +G -R
+
+     To  get  the output of the first command on the screen, use @first_cmd_out-
+     put_on_screen.  To get the output  of  the  last  jumped  to  command,  use
+     @last_visited_cmd_output.
+
+     Requires shell integration <#shell-integration> to work.
+
+     Search the scrollback within a pager
+
+        map ctrl+shift+/ search_scrollback
+        map cmd+f search_scrollback
+
+     Search  for  currently selected text in the scrollback using the configured
+     scrollback_pager.  Assumes that pressing the / key triggers search mode  in
+     the  pager. If you want to create a manual mapping with a special pager for
+     this, you can use something like:
+        map   f1   combine    :    launch    <--stdin-source=@screen_scrollback>
+        --stdin-add-formatting --type=overlay mypager : send_key /
+
+     For  more  sophisticated  control, such as using the current selection, use
+     remote_control_script <#action-remote_control_script>.
+
+   Window management
+     New window
+
+        map ctrl+shift+enter new_window
+        map cmd+enter new_window
+
+     You can open a new kitty window <#term-window> running  an  arbitrary  pro-
+     gram, for example:
+
+        map kitty_mod+y launch mutt
+
+     You  can  open  a  new window with the current working directory set to the
+     working directory of the current window using:
+
+        map ctrl+alt+enter launch --cwd=current
+
+     You can open a new window that is allowed to control kitty  via  the  kitty
+     remote    control    facility   with   launch   --allow-remote-control   <#
+     cmdoption-launch-allow-remote-control>.  Any programs running in that  win-
+     dow will be allowed to control kitty.  For example:
+
+        map ctrl+enter launch --allow-remote-control some_program
+
+     You  can  open  a  new window next to the currently active window or as the
+     first window, with:
+
+        map ctrl+n launch --location=neighbor
+        map ctrl+f launch --location=first
+
+     For more details, see The launch command <>.
+
+     New OS window
+
+        map ctrl+shift+n new_os_window
+        map cmd+n new_os_window
+
+     Works like new_window <#action-new_window> above, except that  it  opens  a
+     top-level   OS   window   <#term-os_window>.  In  particular  you  can  use
+     new_os_window_with_cwd <#action-new_os_window_with_cwd> to  open  a  window
+     with the current working directory.
+
+     Close window
+
+        map ctrl+shift+w close_window
+        map shift+cmd+d close_window
+
+     Next window
+
+        map ctrl+shift+] next_window
+
+     Previous window
+
+        map ctrl+shift+[ previous_window
+
+     Move window forward
+
+        map ctrl+shift+f move_window_forward
+
+     Move window backward
+
+        map ctrl+shift+b move_window_backward
+
+     Move window to top
+
+        map ctrl+shift+` move_window_to_top
+
+     Start resizing window
+
+        map ctrl+shift+r start_resizing_window
+        map cmd+r start_resizing_window
+
+     First window
+
+        map ctrl+shift+1 first_window
+        map cmd+1 first_window
+
+     Second window
+
+        map ctrl+shift+2 second_window
+        map cmd+2 second_window
+
+     Third window
+
+        map ctrl+shift+3 third_window
+        map cmd+3 third_window
+
+     Fourth window
+
+        map ctrl+shift+4 fourth_window
+        map cmd+4 fourth_window
+
+     Fifth window
+
+        map ctrl+shift+5 fifth_window
+        map cmd+5 fifth_window
+
+     Sixth window
+
+        map ctrl+shift+6 sixth_window
+        map cmd+6 sixth_window
+
+     Seventh window
+
+        map ctrl+shift+7 seventh_window
+        map cmd+7 seventh_window
+
+     Eighth window
+
+        map ctrl+shift+8 eighth_window
+        map cmd+8 eighth_window
+
+     Ninth window
+
+        map ctrl+shift+9 ninth_window
+        map cmd+9 ninth_window
+
+     Tenth window
+
+        map ctrl+shift+0 tenth_window
+
+     Visually select and focus window
+
+        map ctrl+shift+f7 focus_visible_window
+
+     Display  overlay  numbers and alphabets on the window, and switch the focus
+     to the window when you press the key. When there are only two windows,  the
+     focus  will  be  switched  directly without displaying the overlay. You can
+     change the overlay characters and their order with option visual_window_se-
+     lect_characters.
+
+     Visually swap window with another
+
+        map ctrl+shift+f8 swap_with_window
+
+     Works like focus_visible_window <#action-focus_visible_window>  above,  but
+     swaps the window.
+
+   Tab management
+     Next tab
+
+        map ctrl+shift+right next_tab
+        map shift+cmd+] next_tab
+        map ctrl+tab next_tab
+
+     Previous tab
+
+        map ctrl+shift+left previous_tab
+        map shift+cmd+[ previous_tab
+        map ctrl+shift+tab previous_tab
+
+     New tab
+
+        map ctrl+shift+t new_tab
+        map cmd+t new_tab
+
+     Close tab
+
+        map ctrl+shift+q close_tab
+        map cmd+w close_tab
+
+     Close OS window
+
+        map shift+cmd+w close_os_window
+
+     Move tab forward
+
+        map ctrl+shift+. move_tab_forward
+
+     Move tab backward
+
+        map ctrl+shift+, move_tab_backward
+
+     Set tab title
+
+        map ctrl+shift+alt+t set_tab_title
+        map shift+cmd+i set_tab_title
+
+     You  can  also  create shortcuts to go to specific tabs <#term-tab>, with 1
+     being the first tab, 2 the second tab and -1 being  the  previously  active
+     tab,  -2  being  the tab active before the previously active tab and so on.
+     Any number larger than the number of tabs goes to the last tab and any num-
+     ber less than the number of previously used tabs in the history goes to the
+     oldest previously used tab in the history:
+
+        map ctrl+alt+1 goto_tab 1
+        map ctrl+alt+2 goto_tab 2
+
+     Just as with new_window <#action-new_window> above, you can also  pass  the
+     name  of arbitrary commands to run when using new_tab <#action-new_tab> and
+     new_tab_with_cwd <#action-new_tab_with_cwd>. Finally, if you want  the  new
+     tab  to  open  next  to  the current tab rather than at the end of the tabs
+     list, use:
+
+        map ctrl+t new_tab !neighbor [optional cmd to run]
+
+   Layout management
+     Next layout
+
+        map ctrl+shift+l next_layout
+
+     You can also create shortcuts to switch to specific layouts <#term-layout>:
+
+        map ctrl+alt+t goto_layout tall
+        map ctrl+alt+s goto_layout stack
+
+     Similarly, to switch back to the previous layout:
+
+        map ctrl+alt+p last_used_layout
+
+     There is also a toggle_layout <#action-toggle_layout> action that  switches
+     to  the named layout or back to the previous layout if in the named layout.
+     Useful to temporarily "zoom" the active window by switching  to  the  stack
+     layout:
+
+        map ctrl+alt+z toggle_layout stack
+
+   Font sizes
+     You  can  change the font size for all top-level kitty OS windows at a time
+     or only the current one.
+
+     Increase font size
+
+        map ctrl+shift+equal change_font_size all +2.0
+        map ctrl+shift+plus change_font_size all +2.0
+        map ctrl+shift+kp_add change_font_size all +2.0
+        map cmd+plus change_font_size all +2.0
+        map cmd+equal change_font_size all +2.0
+        map shift+cmd+equal change_font_size all +2.0
+
+     Decrease font size
+
+        map ctrl+shift+minus change_font_size all -2.0
+        map ctrl+shift+kp_subtract change_font_size all -2.0
+        map cmd+minus change_font_size all -2.0
+        map shift+cmd+minus change_font_size all -2.0
+
+     Reset font size
+
+        map ctrl+shift+backspace change_font_size all 0
+        map cmd+0 change_font_size all 0
+
+     To setup shortcuts for specific font sizes:
+
+        map kitty_mod+f6 change_font_size all 10.0
+
+     To setup shortcuts to change only the current OS window's font size:
+
+        map kitty_mod+f6 change_font_size current 10.0
+
+     To setup shortcuts to multiply/divide the font size:
+
+        map kitty_mod+f6 change_font_size all *2.0
+        map kitty_mod+f6 change_font_size all /2.0
+
+   Select and act on visible text
+     Use the hints kitten to select text and either pass it to an external  pro-
+     gram or insert it into the terminal or copy it to the clipboard.
+
+     Open URL
+
+        map ctrl+shift+e open_url_with_hints
+
+     Open  a  currently visible URL using the keyboard. The program used to open
+     the URL is specified in open_url_with.
+
+     Insert selected path
+
+        map ctrl+shift+p>f kitten hints --type path --program -
+
+     Select a path/filename and insert it into the  terminal.  Useful,  for  in-
+     stance  to  run  git commands on a filename output from a previous git com-
+     mand.
+
+     Open selected path
+
+        map ctrl+shift+p>shift+f kitten hints --type path
+
+     Select a path/filename and open it with the default open program.
+
+     Insert chosen file
+
+        map ctrl+shift+p>c kitten choose-files
+
+     Select a file using the choose-files <> kitten and insert it into the  ter-
+     minal.
+
+     Insert chosen directory
+
+        map ctrl+shift+p>d kitten choose-files --mode=dir
+
+     Select  a directory using the choose-files <> kitten and insert it into the
+     terminal.
+
+     Insert selected line
+
+        map ctrl+shift+p>l kitten hints --type line --program -
+
+     Select a line of text and insert it into the terminal. Useful for the  out-
+     put of things like: ls -1.
+
+     Insert selected word
+
+        map ctrl+shift+p>w kitten hints --type word --program -
+
+     Select words and insert into terminal.
+
+     Insert selected hash
+
+        map ctrl+shift+p>h kitten hints --type hash --program -
+
+     Select  something  that  looks like a hash and insert it into the terminal.
+     Useful with git, which uses SHA1 hashes to identify commits.
+
+     Open the selected file at the selected line
+
+        map ctrl+shift+p>n kitten hints --type linenum
+
+     Select something that looks like filename:linenum and open it in  your  de-
+     fault editor at the specified line number.
+
+     Open the selected hyperlink
+
+        map ctrl+shift+p>y kitten hints --type hyperlink
+
+     Select  a  hyperlink <#term-hyperlinks> (i.e. a URL that has been marked as
+     such by the terminal program, for example, by ls --hyperlink=auto).
+
+     The hints kitten has many more modes of operation that you can map to  dif-
+     ferent shortcuts. For a full description see hints kitten <>.
+
+   Miscellaneous
+     Show documentation
+
+        map ctrl+shift+f1 show_kitty_doc overview
+
+     Command palette
+
+        map ctrl+shift+f3 command_palette
+
+     Toggle fullscreen
+
+        map ctrl+shift+f11 toggle_fullscreen
+        map ctrl+cmd+f toggle_fullscreen
+
+     Toggle maximized
+
+        map ctrl+shift+f10 toggle_maximized
+
+     Toggle macOS secure keyboard entry
+
+        map opt+cmd+s toggle_macos_secure_keyboard_entry
+
+     macOS Cycle through OS Windows
+
+        map cmd+` macos_cycle_through_os_windows
+
+     macOS Cycle through OS Windows backwards
+
+        map cmd+shift+` macos_cycle_through_os_windows_backwards
+
+     Unicode input
+
+        map ctrl+shift+u kitten unicode_input
+        map ctrl+cmd+space kitten unicode_input
+
+     Edit config file
+
+        map ctrl+shift+f2 edit_config_file
+        map cmd+, edit_config_file
+
+     Open the kitty command shell
+
+        map ctrl+shift+escape kitty_shell window
+
+     Open the kitty shell in a new window / tab / overlay / os_window to control
+     kitty using commands.
+
+     Increase background opacity
+
+        map ctrl+shift+a>m set_background_opacity +0.1
+
+     Decrease background opacity
+
+        map ctrl+shift+a>l set_background_opacity -0.1
+
+     Make background fully opaque
+
+        map ctrl+shift+a>1 set_background_opacity 1
+
+     Reset background opacity
+
+        map ctrl+shift+a>d set_background_opacity default
+
+     Reset the terminal
+
+        map ctrl+shift+delete clear_terminal reset active
+        map opt+cmd+r clear_terminal reset active
+
+     You can create shortcuts to clear/reset the terminal. For example:
+
+        # Reset the terminal
+        map f1 clear_terminal reset active
+        # Clear the terminal screen by erasing all contents
+        map f1 clear_terminal clear active
+        # Clear the terminal scrollback by erasing it
+        map f1 clear_terminal scrollback active
+        # Scroll the contents of the screen into the scrollback
+        map f1 clear_terminal scroll active
+        # Clear everything on screen up to the line with the cursor or the start of the current prompt (needs shell integration)
+        map f1 clear_terminal to_cursor active
+        # Same as above except cleared lines are moved into scrollback
+        map f1 clear_terminal to_cursor_scroll active
+        # Erase the last command and its output (needs shell integration to work)
+        map f1 clear_terminal last_command active
+
+     If  you  want  to  operate on all kitty windows instead of just the current
+     one, use all instead of active.
+
+     Some useful functions that can be defined in the shell rc files to  perform
+     various kinds of clearing of the current window:
+
+        clear-only-screen() {
+            printf "\e[H\e[2J"
+        }
+
+        clear-screen-and-scrollback() {
+            printf "\e[H\e[3J"
+        }
+
+        clear-screen-saving-contents-in-scrollback() {
+            printf "\e[H\e[22J"
+        }
+
+     For  instance,  using these escape codes, it is possible to remap Ctrl+L to
+     both scroll the current screen contents  into  the  scrollback  buffer  and
+     clear  the  screen,  instead  of  just  clearing  the  screen.  For ZSH, in
+     ~/.zshrc, add:
+
+        ctrl_l() {
+            builtin print -rn -- $'\r\e[0J\e[H\e[22J' >"$TTY"
+            builtin zle .reset-prompt
+            builtin zle -R
+        }
+        zle -N ctrl_l
+        bindkey '^l' ctrl_l
+
+     Alternatively, you can just add map ctrl+l clear_terminal  to_cursor_scroll
+     active to kitty.conf which works with no changes to the shell rc files, but
+     only  clears up to the prompt, it does not clear any text at the prompt it-
+     self.
+
+     Clear to start
+
+        map cmd+k clear_terminal to_cursor active
+
+     Clear scrollback
+
+        map option+cmd+k clear_terminal scrollback active
+
+     Clear the last command
+
+        map cmd+l clear_terminal last_command active
+
+     Clear screen
+
+        map cmd+ctrl+l clear_terminal to_cursor_scroll active
+
+     Reload kitty.conf
+
+        map ctrl+shift+f5 load_config_file
+        map ctrl+cmd+, load_config_file
+
+     Reload kitty.conf, applying any changes since the last time it was  loaded.
+     Note  that a handful of options cannot be dynamically changed and require a
+     full restart of kitty. Particularly, when changing  shortcuts  for  actions
+     located  on  the  macOS  global menu bar, a full restart is needed. You can
+     also map a keybinding to load a different config file, for example:
+
+        map f5 load_config /path/to/alternative/kitty.conf
+
+     Note that all options from the original kitty.conf are discarded, in  other
+     words the new configuration replace the old ones.
+
+     Debug kitty configuration
+
+        map ctrl+shift+f6 debug_config
+        map opt+cmd+, debug_config
+
+     Show details about exactly what configuration kitty is running with and its
+     host environment. Useful for debugging issues.
+
+     Send arbitrary text on key presses
+
+     You  can  tell  kitty  to send arbitrary (UTF-8) encoded text to the client
+     program when pressing specified shortcut keys. For example:
+
+        map ctrl+alt+a send_text all Special text
+
+     This will send "Special text" when you press the  Ctrl+Alt+A  key  combina-
+     tion.  The  text  to  be  sent decodes ANSI C escapes <https://www.gnu.org/
+     software/bash/manual/html_node/ANSI_002dC-Quoting.html> so you can use  es-
+     capes  like  \e  to send control codes or \u21fb to send Unicode characters
+     (or you can just input the Unicode characters directly as UTF-8 text).  You
+     can use kitten show-key to get the key escape codes you want to emulate.
+
+     The  first argument to send_text is the keyboard modes in which to activate
+     the shortcut. The possible values are normal, application, kitty or a comma
+     separated combination of them.  The modes normal and application  refer  to
+     the DECCKM cursor key mode for terminals, and kitty refers to the kitty ex-
+     tended keyboard protocol. The special value all means all of them.
+
+     Some more examples:
+
+        # Output a word and move the cursor to the start of the line (like typing and pressing Home)
+        map ctrl+alt+a send_text normal Word\e[H
+        map ctrl+alt+a send_text application Word\eOH
+        # Run a command at a shell prompt (like typing the command and pressing Enter)
+        map ctrl+alt+a send_text normal,application some command with arguments\r
+
+     Open kitty Website
+
+        map shift+cmd+/ open_url https://sw.kovidgoyal.net/kitty/
+
+     Hide macOS kitty application
+
+        map cmd+h hide_macos_app
+
+     Hide macOS other applications
+
+        map opt+cmd+h hide_macos_other_apps
+
+     Minimize macOS window
+
+        map cmd+m minimize_macos_window
+
+     Quit kitty
+
+        map cmd+q quit
+
+Sample kitty.conf
+     You   can  edit  a  fully  commented  sample  kitty.conf  by  pressing  the
+     ctrl+shift+f2 shortcut in kitty. This will generate a config file with full
+     documentation and all settings commented out. If you  have  a  pre-existing
+     kitty.conf,  then  that  will  be used instead, delete it to see the sample
+     file.
+
+     A default configuration file can also be generated by running:
+
+        kitty +runpy 'from kitty.config import *; print(commented_out_default_config())'
+
+     This will print the commented out default config file to STDOUT.
+
+All mappable actions
+     See the list of all the things you can make |kitty| can do <>.
+
+   Mappable actions
+     The actions described below can be mapped to any key press or mouse  action
+     using the map and mouse_map directives in kitty.conf. For configuration ex-
+     amples, see the default shortcut links for each action.  To read about key-
+     board mapping in more detail, see Making your keyboard dance <>.
+
+     You  can also browse and trigger these actions by pressing ctrl+shift+f3 <#
+     shortcut-kitty.Command-palette> to run the command palette.
+
+   Copy/paste
+     clear_selection
+
+     Clear the current selection
+
+     copy_and_clear_or_interrupt
+
+     Copy the selected text from the active window to the  clipboard  and  clear
+     selection, if no selection, send SIGINT (aka ctrl+c)
+
+     copy_ansi_to_clipboard
+
+     Copy  the  selected  text from the active window to the clipboard with ANSI
+     formatting codes
+
+     copy_last_command_output
+
+     Copy the last non-empty output from a shell command to the clipboard
+
+     Requires Shell integration <#shell-integration> to work
+
+     copy_or_interrupt
+
+     Copy the selected text from the active window to the clipboard, if  no  se-
+     lection, send SIGINT (aka ctrl+c)
+
+     copy_or_noop
+
+     Copy  the  selected text from the active window to the clipboard, if no se-
+     lection, pass the key through to the application running in the terminal.
+
+     Default   shortcuts   using    this    action:    cmd+c    <#shortcut-kitty
+     .Copy-to-clipboard-or-pass-through>
+
+     copy_selection_or_last_command_output
+
+     Copy  the  selected text from the active window to the clipboard, if no se-
+     lection, copy the last command output (requires shell integration to work)
+
+     copy_to_clipboard
+
+     Copy the selected text from the active window to the clipboard
+
+     Default  shortcuts  using  this   action:   ctrl+shift+c   <#shortcut-kitty
+     .Copy-to-clipboard>
+
+     pass_selection_to_program
+
+     Pass the selected text from the active window to the specified program
+
+     Default   shortcuts   using   this  action:  ctrl+shift+o  <#shortcut-kitty
+     .Pass-selection-to-program>
+
+     paste
+
+     Paste the specified text into the current window. ANSI C  escapes  are  de-
+     coded.
+
+     copy_to_buffer
+
+     Copy the selection from the active window to the specified buffer
+
+     See Multiple copy/paste buffers <#cpbuf> for details.
+
+     paste_from_buffer
+
+     Paste from the specified buffer to the active window
+
+     See Multiple copy/paste buffers <#cpbuf> for details.
+
+     paste_from_clipboard
+
+     Paste from the clipboard to the active window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+v  <#shortcut-kitty
+     .Paste-from-clipboard>
+
+     paste_from_selection
+
+     Paste from the primary selection, if present, otherwise  the  clipboard  to
+     the active window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+s  <#shortcut-kitty
+     .Paste-from-selection>
+
+   Debugging
+     dump_lines_with_attrs
+
+     Show a dump of the current lines in the scrollback + screen with their line
+     attributes
+
+     close_shared_ssh_connections
+
+     Close all shared SSH connections
+
+     See share_connections <#opt-kitten-ssh.share_connections> for details.
+
+     debug_config
+
+     Show the effective configuration kitty is running with
+
+     Default  shortcuts  using  this  action:   ctrl+shift+f6   <#shortcut-kitty
+     .Debug-kitty-configuration>
+
+     show_kitty_env_vars
+
+     Show the environment variables that the kitty process sees
+
+     simulate_color_scheme_preference_change
+
+     Simulate a change in OS color scheme preference
+
+     test_dragging
+
+     Start a test drag operation, for use with mouse_map
+
+   Font sizes
+     change_font_size
+
+     Change the font size for the current or all OS Windows
+
+     See Font sizes <#conf-kitty-shortcuts-fonts> for details.
+
+     Default  shortcuts  using  this  action:  ctrl+shift+minus <#shortcut-kitty
+     .Decrease-font-size>,           ctrl+shift+equal           <#shortcut-kitty
+     .Increase-font-size>,         ctrl+shift+backspace         <#shortcut-kitty
+     .Reset-font-size>
+
+   Layouts
+     goto_layout
+
+     Switch to the named layout
+
+     In case there are multiple layouts with the same  name  and  different  op-
+     tions,  specify  the  full layout definition or a unique prefix of the full
+     definition.
+
+     For example:
+
+        map f1 goto_layout tall
+        map f2 goto_layout fat:bias=20
+
+     last_used_layout
+
+     Go to the previously used layout
+
+     layout_action
+
+     Perform a layout specific action. See Arrange windows <> for details
+
+     next_layout
+
+     Go to the next enabled layout. Can optionally supply an integer to jump  by
+     the specified number.
+
+     Default   shortcuts   using   this  action:  ctrl+shift+l  <#shortcut-kitty
+     .Next-layout>
+
+     toggle_layout
+
+     Toggle the named layout
+
+     Switches to the named  layout  if  another  layout  is  current,  otherwise
+     switches  to the last used layout. Useful to "zoom" a window temporarily by
+     switching to the stack layout. See also scrollback_fill_enlarged_window  <#
+     opt-kitty.scrollback_fill_enlarged_window>  if  you would like content from
+     the scrollback buffer to scroll down into the zoomed window. For example:
+
+        map f1 toggle_layout stack
+
+   Marks
+     remove_marker
+
+     Remove a previously created marker
+
+     scroll_to_mark
+
+     Scroll to the next or previous mark of the specified type
+
+     toggle_marker
+
+     Toggle the current marker on/off
+
+     create_marker
+
+     Create a new marker
+
+   Miscellaneous
+     send_key
+
+     Send the specified keys to the active window.
+
+     Note that the key will be sent only if the current  keyboard  mode  of  the
+     program  running  in  the terminal supports it.  Both key press and key re-
+     lease are sent. First presses for all specified keys and then  releases  in
+     reverse  order.   To  send a pattern of press and release for multiple keys
+     use the combine action. For example:
+
+        map f1 send_key ctrl+x alt+y
+        map f1 combine : send_key ctrl+x : send_key alt+y
+
+     send_text
+
+     Send the specified text to the active window
+
+     See send_text <#shortcut-kitty.Send-arbitrary-text-on-key-presses> for  de-
+     tails.
+
+     Default  shortcuts  using  this  action:  ctrl+shift+alt+h <#shortcut-kitty
+     .Send-arbitrary-text-on-key-presses>
+
+     show_kitty_doc
+
+     Display the specified kitty documentation,  preferring  a  local  copy,  if
+     found.
+
+     For example:
+
+        # show the config docs
+        map f1 show_kitty_doc conf
+        # show the ssh kitten docs
+        map f1 show_kitty_doc kittens/ssh
+
+     Default   shortcuts   using  this  action:  ctrl+shift+f1  <#shortcut-kitty
+     .Show-documentation>
+
+     signal_child
+
+     Send the specified SIGNAL to the foreground process in the active window
+
+     For example:
+
+        map f1 signal_child SIGTERM
+
+     clear_terminal
+
+     Clear the terminal
+
+     See reset_terminal <#shortcut-kitty.Reset-the-terminal>  for  details.  For
+     example:
+
+        # Reset the terminal
+        map f1 clear_terminal reset active
+        # Clear the terminal screen by erasing all contents
+        map f1 clear_terminal clear active
+        # Clear the terminal scrollback by erasing it
+        map f1 clear_terminal scrollback active
+        # Scroll the contents of the screen into the scrollback
+        map f1 clear_terminal scroll active
+        # Clear everything on screen up to the line with the cursor or the start of the current prompt (needs shell integration)
+        # Useful for clearing the screen up to the shell prompt and moving the shell prompt to the top of the screen.
+        map f1 clear_terminal to_cursor active
+        # Same as above except cleared lines are moved into scrollback
+        map f1 clear_terminal to_cursor_scroll active
+        # Erase the last command and its output (needs shell integration to work)
+        map f1 clear_terminal last_command active
+
+     Default    shortcuts    using    this    action:   cmd+l   <#shortcut-kitty
+     .Clear-the-last-command>,  cmd+ctrl+l  <#shortcut-kitty.Clear-screen>,  op-
+     tion+cmd+k   <#shortcut-kitty.Clear-scrollback>,   cmd+k   <#shortcut-kitty
+     .Clear-to-start>, ctrl+shift+delete <#shortcut-kitty.Reset-the-terminal>
+
+     combine
+
+     Combine multiple actions and map to a single keypress
+
+     The syntax is:
+
+        map key combine <separator> action1 <separator> action2 <separator> action3 ...
+
+     For example:
+
+        map kitty_mod+e combine : new_window : next_layout
+        map kitty_mod+e combine | new_tab | goto_tab -1
+
+     command_palette
+
+     Browse and trigger keyboard shortcuts and actions in a searchable overlay.
+
+     Default  shortcuts  using  this  action:   ctrl+shift+f3   <#shortcut-kitty
+     .Command-palette>
+
+     disable_ligatures_in
+
+     Turn on/off ligatures in the specified window
+
+     See disable_ligatures <#opt-kitty.disable_ligatures> for details
+
+     discard_event
+
+     Discard this event completely ignoring it
+
+     edit_config_file
+
+     Edit the kitty.conf config file in your favorite text editor
+
+     Default   shortcuts   using  this  action:  ctrl+shift+f2  <#shortcut-kitty
+     .Edit-config-file>
+
+     grab_keyboard
+
+     Grab the keyboard. This means global shortcuts defined in the  OS  will  be
+     passed to kitty instead. Useful if
+
+     you  want  to create an OS modal window. How well this works depends on the
+     OS/window manager/desktop environment. On Wayland it works only if the com-
+     positor implements the inhibit-keyboard-shortcuts protocol <https://wayland
+     .app/protocols/keyboard-shortcuts-inhibit-unstable-v1>.   On  macOS   Apple
+     doesn't  allow  applications  to  grab the keyboard without special permis-
+     sions, so it doesn't work.
+
+     hide_macos_app
+
+     Hide macOS kitty application
+
+     Default   shortcuts   using    this    action:    cmd+h    <#shortcut-kitty
+     .Hide-macOS-kitty-application>
+
+     hide_macos_other_apps
+
+     Hide macOS other applications
+
+     Default   shortcuts   using   this   action:   opt+cmd+h   <#shortcut-kitty
+     .Hide-macOS-other-applications>
+
+     input_unicode_character
+
+     Input an arbitrary unicode character. See Unicode input <> for details.
+
+     kitten
+
+     Run the specified kitten. See Custom kittens <> for details
+
+     Default shortcuts using this action:
+
+     * Selecting   files,   fast   <>    -    ctrl+shift+p>d    <#shortcut-kitty
+       .Insert-chosen-directory> Insert chosen directory
+
+     * Selecting    files,    fast    <>   -   ctrl+shift+p>c   <#shortcut-kitty
+       .Insert-chosen-file> Insert chosen file
+
+     * Hints <> - ctrl+shift+p>h  <#shortcut-kitty.Insert-selected-hash>  Insert
+       selected hash
+
+     * Hints  <>  - ctrl+shift+p>l <#shortcut-kitty.Insert-selected-line> Insert
+       selected line
+
+     * Hints <> - ctrl+shift+p>f  <#shortcut-kitty.Insert-selected-path>  Insert
+       selected path
+
+     * Hints  <>  - ctrl+shift+p>w <#shortcut-kitty.Insert-selected-word> Insert
+       selected word
+
+     * Hints <> - ctrl+shift+p>shift+f <#shortcut-kitty.Open-selected-path> Open
+       selected path
+
+     * Hints        <>         -         ctrl+shift+p>n         <#shortcut-kitty
+       .Open-the-selected-file-at-the-selected-line>  Open  the selected file at
+       the selected line
+
+     * Hints <> -  ctrl+shift+p>y  <#shortcut-kitty.Open-the-selected-hyperlink>
+       Open the selected hyperlink
+
+     * Unicode  input  <> - ctrl+shift+u <#shortcut-kitty.Unicode-input> Unicode
+       input
+
+     kitty_shell
+
+     Run the kitty shell to control kitty with commands
+
+     Default shortcuts using  this  action:  ctrl+shift+escape  <#shortcut-kitty
+     .Open-the-kitty-command-shell>
+
+     launch
+
+     Launch the specified program in a new window/tab/etc.
+
+     See The launch command <> for details
+
+     load_config_file
+
+     Reload the config file
+
+     If  mapped  without  arguments  reloads  the default config file, otherwise
+     loads the specified config files, in order. Loading a config file  replaces
+     all config options. For example:
+
+        map f5 load_config_file /path/to/some/kitty.conf
+
+     Default   shortcuts   using  this  action:  ctrl+shift+f5  <#shortcut-kitty
+     .Reload-kitty.conf>
+
+     macos_cycle_through_os_windows
+
+     Cycle through OS windows on macOS
+
+     Default   shortcuts   using    this    action:    cmd+`    <#shortcut-kitty
+     .macOS-Cycle-through-OS-Windows>
+
+     macos_cycle_through_os_windows_backwards
+
+     Cycle through OS windows backwards on macOS
+
+     Default   shortcuts   using   this   action:  cmd+shift+`  <#shortcut-kitty
+     .macOS-Cycle-through-OS-Windows-backwards>
+
+     minimize_macos_window
+
+     Minimize macOS window
+
+     Default   shortcuts   using    this    action:    cmd+m    <#shortcut-kitty
+     .Minimize-macOS-window>
+
+     open_url
+
+     Open the specified URL
+
+     Default   shortcuts   using   this   action:  shift+cmd+/  <#shortcut-kitty
+     .Open-kitty-Website>
+
+     open_url_with_hints
+
+     Click a URL using the keyboard
+
+     Default  shortcuts  using  this   action:   ctrl+shift+e   <#shortcut-kitty
+     .Open-URL>
+
+     pop_keyboard_mode
+
+     End the current keyboard mode switching to the previous mode.
+
+     push_keyboard_mode
+
+     Switch  to  the  specified keyboard mode, pushing it onto the stack of key-
+     board modes.
+
+     remote_control
+
+     Run a remote control command without needing to allow remote control
+
+     For example:
+
+        map f1 remote_control set-spacing margin=30
+
+     See Mapping key presses to remote control commands  <#rc-mapping>  for  de-
+     tails.
+
+     remote_control_script
+
+     Run a remote control script without needing to allow remote control
+
+     For example:
+
+        map f1 remote_control_script /path/to/script arg1 arg2 ...
+
+     See  Mapping  key  presses to remote control commands <#rc-mapping> for de-
+     tails. Relative paths are resolved with respect to the kitty config  direc-
+     tory.
+
+     set_colors
+
+     Change colors in the specified windows
+
+     For details, see kitten @ set-colors <#at-set-colors>. For example:
+
+        map f5 set_colors --configured /path/to/some/config/file/colors.conf
+
+     show_error
+
+     Show an error message with the specified title and text
+
+     sleep
+
+     Sleep  for  the  specified time period. Suffix can be s for seconds, m, for
+     minutes, h for hours and d for days. The time can be fractional.
+
+     toggle_macos_secure_keyboard_entry
+
+     Toggle macOS secure keyboard entry
+
+     Default   shortcuts   using   this   action:   opt+cmd+s   <#shortcut-kitty
+     .Toggle-macOS-secure-keyboard-entry>
+
+     ungrab_keyboard
+
+     Ungrab the keyboard if it was previously grabbed
+
+     no_op
+
+     Unbind a shortcut
+
+     Mapping  a  shortcut  to no_op causes kitty to not intercept the key stroke
+     anymore, instead passing it to the program running inside it.
+
+   Mouse actions
+     mouse_click_url
+
+     Click the URL under the mouse
+
+     mouse_click_url_or_select
+
+     Click the URL under the mouse only if the screen has no selection
+
+     mouse_handle_click
+
+     Handle a mouse click
+
+     Try to perform the specified actions one after the other till one  of  them
+     is successful.  Supported actions are:
+
+        selection - check for a selection and if one exists abort processing
+        link - if a link exists under the mouse, click it
+        prompt - if the mouse click happens at a shell prompt move the cursor to the mouse location
+
+     For examples, see Mouse actions <#conf-kitty-mouse-mousemap>
+
+     mouse_select_command_output
+
+     Select clicked command output
+
+     Requires Shell integration <#shell-integration> to work
+
+     mouse_selection
+
+     Manipulate the selection based on the current mouse position
+
+     For examples, see Mouse actions <#conf-kitty-mouse-mousemap>
+
+     mouse_show_command_output
+
+     Show clicked command output in a pager like less
+
+     Requires Shell integration <#shell-integration> to work
+
+     paste_selection
+
+     Paste the current primary selection
+
+     paste_selection_or_clipboard
+
+     Paste  the  current  primary  selection or the clipboard if no selection is
+     present
+
+   Scrolling
+     scroll_end
+
+     Scroll to the bottom of the scrollback buffer when in main screen
+
+     Default  shortcuts  using  this  action:  ctrl+shift+end   <#shortcut-kitty
+     .Scroll-to-bottom>
+
+     scroll_home
+
+     Scroll to the top of the scrollback buffer when in main screen
+
+     Default  shortcuts  using  this  action:  ctrl+shift+home  <#shortcut-kitty
+     .Scroll-to-top>
+
+     scroll_line_down
+
+     Scroll down by one line  when  in  main  screen.  To  scroll  by  different
+     amounts, you can map the remote_control scroll-window action.
+
+     Default  shortcuts  using  this  action:  ctrl+shift+down  <#shortcut-kitty
+     .Scroll-line-down>
+
+     scroll_line_up
+
+     Scroll up by one line when in main screen. To scroll by different  amounts,
+     you can map the remote_control scroll-window action.
+
+     Default   shortcuts   using  this  action:  ctrl+shift+up  <#shortcut-kitty
+     .Scroll-line-up>
+
+     scroll_page_down
+
+     Scroll down by one page  when  in  main  screen.  To  scroll  by  different
+     amounts, you can map the remote_control scroll-window action.
+
+     Default  shortcuts using this action: ctrl+shift+page_down <#shortcut-kitty
+     .Scroll-page-down>
+
+     scroll_page_up
+
+     Scroll up by one page when in main screen. To scroll by different  amounts,
+     you can map the remote_control scroll-window action.
+
+     Default  shortcuts  using  this action: ctrl+shift+page_up <#shortcut-kitty
+     .Scroll-page-up>
+
+     scroll_prompt_to_bottom
+
+     Scroll prompt to the bottom of the screen, filling in extra lines from  the
+     scrollback buffer, when in main screen
+
+     scroll_prompt_to_top
+
+     Scroll  prompt  to  the top of the screen, filling screen with empty lines,
+     when in main screen. To avoid putting the lines above the prompt  into  the
+     scrollback use scroll_prompt_to_top y
+
+     scroll_to_prompt
+
+     Scroll to the previous/next shell command prompt
+
+     Allows  easy  jumping  from one command to the next. Requires working Shell
+     integration <#shell-integration>. Takes two optional numbers as arguments:
+
+     The first is the number of prompts to jump; negative  values  jump  up  and
+     positive  values  jump  down.  A value of zero will jump to the last prompt
+     visited by this action. Defaults to -1
+
+     The second is the number of lines to show above the prompt that was  jumped
+     to.  This  is  somewhat like less's --jump-target option or vim's scrolloff
+     setting. Defaults to 0.
+
+     For example:
+
+        map ctrl+p scroll_to_prompt -1 3  # jump to previous, showing 3 lines prior
+        map ctrl+n scroll_to_prompt 1     # jump to next
+        map ctrl+o scroll_to_prompt 0     # jump to last visited
+
+     Default  shortcuts  using  this   action:   ctrl+shift+x   <#shortcut-kitty
+     .Scroll-to-next-shell-prompt>,         ctrl+shift+z        <#shortcut-kitty
+     .Scroll-to-previous-shell-prompt>
+
+     search_scrollback
+
+     Search scrollback in a pager like less. If there is selected  text,  it  is
+     automatically searched for.
+
+     Note  that this assumes that pressing the / key triggers search mode in the
+     page configured as the scrollback pager.
+
+     Default  shortcuts  using  this   action:   ctrl+shift+/   <#shortcut-kitty
+     .Search-the-scrollback-within-a-pager>
+
+     show_first_command_output_on_screen
+
+     Show output from the first shell command on screen in a pager like less
+
+     Requires Shell integration <#shell-integration> to work
+
+     show_last_command_output
+
+     Show output from the last shell command in a pager like less
+
+     Requires Shell integration <#shell-integration> to work
+
+     Default   shortcuts   using   this  action:  ctrl+shift+g  <#shortcut-kitty
+     .Browse-output-of-the-last-shell-command-in-pager>
+
+     show_last_non_empty_command_output
+
+     Show the last non-empty output from a shell command in a pager like less
+
+     Requires Shell integration <#shell-integration> to work
+
+     show_last_visited_command_output
+
+     Show the  first  command  output  below  the  last  scrolled  position  via
+     scroll_to_prompt
+
+     or the last mouse clicked command output in a pager like less
+
+     Requires Shell integration <#shell-integration> to work
+
+     show_scrollback
+
+     Show scrollback in a pager like less
+
+     Default   shortcuts   using   this  action:  ctrl+shift+h  <#shortcut-kitty
+     .Browse-scrollback-buffer-in-pager>
+
+   Sessions
+     close_session
+
+     Close a session, that is, close all windows that belong to the session.
+
+     Examples::
+            # Ask for the session to close map f1 close_session # Close the cur-
+            rently active session map f1 close_session .   #  Close  session  by
+            name  map  f1  close_session "my session" # Close session by path to
+            session file map f1 close_session  "/path/to/session/file.kitty-ses-
+            sion"
+
+     goto_session
+
+     Switch  to  the  specified session, creating it if not already present. See
+     Creating/Switching to sessions with a keypress <#goto-session>.
+
+     save_as_session
+
+     Save the current kitty state as a session file. See The save_as_session ac-
+     tion <#save-as-session>.
+
+   Tab management
+     close_other_tabs_in_os_window
+
+     Close all the tabs in the current OS window other than the currently active
+     tab
+
+     close_tab
+
+     Close the current tab
+
+     Default  shortcuts  using  this   action:   ctrl+shift+q   <#shortcut-kitty
+     .Close-tab>
+
+     detach_tab
+
+     Detach  a  tab,  moving  it to another OS Window. You can also use drag and
+     drop to detach tabs.
+
+     See detaching windows <#detach-window> for details.
+
+     goto_tab
+
+     Go to the specified tab, by number, starting with 1
+
+     Zero and negative numbers go to previously active tabs.  Use the select_tab
+     action to interactively select a tab to go to.
+
+     move_tab_backward
+
+     Move the active tab backward. You can also use drag and drop to  re-arrange
+     tabs.
+
+     Default   shortcuts   using   this  action:  ctrl+shift+,  <#shortcut-kitty
+     .Move-tab-backward>
+
+     move_tab_forward
+
+     Move the active tab forward. You can also use drag and drop  to  re-arrange
+     tabs.
+
+     Default   shortcuts   using   this  action:  ctrl+shift+.  <#shortcut-kitty
+     .Move-tab-forward>
+
+     new_tab
+
+     Create a new tab
+
+     Default shortcuts using this action: ctrl+shift+t <#shortcut-kitty.New-tab>
+
+     new_tab_with_cwd
+
+     Create a new tab with working directory for the window in  it  set  to  the
+     same as the active window.
+
+     The tab is added to the currently active session <#sessions>, if any.
+
+     next_tab
+
+     Make the next tab active
+
+     Default  shortcuts  using  this  action:  ctrl+shift+right <#shortcut-kitty
+     .Next-tab>
+
+     previous_tab
+
+     Make the previous tab active
+
+     Default  shortcuts  using  this  action:  ctrl+shift+left  <#shortcut-kitty
+     .Previous-tab>
+
+     select_tab
+
+     Interactively select a tab to switch to
+
+     set_tab_title
+
+     Change  the title of the active tab interactively, by typing in the new ti-
+     tle.
+
+     If you specify an argument to this action then that is used  as  the  title
+     instead  of asking for it.  Use the empty string ("") to reset the title to
+     default. Use a space (" ") to  indicate  that  the  prompt  should  not  be
+     pre-filled. For example:
+
+        # interactive usage
+        map f1 set_tab_title
+        # set a specific title
+        map f2 set_tab_title some title
+        # reset to default
+        map f3 set_tab_title ""
+        # interactive usage without prefilled prompt
+        map f3 set_tab_title " "
+
+     Default  shortcuts  using  this  action:  ctrl+shift+alt+t <#shortcut-kitty
+     .Set-tab-title>
+
+   Window management
+     set_window_title
+
+     Change the title of the active window interactively, by typing in  the  new
+     title.
+
+     If  you  specify  an argument to this action then that is used as the title
+     instead of asking for it.  Use the empty string ("") to reset the title  to
+     default.  Use  a  space  ("  ")  to  indicate that the prompt should not be
+     pre-filled. For example:
+
+        # interactive usage
+        map f1 set_window_title
+        # set a specific title
+        map f2 set_window_title some title
+        # reset to default
+        map f3 set_window_title ""
+        # interactive usage without prefilled prompt
+        map f3 set_window_title " "
+
+     close_other_windows_in_tab
+
+     Close all windows in the tab other than the currently active window
+
+     eighth_window
+
+     Focus the eighth window
+
+     Default  shortcuts  using  this   action:   ctrl+shift+8   <#shortcut-kitty
+     .Eighth-window>
+
+     fifth_window
+
+     Focus the fifth window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+5  <#shortcut-kitty
+     .Fifth-window>
+
+     first_window
+
+     Focus the first window
+
+     Default  shortcuts  using  this   action:   ctrl+shift+1   <#shortcut-kitty
+     .First-window>
+
+     focus_visible_window
+
+     Focus a visible window by pressing the number of the window. Window numbers
+     are displayed
+
+     over  the  windows  for  easy selection in this mode. See visual_window_se-
+     lect_characters <#opt-kitty.visual_window_select_characters>.
+
+     Default  shortcuts  using  this  action:   ctrl+shift+f7   <#shortcut-kitty
+     .Visually-select-and-focus-window>
+
+     fourth_window
+
+     Focus the fourth window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+4  <#shortcut-kitty
+     .Fourth-window>
+
+     move_window
+
+     Move the window in the specified direction
+
+     For example:
+
+        map ctrl+left move_window left
+        map ctrl+down move_window bottom
+
+     move_window_backward
+
+     Move active window backward (swap it with the previous window)
+
+     Default  shortcuts  using  this   action:   ctrl+shift+b   <#shortcut-kitty
+     .Move-window-backward>
+
+     move_window_forward
+
+     Move active window forward (swap it with the next window)
+
+     Default   shortcuts   using   this  action:  ctrl+shift+f  <#shortcut-kitty
+     .Move-window-forward>
+
+     move_window_to_top
+
+     Move active window to the top (make it the first window)
+
+     Default  shortcuts  using  this   action:   ctrl+shift+`   <#shortcut-kitty
+     .Move-window-to-top>
+
+     neighboring_window
+
+     Focus the neighboring window in the current tab
+
+     For example:
+
+        map ctrl+left neighboring_window left
+        map ctrl+down neighboring_window bottom
+
+     next_window
+
+     Focus  the  next  window in the current tab. Does not traverse overlay win-
+     dows.
+
+     Default  shortcuts  using  this   action:   ctrl+shift+]   <#shortcut-kitty
+     .Next-window>
+
+     ninth_window
+
+     Focus the ninth window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+9  <#shortcut-kitty
+     .Ninth-window>
+
+     nth_window
+
+     Focus the nth window if positive or the previously active windows if  nega-
+     tive. When the number is larger
+
+     than the number of windows focus the last window. For example:
+
+        # focus the previously active window
+        map ctrl+p nth_window -1
+        # focus the first window
+        map ctrl+1 nth_window 0
+
+     previous_window
+
+     Focus  the  previous  window  in the current tab. Does not traverse overlay
+     windows.
+
+     Default  shortcuts  using  this   action:   ctrl+shift+[   <#shortcut-kitty
+     .Previous-window>
+
+     reset_window_sizes
+
+     Reset window sizes undoing any dynamic resizing of windows
+
+     resize_window
+
+     Resize the active window by the specified amount
+
+     See Resizing windows <#window-resizing> for details.
+
+     second_window
+
+     Focus the second window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+2  <#shortcut-kitty
+     .Second-window>
+
+     seventh_window
+
+     Focus the seventh window
+
+     Default  shortcuts  using  this   action:   ctrl+shift+7   <#shortcut-kitty
+     .Seventh-window>
+
+     sixth_window
+
+     Focus the sixth window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+6  <#shortcut-kitty
+     .Sixth-window>
+
+     swap_with_window
+
+     Swap the current window with another window in the  current  tab,  selected
+     visually.       See       visual_window_select_characters       <#opt-kitty
+     .visual_window_select_characters>
+
+     Default  shortcuts  using  this  action:   ctrl+shift+f8   <#shortcut-kitty
+     .Visually-swap-window-with-another>
+
+     tenth_window
+
+     Focus the tenth window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+0  <#shortcut-kitty
+     .Tenth-window>
+
+     third_window
+
+     Focus the third window
+
+     Default  shortcuts  using  this   action:   ctrl+shift+3   <#shortcut-kitty
+     .Third-window>
+
+     close_os_window
+
+     Close the currently active OS Window
+
+     Default   shortcuts   using   this   action:  shift+cmd+w  <#shortcut-kitty
+     .Close-OS-window>
+
+     close_other_os_windows
+
+     Close all other OS Windows other than the OS  Window  containing  the  cur-
+     rently active window
+
+     close_window
+
+     Close the currently active window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+w  <#shortcut-kitty
+     .Close-window>
+
+     close_window_with_confirmation
+
+     Close window with confirmation
+
+     Asks for confirmation before closing the window. If you don't want the con-
+     firmation when the window is sitting at a shell prompt (requires Shell  in-
+     tegration <#shell-integration>), use:
+
+        map f1 close_window_with_confirmation ignore-shell
+
+     detach_window
+
+     Detach a window, moving it to another tab or OS Window
+
+     See detaching windows <#detach-window> for details.
+
+     new_os_window
+
+     New OS Window
+
+     Default   shortcuts   using   this  action:  ctrl+shift+n  <#shortcut-kitty
+     .New-OS-window>
+
+     new_os_window_with_cwd
+
+     New OS Window with the same working directory as the currently active  win-
+     dow.
+
+     The  new OS Window is added to the currently active session <#sessions>, if
+     any.
+
+     new_window
+
+     Create a new window
+
+     Default shortcuts  using  this  action:  ctrl+shift+enter  <#shortcut-kitty
+     .New-window>
+
+     new_window_with_cwd
+
+     Create  a new window with working directory same as that of the active win-
+     dow.
+
+     The new window will belong to the active session <#sessions> if any.
+
+     nth_os_window
+
+     Focus the nth OS window if positive or the previously active OS windows  if
+     negative. When the number is larger
+
+     than  the  number  of  OS windows focus the last OS window. A value of zero
+     will refocus the currently focused OS window, this is useful  if  focus  is
+     not on any kitty OS window at all, however, it will only work if the window
+     manager allows applications to grab focus. For example:
+
+        # focus the previously active kitty OS window
+        map ctrl+p nth_os_window -1
+        # focus the current kitty OS window (grab focus)
+        map ctrl+0 nth_os_window 0
+        # focus the first kitty OS window
+        map ctrl+1 nth_os_window 1
+        # focus the last kitty OS window
+        map ctrl+1 nth_os_window 999
+
+     quit
+
+     Quit, closing all windows
+
+     Default shortcuts using this action: cmd+q <#shortcut-kitty.Quit-kitty>
+
+     set_background_opacity
+
+     Set the background opacity for the active OS Window
+
+     For example:
+
+        map f1 set_background_opacity +0.1
+        map f2 set_background_opacity -0.1
+        map f3 set_background_opacity 0.5
+
+     Default   shortcuts  using  this  action:  ctrl+shift+a>l  <#shortcut-kitty
+     .Decrease-background-opacity>,       ctrl+shift+a>1        <#shortcut-kitty
+     .Make-background-fully-opaque>,       ctrl+shift+a>m       <#shortcut-kitty
+     .Increase-background-opacity>,       ctrl+shift+a>d        <#shortcut-kitty
+     .Reset-background-opacity>
+
+     start_resizing_window
+
+     Resize the active window interactively
+
+     See Resizing windows <#window-resizing> for details.
+
+     Default   shortcuts   using   this  action:  ctrl+shift+r  <#shortcut-kitty
+     .Start-resizing-window>
+
+     toggle_fullscreen
+
+     Toggle the fullscreen status of the active OS Window
+
+     Default  shortcuts  using  this  action:  ctrl+shift+f11   <#shortcut-kitty
+     .Toggle-fullscreen>
+
+     toggle_maximized
+
+     Toggle the maximized status of the active OS Window
+
+     Default   shortcuts  using  this  action:  ctrl+shift+f10  <#shortcut-kitty
+     .Toggle-maximized>
+
+     toggle_tab
+
+     Toggle to the tab matching the specified expression
+
+     Switches to the matching tab if another tab is current, otherwise  switches
+     to  the last used tab. Useful to easily switch to and back from a tab using
+     a single shortcut. Note that toggling works only between tabs in  the  same
+     OS  window.  See  Matching windows and tabs <#search-syntax> for details on
+     the match expression. For example:
+
+        map f1 toggle_tab title:mytab
+
+   Wide gamut color formats
+     kitty supports modern wide gamut color formats for precise color specifica-
+     tion.  These formats can be used anywhere a color value is accepted in  the
+     configuration (foreground, background, color0-color255, etc.).
+
+   OKLCH Colors
+     OKLCH  is  a  perceptually  uniform  color  space, ideal for creating color
+     themes.  The format is:
+
+        foreground oklch(0.9 0.05 140)
+        color1     oklch(0.7 0.25 25)
+
+     Parameters:
+
+     * L (Lightness): 0 to 1, where 0 is black and 1 is white
+
+     * C (Chroma): 0 to approximately 0.4, represents color saturation
+
+     * H (Hue): 0 to 360 degrees (0=red, 120=green, 240=blue)
+
+     Benefits:
+
+     * Perceptually uniform - equal changes produce equal perceived differences
+
+     * Adjusting lightness preserves hue (unlike HSL)
+
+     * Industry standard for modern color design
+
+     Example:
+
+        foreground oklch(0.9 0.05 140)
+        color1     oklch(0.65 0.25 29)    # Vibrant red-orange
+        color2     oklch(0.65 0.25 142)   # Vibrant green
+        color3     oklch(0.70 0.19 90)    # Warm yellow
+
+   CIE LAB Colors
+     CIE LAB is a device-independent color space designed to  approximate  human
+     vision.
+
+     The format is:
+
+        background lab(20 5 -10)
+        color4     lab(50 0 -50)
+
+     Parameters:
+
+     * L: Lightness, 0 to 100 (0 = black, 100 = white)
+
+     * a: Green (-) to red (+), typically -100 to +100
+
+     * b: Blue (-) to yellow (+), typically -100 to +100
+
+     Example:
+
+        background lab(10 0 0)           # Very dark neutral gray
+        foreground lab(90 0 0)           # Very light neutral gray
+        color1     lab(50 60 40)         # Red
+        color4     lab(50 0 -50)         # Blue
+
+   Gamut Mapping
+     When  you  specify  colors in OKLCH or CIE LAB formats that are outside the
+     sRGB color gamut, kitty automatically converts them  using  the  CSS  Color
+     Module Level 4 gamut mapping algorithm:
+
+     * Preserves the original lightness and hue as much as possible
+
+     * Reduces  chroma  (saturation) until the color fits within the displayable
+       range
+
+     * Uses perceptual color difference (deltaE OK) to minimize visible changes
+
+     * Maximizes color saturation while staying in gamut
+
+     This ensures that wide gamut colors gracefully  degrade  on  standard  sRGB
+     displays while taking full advantage of wide gamut displays when available.
+     The mapping happens automatically - you don't need to do anything special.
+
+     For  example, oklch(0.7 0.4 25) might be too saturated for sRGB but will be
+     automatically adjusted to fit while preserving the perceived hue and light-
+     ness.
+
+   References
+     * CSS Color Module Level 4 <https://www.w3.org/TR/css-color-4/>
+
+     * OKLCH Color Space <https://bottosson.github.io/posts/oklab/>
+
+Author
+     Kovid Goyal
+
+Copyright
+     2026, Kovid Goyal
+
+0.46.2                            Mar 21, 2026                     kitty.conf(5)

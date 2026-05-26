@@ -1,0 +1,37 @@
+org.bluez.Thermometer(5)   Linux System Administration  org.bluez.Thermometer(5)
+
+Name
+     org.bluez.Thermometer - BlueZ D-Bus Health Thermometer API documentation
+
+Interface
+     Service
+            org.bluez
+
+     Interface
+            org.bluez.Thermometer1
+
+     Object path
+            [variable prefix]/{hci0,hci1,...}/dev_XX_XX_XX_XX_XX_XX
+
+   Properties
+   boolean Intermediate [readonly]
+     True if the thermometer supports intermediate measurement notifications.
+
+   uint16 Interval (optional) [readwrite]
+     The  Measurement  Interval  defines  the time (in seconds) between measure-
+     ments. This interval is not related to the  intermediate  measurements  and
+     must  be defined into a valid range. Setting it to zero means that no peri-
+     odic measurements will be taken.
+
+   uint16 Maximum (optional) [readonly]
+     Defines the maximum value allowed for the interval  between  periodic  mea-
+     surements.
+
+   uint16 Minimum (optional) [readonly]
+     Defines  the  minimum  value allowed for the interval between periodic mea-
+     surements.
+
+Author
+     Santiago Carot-Nemesio <sancane@gmail.com>
+
+BlueZ                               July 2011           org.bluez.Thermometer(5)

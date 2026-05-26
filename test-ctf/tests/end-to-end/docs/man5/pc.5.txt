@@ -1,0 +1,81 @@
+pkg-config  files  provide a useful mechanism for storing various
+information about libraries and packages on a given system.   In-
+formation  stored by files include compiler and linker flags nec-
+essary to use a given library, as  well  as  any  other  relevant
+metadata.  These files are processed by a utility called of which
+is  an  implementation.   The  file  follows a format inspired by
+RFC822.  Comments are prefixed by a pound sign, hash sign or  oc-
+tothorpe  (#), and variable assignment is similar to POSIX shell.
+Properties are defined using RFC822-style stanzas.  Variable def-
+initions start with an alphanumeric string, followed by an  equal
+sign,  and  then the value the variable should contain.  Variable
+references are always written as "${variable}".  It  is  possible
+to  escape  literal  "${"  as  "$${".   Properties  are set using
+RFC822-style stanzas which consist of a keyword,  followed  by  a
+colon  (:)  and  then  the  value  the property should be set to.
+Variable substitution is always performed regardless of  property
+type.   There  are  three types of property: The property will be
+set to the text of the value.  The property will be set to a list
+of dependencies parsed from the text.  Dependency lists  are  de-
+fined by this ABNF syntax: package-list = *WSP *( package-spec *(
+package-sep  ) ) package-sep  = WSP / "," package-spec = package-
+key [ ver-op package-version ] ver-op       = "<" / "<=" / "="  /
+"!=" / ">=" / ">" The property will be set to a list of fragments
+parsed from the text.  The input text must be in a format that is
+suitable  for  passing  to a POSIX shell without any shell expan-
+sions after variable substitution has been done.   The  displayed
+name  of  the  package.   (mandatory; literal) The version of the
+package.  (mandatory; literal)  A  description  of  the  package.
+(mandatory; literal) A URL to a webpage for the package.  This is
+used  to recommend where newer versions of the package can be ac-
+quired.  (mandatory; literal)  Required  compiler  flags.   These
+flags  are  always used, regardless of whether static compilation
+is requested.  (optional; fragment list) Required compiler  flags
+for static compilation.  (optional; fragment list; pkgconf exten-
+sion)  A  copyright  attestation  statement.  (optional; literal;
+pkgconf extension) Required linking flags for this package.   Li-
+braries this package depends on for linking against it, which are
+not  described  as  dependencies  should be specified here.  (op-
+tional; fragment list) Required linking flags  for  this  package
+that  are  only required when linking statically.  Libraries this
+package depends on for linking against it statically,  which  are
+not  described  as  dependencies  should be specified here.  (op-
+tional; fragment list) The asserted SPDX license tag that  should
+be applied to the given package.  (optional; literal; pkgconf ex-
+tension)  The  preferred contact for the maintainer.  This should
+be in the format of a name followed by an e-mail address or  web-
+site.   (optional; literal; pkgconf extension) Required dependen-
+cies that must be met for the package to be usable.   All  depen-
+dencies  must  be satisfied or the pkg-config implementation must
+not use the package.  (optional; dependency list) Required depen-
+dencies that must be met for the package to be usable for  header
+inclusion and static linking.  All dependencies must be satisfied
+or  the  pkg-config  implementation  must not use the package for
+header inclusion and static linking.  (optional; dependency list)
+Dependencies that must not be met for the package to  be  usable.
+If  any package in the proposed dependency solution match any de-
+pendency in the Conflicts list, the package being  considered  is
+not usable.  (optional; dependency list) Dependencies that may be
+provided  by an alternate package.  If a package cannot be found,
+the entire package collection is scanned for providers which  can
+match the requested dependency.  (optional; dependency list; pkg-
+conf  extension)  Features that have been marked as a pkgconf ex-
+tension are only guaranteed to work with the pkgconf  implementa-
+tion of pkg-config.  Other implementations may or may not support
+the  extensions.   Accordingly,  it is suggested that files which
+absolutely depend on these extensions declare  a  requirement  on
+the  pkgconf  virtual.   An example .pc file: # This is a comment
+prefix=/home/kaniini/pkg   # this defines  a  variable  exec_pre-
+fix=${prefix}       #  defining another variable with a substitu-
+tion libdir=${exec_prefix}/lib includedir=${prefix}/include
+
+Name:  libfoo                                   #  human-readable
+name  Description: an example library called libfoo # human-read-
+able description Copyright: Copyright (c)  2022  pkgconf  project
+authors  License:  Apache-2.0  Maintainer:  the  pkgconf  project
+<http://www.pkgconf.org> Version: 1.0 URL: http://www.pkgconf.org
+Requires:  libbar  >  2.0.0  Conflicts:  libbaz  <=  3.0.0  Libs:
+-L${libdir}  -lfoo Libs.private: -lm Cflags: -I${includedir}/lib-
+foo
+
+

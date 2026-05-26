@@ -1,0 +1,85 @@
+MKINITCPIO.CONF(5)              mkinitcpio manual             MKINITCPIO.CONF(5)
+
+NAME
+     mkinitcpio.conf - mkinitcpio configuration file
+
+SYNOPSIS
+     /etc/mkinitcpio.conf
+
+DESCRIPTION
+     mkinitcpio  will  attempt to read from a configuration file each time it is
+     invoked, /etc/mkinitcpio.conf by default. This file defines  several  vari-
+     ables which describe the contents of the image to be generated. In addition
+     to  the  "main" configuration file, drop-in configuration snippets are read
+     from /etc/mkinitcpio.conf.d/*.conf. These drop-ins have  higher  precedence
+     and override the main configuration file.
+
+VARIABLES
+     MODULES
+         Defines an array of additional modules which should be added to the im-
+         age.  Dependencies  (including  other  modules and necessary firmware),
+         will also be added to the image. At runtime, the modules in this  array
+         which were successfully added to the image will be explicitly loaded.
+
+     FILES
+         Defines  an  array of additional files which should be added to the im-
+         age. Files are added as is, and parent directories  will  be  added  if
+         needed. Files specified in this variable will override previously added
+         files of the same path.
+
+     BINARIES
+         Defines  an  array  of additional binaries which should be added to the
+         image. These are assumed to be  dynamic  ELF  binaries,  and  necessary
+         shared library dependencies will automatically be added. However, it is
+         not  considered  an error to specify a non-ELF binary in this variable.
+         Parent directories will be added if needed.  Files  specified  in  this
+         variable will override previously added files of the same path.
+
+     HOOKS
+         Defines  an  array of hooks which will be run during the build process.
+         Order is important, as it defines the order in which hooks will be  run
+         during  bootup.  Use  mkinitcpio's -L flag to list all available hooks,
+         and the -H flag to display the help text for a specific hook.
+
+     COMPRESSION
+         Defines a program to filter the generated image through. The kernel un-
+         derstands the compression formats  yielded  by  the  zstd(1),  gzip(1),
+         bzip2(1),  lz4(1), lzop(1), lzma(1), and xz(1) compressors. If unspeci-
+         fied, this setting defaults to zstd compression for  Linux  ^a  5.9  and
+         gzip  compression  for  Linux < 5.9. In order to create an uncompressed
+         image, define this variable as cat.
+
+         It is not hard to realize that a filter such as a tac or rev will cause
+         mkinitcpio to report success but generate a useless  image.  Similarly,
+         using  a  compression  program not listed above may generate an equally
+         useless image, despite being "valid".
+
+     COMPRESSION_OPTIONS
+         Defines an array of additional options to be passed to the  compression
+         program.  This option is generally not used. It can be potentially dan-
+         gerous and may cause invalid images to be generated without any sign of
+         an error.
+
+     MODULES_DECOMPRESS
+         Switch (yes/no) to decide whether loadable  kernel  modules  and  their
+         firmware  should  remain compressed or be uncompressed during initramfs
+         creation. Disabled by default to avoid recompressing the files using  a
+         lower  compression and to reduce RAM usage during early boot. Enable to
+         allow further decreasing image size when using high  compression  (e.g.
+         xz  -9e or zstd --long --ultra -22) at the expense of increased RAM us-
+         age at early boot.
+
+         Note that any compressed files will be placed in the uncompressed early
+         CPIO to avoid double compression.
+
+SEE ALSO
+     mkinitcpio(8)
+
+AUTHORS
+     mkinitcpio is maintained by the Arch Linux community. Refer to the  AUTHORS
+     file for a full list of contributors.
+
+COPYRIGHT
+     Copyright  mkinitcpio contributors. GPL-2.0-only.
+
+mkinitcpio 41                      2026-04-29                 MKINITCPIO.CONF(5)

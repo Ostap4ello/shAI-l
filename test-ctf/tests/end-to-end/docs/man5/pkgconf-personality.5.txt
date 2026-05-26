@@ -1,0 +1,40 @@
+pkgconf  cross-compile  personality files provide a useful mecha-
+nism for storing various  information  about  system  toolchains.
+Information  stored by files include information about paths used
+by a cross-compile toolchain, such as the sysroot  directory  and
+default include and library paths.  pkgconf uses this information
+to determine what information is necessary to use libraries.  The
+file  follows a format inspired by RFC822.  Comments are prefixed
+by a pound sign, hash sign or octothorpe (#),  and  variable  as-
+signment is similar to POSIX shell.  Properties are defined using
+RFC822-style  stanzas.   Properties  are  set  using RFC822-style
+stanzas which consist of a keyword, followed by a colon  (:)  and
+then the value the property should be set to.  Variable substitu-
+tion  is always performed regardless of property type.  There are
+three types of property: The property will be set to the text  of
+the  value.   The  property  will  be  set to a list of fragments
+parsed from the text.  The input text must be in a format that is
+suitable for passing to a POSIX shell without  any  shell  expan-
+sions  after  variable  substitution has been done.  Elements are
+delimited with a colon.  The property will be set to true if  the
+value  is  one  of:  true, yes or 1.  Otherwise it will be set to
+false.  The triplet used by the cross-compile toolchain.  (manda-
+tory; literal) The directory used  by  the  system  root  of  the
+cross-compile toolchain.  (mandatory; literal) A list of directo-
+ries  to look for files in.  (mandatory; fragment list) A list of
+directories that are included by default in the search  path  for
+include  files.  (mandatory; fragment list) A list of directories
+that are included by default in the search  path  for  libraries.
+(mandatory;  fragment list) If true, pkgconf will default to pre-
+ferring a pure dependency graph.  (optional; boolean; default  is
+false) If true, pkgconf will default to operating in static link-
+ing mode.  (optional; boolean; default is false) An example .per-
+sonality  file:  # This is a comment Triplet: x86_64-pc-linux-gnu
+SysrootDir:  /home/kaniini/sysroot/x86_64-pc-linux-gnu   Default-
+SearchPaths:   /home/kaniini/sysroot/x86_64-pc-linux-gnu/lib/pkg-
+config:/home/kaniini/sysroot/x86_64-pc-linux-gnu/share/pkgconfig
+SystemIncludePaths: /home/kaniini/sysroot/x86_64-pc-linux-gnu/in-
+clude SystemLibraryPaths:  /home/kaniini/sysroot/x86_64-pc-linux-
+gnu/lib
+
+

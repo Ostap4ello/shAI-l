@@ -1,0 +1,39 @@
+DOWNGRADE.CONF(5)              File Formats Manual             DOWNGRADE.CONF(5)
+
+NAME
+     downgrade.conf - configuration file for downgrade
+
+SYNOPSIS
+     /etc/xdg/downgrade/downgrade.conf
+
+DESCRIPTION
+     Command-line  options  to  use  for all invocations of downgrade my be per-
+     sisted in the file /etc/xdg/downgrade/downgrade.conf. These options are ap-
+     plied first, before options passed on the actual command-line.
+
+FORMAT
+     Options (and their argument(s)) should be placed one per line. Empty lines,
+     or those prefixed by # are ignored.
+
+EXAMPLES
+     To use an alternative package cache, e.g. yay(1)'s cache:
+
+
+         # /etc/xdg/downgrade/downgrade.conf
+         --pacman-cache /home/me/.cache/yay
+         --maxdepth 2
+
+
+
+     To use an alternative source, e.g. for 32-bit packages:
+
+
+         # /etc/xdg/downgrade/downgrade.conf
+         --ala-url https://archive.archlinux32.org
+
+
+
+SEE ALSO
+     downgrade(8)
+
+                                   March 2026                  DOWNGRADE.CONF(5)

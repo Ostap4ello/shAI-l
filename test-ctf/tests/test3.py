@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RAG precision@k test on document scope."""
+"""RAG precision@k test on passage scope."""
 
 import time
 import json

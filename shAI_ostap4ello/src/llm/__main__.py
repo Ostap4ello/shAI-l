@@ -63,7 +63,7 @@ def _cmd_embed_string(args: argparse.Namespace) -> None:
     except Exception as e:
         logger.error(f"Generating answer failed with exception: {e}")
         raise SystemExit(0)
-    print(json.dumps(embedding, indent=2))
+    print(json.dumps(embedding.tolist(), indent=2))
 
 
 def _cli_parser() -> argparse.ArgumentParser:

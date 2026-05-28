@@ -40,8 +40,6 @@ def get_default_config() -> configparser.ConfigParser:
     }
 
     config["rag"] = {
-        "top_k": "5",
-        "model": "qwen3:1.7b",
     }
 
     config["utils"] = {
@@ -189,15 +187,6 @@ def propagate_config() -> None:
 
     # Propagate RAG defaults (from default config)
     from ..workflows import __main__ as ws_main
-
-    ws_main.DEFAULT_API_BASE_URL = config.get(
-        "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
-    )
-    ws_main.DEFAULT_API_KEY = config.get("llm", "api_key", fallback="ollama")
-    ws_main.DEFAULT_MODEL = config.get("rag", "model", fallback="qwen3:1.7b")
-    ws_main.DEFAULT_EMBED_MODEL = config.get(
-        "llm", "embed_model", fallback="ibm/granite-embedding:125m"
-    )
 
     from ..utils import __main__ as utils_main
     utils_main.DEFAULT_DOCKER_CONTAINER_NAME = config.get(

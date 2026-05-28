@@ -4,7 +4,7 @@ Integration testing (via cli) for main shAI functionality, with a focus on
 regression testing
 """
 
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 import os
 import signal
 import sys
@@ -35,7 +35,7 @@ def _load_test_cases(path: Path) -> List[Dict[str, dict]]:
 
 
 def shai(argv):
-    global score, total
+    global score, total, err
     total += 1
     try:
         with open(os.devnull, "w") as f, redirect_stdout(f):
@@ -43,9 +43,11 @@ def shai(argv):
     except SystemExit as e:
         if e.code != 0:
             logger.info(f"FAIL: argv {argv} exited with code {e.code}")
+            err.append(" ".join(argv))
             return
     except Exception as e:
         logger.info(f"FAIL: argv {argv} exited unhandled Exception {e}")
+        err.append(" ".join(argv))
         return
     logger.info(f"PASS: argv {argv} completed successfully")
     score += 1
@@ -93,16 +95,18 @@ def run_test(config: Dict[str, Any]) -> str:
     db_path = config.get("db_path", "./tests/regress/docs/")
 
     tc = _load_test_cases(test_cases_file)
-    assert type(tc) is dict
+    assert type(tc) is list
 
     # TODO: quiet mode for logging
 
     # Building index
 
-    global score, total
+    global score, total, err
     score = 0
     total = 0
-    _recursive_run(tc, [])
+    err = []
+    for t in tc:
+        _recursive_run(t, [])
 
     # Save results
     output = {
@@ -110,6 +114,12 @@ def run_test(config: Dict[str, Any]) -> str:
         "description": TEST_DESCRIPTION,
         "results": f"{score}/{total} test cases passed",
     }
+    if len(err) > 0:
+        # TODO: fix warning wigh assert
+        output["failed"] = err
+        logger.info("List of failed commands:")
+        for e in err:
+            logger.info(f"-> {e}")
 
     if results_file:
         results_path = Path(results_file)
@@ -119,4 +129,5 @@ def run_test(config: Dict[str, Any]) -> str:
         logger.info(f"Results saved to {results_path}")
 
     summary = f"{TEST_NAME}: {TEST_DESCRIPTION} | " f"results={output['results']}"
+
     return summary

@@ -164,11 +164,14 @@ if __name__ == "__main__":
         test_def_path = Path(__file__).parent / "config.conf"
         register_tests(str(test_def_path))
 
-        run_config_path = sys.argv[2] if len(sys.argv) > 2 else None
-        if not run_config_path or not Path(run_config_path).exists():
-            logger.error("Error: config_path argument is required and must be a valid file")
+        if len(sys.argv) < 3:
+            logger.error("Error: Missing config_path argument for 'run' command")
             sys.exit(1)
-        run_tests(run_config_path)
+        for run_config_path in sys.argv[2:]:
+            if not run_config_path or not Path(run_config_path).exists():
+                logger.error("Error: config_path argument is required and must be a valid file")
+                sys.exit(1)
+            run_tests(run_config_path)
     else:
         print(f"Unknown command: {cmd}")
         sys.exit(1)

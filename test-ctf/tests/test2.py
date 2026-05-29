@@ -13,6 +13,8 @@ from shAI_ostap4ello.src.db import build, search, search_in_files_dynamic
 
 import logging
 
+from shAI_ostap4ello.src.workflows.rag import load_related_documents
+
 logger = logging.getLogger(__name__)
 logging.getLogger("shAI_ostap4ello.src.db").setLevel(logging.WARNING)
 
@@ -102,13 +104,16 @@ def run_test(config: Dict[str, Any]) -> str:
     mrr = 0.0
     latencies = []
     results_list = []
+    corpus_sizes = []
+    successful_testcases = 0
+    tc_latency = 0.0
 
     for i, test_case in enumerate(test_cases, 1):
         if (i % (cnt // 20 + 1)) == 0:
             logger.info(f"Running test case {i}/{cnt}...")
-        tc_start = time.time()
         found_rank = 0
         try:
+            tc_start = time.time()
             results = search(
                 db_path=str(db_path),
                 client=client,
@@ -128,6 +133,12 @@ def run_test(config: Dict[str, Any]) -> str:
                 query=test_case["query"],
                 top_k=top_k_extended,
             )
+            tc_latency = time.time() - tc_start
+
+            corpus = ""
+            for _, p, c in load_related_documents(results):
+                corpus += p + " "
+                corpus += c + " "
 
             for rank, result in enumerate(results, 1):
                 if _check_section_match(
@@ -140,17 +151,19 @@ def run_test(config: Dict[str, Any]) -> str:
                     found_rank = rank
                     break
 
+            corpus_sizes.append(len(corpus))
             mrr += 1.0 / found_rank if found_rank > 0 else 0.0
             top_1 = 1 if found_rank == 1 else 0
             top_k_v = 1 if found_rank > 0 else 0
             top_1_matches += top_1
             top_k_matches += top_k_v
+            successful_testcases += 1
 
         except Exception as e:
             logger.error(f"Test case {i} error: {e}")
             top_1, top_k_v = 0, 0
+            tc_latency = 0
 
-        tc_latency = time.time() - tc_start
         latencies.append(tc_latency)
         results_list.append(
             {
@@ -163,17 +176,32 @@ def run_test(config: Dict[str, Any]) -> str:
         )
 
     # Save results
-    n = len(test_cases)
+    total_testcases = len(test_cases)
     output = {
-        "test": TEST_NAME,
+        "test": "1",
+        "nofail": f"{successful_testcases}/{total_testcases}",
         "model": embed_model,
-        "top_1_matches": f"{top_1_matches}/{n}",
-        "top_k_matches": f"{top_k_matches}/{n}",
-        "top_1_accuracy": f"{(top_1_matches/n*100):.1f}%" if n > 0 else "0%",
-        "top_k_accuracy": f"{(top_k_matches/n*100):.1f}%" if n > 0 else "0%",
+        "top_1_matches": f"{top_1_matches}/{successful_testcases}",
+        "top_k_matches": f"{top_k_matches}/{successful_testcases}",
+        "top_1_pct": (
+            f"{(top_1_matches/successful_testcases*100):.1f}%"
+            if successful_testcases > 0
+            else "0%"
+        ),
+        "top_k_pct": (
+            f"{(top_k_matches/successful_testcases*100):.1f}%"
+            if successful_testcases > 0
+            else "0%"
+        ),
+        "mrr": (
+            round(mrr / successful_testcases, 4) if successful_testcases > 0 else 0.0
+        ),
         "index_latency": round(index_latency, 4),
-        "mrr": round(mrr / n, 4) if n > 0 else 0.0,
         "avg_latency": round(sum(latencies) / len(latencies), 4) if latencies else 0,
+        "avg_corpus_size": (
+            round(sum(corpus_sizes) / len(corpus_sizes), 2) if corpus_sizes else 0
+        ),
+        "index_latency": round(index_latency, 4),
         "testcases": results_list,
     }
 
@@ -186,10 +214,11 @@ def run_test(config: Dict[str, Any]) -> str:
 
     summary = (
         f"{TEST_NAME}: {TEST_DESCRIPTION} | "
-        f"top-1={output['top_1_accuracy']} ({output['top_1_matches']}) | "
-        f"top-k={output['top_k_accuracy']} ({output['top_k_matches']}) | "
+        f"top-1={output['top_1_matches']} ({output['top_1_pct']}) | "
+        f"top-k={output['top_k_matches']} ({output['top_k_pct']}) | "
         f"MRR={output['mrr']} | "
+        f"avg_corpus_size={output['avg_corpus_size']} chars | "
+        f"index_latency={output['index_latency']}s | "
         f"avg_latency={output['avg_latency']}s | "
-        f"index_latency={output['index_latency']}s"
     )
     return summary

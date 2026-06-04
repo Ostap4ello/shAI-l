@@ -4,9 +4,10 @@ Integration testing (via cli) for main shAI functionality, with a focus on
 regression testing
 """
 
-from contextlib import redirect_stderr, redirect_stdout
 import os
+import re
 import signal
+import subprocess
 import sys
 import json
 from pathlib import Path
@@ -37,20 +38,19 @@ def _load_test_cases(path: Path) -> List[Dict[str, dict]]:
 def shai(argv):
     global score, total, err
     total += 1
-    try:
-        with open(os.devnull, "w") as f, redirect_stdout(f):
-            _shai(argv)
-    except SystemExit as e:
-        if e.code != 0:
-            logger.info(f"FAIL: argv {argv} exited with code {e.code}")
-            err.append(" ".join(argv))
-            return
-    except Exception as e:
-        logger.info(f"FAIL: argv {argv} exited unhandled Exception {e}")
+
+    result = subprocess.run(
+        argv, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        logger.info(f"FAIL: argv {argv} exited with code {result.returncode}")
+        for i in range(len(argv)):
+            argv[i] = re.sub(" ", "\\ ", argv[i])
         err.append(" ".join(argv))
-        return
-    logger.info(f"PASS: argv {argv} completed successfully")
-    score += 1
+        logger.debug(f"stderr: {result.stderr}\n")
+    else:
+        logger.info(f"PASS: argv {argv} completed successfully")
+        logger.debug(f"stdout: {result.stdout}\n")
 
 
 def _recursive_run(test_case: dict | list | str, base_argv: list):

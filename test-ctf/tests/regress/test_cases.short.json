@@ -7,7 +7,8 @@
       {
         "argv": ["llm"],
         "children": [["-h"], ["--help"], []]
-      }
+      },
+      ["hello a b"]
     ]
   }
 ]

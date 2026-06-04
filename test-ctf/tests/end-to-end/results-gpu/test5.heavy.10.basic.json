@@ -1,0 +1,11 @@
+{
+  "test": "test6",
+  "description": "End-to-end application latency testing for main functionality",
+  "results": {
+    "embed-model-warmup": 24.1898455619812,
+    "build-sample-10": 16.741405248641968,
+    "search-sample-10": 1.5998660326004028,
+    "generation-model-warmup": 40.09919095039368,
+    "rag-sample-10": 39.776180791854856
+  }
+}

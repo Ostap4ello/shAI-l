@@ -1,34 +1,36 @@
 {
   "test": "1",
+  "nofail": "3/3",
   "model": "ibm/granite-embedding:30m",
   "top_1_matches": "3/3",
   "top_k_matches": "3/3",
   "top_1_pct": "100.0%",
   "top_k_pct": "100.0%",
   "mrr": 1.0,
-  "index_latency": 1.7456,
-  "avg_latency": 0.0313,
+  "index_latency": 1.8593,
+  "avg_latency": 0.0284,
+  "avg_corpus_size": 2410.33,
   "testcases": [
     {
       "id": 1,
       "top_1": 1,
       "top_k": 1,
       "rank": 1,
-      "latency": 0.0288
+      "latency": 0.0271
     },
     {
       "id": 2,
       "top_1": 1,
       "top_k": 1,
       "rank": 1,
-      "latency": 0.0299
+      "latency": 0.0312
     },
     {
       "id": 3,
       "top_1": 1,
       "top_k": 1,
       "rank": 1,
-      "latency": 0.0351
+      "latency": 0.0268
     }
   ]
 }

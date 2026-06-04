@@ -1,5 +1,5 @@
 {
   "test": "test_integration",
   "description": "Integration testing (via cli) for main shAI functionality, with a focus on regression testing",
-  "results": "32/32 test cases passed"
+  "results": "36/36 test cases passed"
 }

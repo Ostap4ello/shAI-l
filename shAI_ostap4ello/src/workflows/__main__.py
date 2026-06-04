@@ -13,12 +13,16 @@ from ..db.__main__ import (
     DEFAULT_TOP_K_EXTENDED,
     DEFAULT_EXTENDED_SEARCH,
 )
-from ..llm.__main__ import DEFAULT_API_KEY, DEFAULT_MODEL, DEFAULT_API_BASE_URL
 
-from ..llm import get_client
 from . import rag_simple, rag_extended
+from ..llm import get_client
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
+DEFAULT_API_KEY = "ollama"
+DEFAULT_MODEL = "qwen3:1.7b"
+DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
 
 
 def _cli_parser():

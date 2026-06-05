@@ -82,7 +82,7 @@ def cli_parser() -> argparse.ArgumentParser:
         "--config",
         "-c",
         type=str,
-        default=DEFAULT_CONFIG_PATH,
+        default=None,
     )
 
     parser.add_argument(
@@ -174,12 +174,21 @@ def main(argv: list | None = None) -> None:
 
     # TODO: default values in help are not updated when loading config
     if pre_args is not None:
-        logger.info(
-            f"Loading config from {pre_args.config} (create={pre_args.create_config})"
-        )
+        if pre_args.config is None:
+            pre_args.config = DEFAULT_CONFIG_PATH
+        elif pre_args.create_config == True:
+            logger.info(
+                f"Creating new config ar {pre_args.config}"
+            )
+        else:
+            logger.info(
+                f"Loading config from {pre_args.config}"
+            )
+
         load_config(config_path_str=pre_args.config, create=pre_args.create_config)
+
         if pre_args.create_config:
-            print(f"Config file created at {pre_args.config}")
+            logger.info(f"Config file created at {pre_args.config}")
             raise SystemExit(0)
 
     parser = cli_parser()

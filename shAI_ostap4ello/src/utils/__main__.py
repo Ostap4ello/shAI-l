@@ -36,13 +36,13 @@ def _cmd_start_ollama(args: argparse.Namespace) -> None:
             create=args.create,
         )
     except Exception as e:
-        logger.error(f"Error in {args.func}: {e}")
+        logger.error(f"{e}")
         raise SystemExit(1)
 
 
 def _cmd_stop_ollama(args: argparse.Namespace) -> None:
     print(
-        "Removing" if args.remove else "Stopping"
+        "Removing" if args.remove else "Stopping",
         f"Ollama Docker Container, name {args.name}..."
     )
     try:

@@ -69,7 +69,7 @@ def load_config(
             logger.error(f"File {config_path} already exists.")
             exit(1)
 
-        logger.info(f" Creating new {config_path} with default values.")
+        logger.info(f"Creating new {config_path} with default values.")
         try:
             config_path.parent.mkdir(parents=True, exist_ok=True)
             default_config.write(config_path.open("w"))

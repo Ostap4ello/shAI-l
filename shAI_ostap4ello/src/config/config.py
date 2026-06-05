@@ -36,7 +36,7 @@ def get_default_config() -> configparser.ConfigParser:
         "show_contents": "false",
 
         "top_k": "5",
-        "section_rows": "0",
+        "section_rows": "20",
 
         "extended_search": "false",
         "top_k_extended": "10",

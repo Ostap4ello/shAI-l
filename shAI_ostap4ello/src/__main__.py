@@ -29,7 +29,11 @@ DEFAULT_LOG_LEVEL = "INFO"
 
 
 def _cmd_ollama_init(_: argparse.Namespace) -> None:
-    init_shai()
+    try:
+        init_shai()
+    except Exception as e:
+        logger.error(f"Initialization failed with exception: {e}")
+        raise SystemExit(1)
 
 
 def init_shai():
@@ -40,7 +44,6 @@ def init_shai():
     models = [
         get_config_value("llm", "model", str),
         get_config_value("llm", "embed_model", str),
-        get_config_value("rag", "model", str),
     ]
     logger.info(f"Initializing Ollama container for configured models ({models})")
     url = get_config_value("utils", "ollama_url", str)

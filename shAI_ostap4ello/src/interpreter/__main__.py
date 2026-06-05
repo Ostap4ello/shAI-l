@@ -20,6 +20,7 @@ def cli_parser() -> argparse.ArgumentParser:
         default=DEFAULT_CONFIG_PATH,
     )
     parser.add_argument(
+        "-l",
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],

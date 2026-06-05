@@ -9,7 +9,7 @@ import sys
 from .adapter import *
 from .fetch_man import fetch_manpages_to_db, MAN_ROOT, DEFAULT_SECTIONS, MERGE_POLICIES
 
-DEFAULT_OLLAMA_URL="http://127.0.0.1:11434/"
+DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434/"
 DEFAULT_DOCKER_CONTAINER_NAME = "ollama-node-1"
 DEFAULT_DOCKER_CONTEXT_LENGTH = 32000
 DEFAULT_DOCKER_GPUS = "all"
@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
 )
-
 
 
 def _cmd_start_ollama(args: argparse.Namespace) -> None:
@@ -46,7 +45,7 @@ def _cmd_start_ollama(args: argparse.Namespace) -> None:
 def _cmd_stop_ollama(args: argparse.Namespace) -> None:
     print(
         "Removing" if args.remove else "Stopping",
-        f"Ollama Docker Container, name {args.name}..."
+        f"Ollama Docker Container, name {args.name}...",
     )
     try:
         if not is_ollama_running(args.name):
@@ -149,6 +148,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "-l",
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -157,9 +157,11 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
 
     parser_start = subparsers.add_parser(
-        "start-ollama", help="Run the Ollama Docker container"
+        "start-ollama",
+        help="Run the Ollama Docker container",
     )
     parser_start.add_argument(
+        "-C",
         "--create",
         action="store_true",
         default=False,
@@ -183,12 +185,14 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_start.set_defaults(func=_cmd_start_ollama)
 
     parser_stop = subparsers.add_parser(
-        "stop-ollama", help="Stop the Ollama Docker container"
+        "stop-ollama",
+        help="Stop the Ollama Docker container",
     )
     parser_stop.add_argument(
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
     )
     parser_stop.add_argument(
+        "-R",
         "--remove",
         action="store_true",
         default=False,
@@ -197,7 +201,8 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_stop.set_defaults(func=_cmd_stop_ollama)
 
     parser_status = subparsers.add_parser(
-        "is-ollama-running", help="Check if the Ollama Docker container is running"
+        "is-ollama-running",
+        help="Check if the Ollama Docker container is running",
     )
     parser_status.add_argument(
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
@@ -233,10 +238,18 @@ def _cli_parser() -> argparse.ArgumentParser:
         + " (recursively from src-dir to out-dir for all gz files found in src-dir)",
     )
     parser_convert.add_argument(
-        "--src-dir", type=str, required=True, help="Source directory for groff files"
+        "-s",
+        "--src-dir",
+        type=str,
+        required=True,
+        help="Source directory for groff files",
     )
     parser_convert.add_argument(
-        "--out-dir", type=str, required=True, help="Output directory for text files"
+        "-o",
+        "--out-dir",
+        type=str,
+        required=True,
+        help="Output directory for text files",
     )
     parser_convert.set_defaults(func=_cmd_convert)
 

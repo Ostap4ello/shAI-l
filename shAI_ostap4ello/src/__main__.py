@@ -32,6 +32,7 @@ DEFAULT_LOG_LEVEL = "INFO"
 def _cmd_ollama_init(_: argparse.Namespace) -> None:
     init_shai()
 
+
 def init_shai():
     db_path = Path(get_config_value("db", "db_path", str)).expanduser().resolve()
     logger.info(f"Creating db folder({db_path})")
@@ -44,7 +45,9 @@ def init_shai():
     ]
     logger.info(f"Initializing Ollama container for configured models ({models})")
     url = get_config_value("utils", "ollama_url", str)
-    was_ollama_running = is_ollama_running(get_config_value("utils", "ollama_container_name"))
+    was_ollama_running = is_ollama_running(
+        get_config_value("utils", "ollama_container_name")
+    )
 
     if not was_ollama_running:
         try:
@@ -73,8 +76,10 @@ def init_shai():
             logger.error(f"Error: {e}")
             raise SystemExit(1)
 
+
 def _interpreter_cmd(args: argparse.Namespace) -> None:
     interpreter_main(args.config, args.log_level)
+
 
 def cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="ShAI-CLI")
@@ -87,6 +92,7 @@ def cli_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "--create-config",
+        "-C",
         action="store_true",
         default=DEFAULT_CREATE_CONFIG,
         help="If true, creates a config file with default values if it doesn't exist, then exits",
@@ -103,6 +109,7 @@ def cli_parser() -> argparse.ArgumentParser:
     )
     subparsers.add_parser(
         "workflows",
+        aliases=["ws"],
         parents=[_w_cli_parser()],
         add_help=False,
         help="RAG-enabled generation",
@@ -115,6 +122,7 @@ def cli_parser() -> argparse.ArgumentParser:
     )
     subparsers.add_parser(
         "utils",
+        aliases=["u"],
         parents=[_utils_cli_parser()],
         add_help=False,
         help="Miscellaneous utilities",
@@ -129,11 +137,10 @@ def cli_parser() -> argparse.ArgumentParser:
     )
     init_parser.set_defaults(func=_cmd_ollama_init)
 
-    _interpreter_parser = subparsers.add_parser(
-        "interpreter", help="ShAI shell"
-    )
+    _interpreter_parser = subparsers.add_parser("interpreter", help="ShAI shell")
     _interpreter_parser.add_argument(
         "--log-level",
+        "-l",
         type=str,
         required=False,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -178,13 +185,9 @@ def main(argv: list | None = None) -> None:
         if pre_args.config is None:
             pre_args.config = DEFAULT_CONFIG_PATH
         elif pre_args.create_config == True:
-            logger.info(
-                f"Creating new config ar {pre_args.config}"
-            )
+            logger.info(f"Creating new config ar {pre_args.config}")
         else:
-            logger.info(
-                f"Loading config from {pre_args.config}"
-            )
+            logger.info(f"Loading config from {pre_args.config}")
 
         load_config(config_path_str=pre_args.config, create=pre_args.create_config)
 

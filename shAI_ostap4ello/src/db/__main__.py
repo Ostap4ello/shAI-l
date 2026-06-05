@@ -34,6 +34,7 @@ DEFAULT_EXTS_SECTION_ROWS = 20
 def _get_client() -> OpenAI:
     return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
 
+
 def _cmd_info(args: argparse.Namespace) -> None:
     db_path = os.path.expanduser(args.db_path)
     if not check(db_path, args.index_path_within_db):
@@ -49,6 +50,7 @@ def _cmd_info(args: argparse.Namespace) -> None:
     except Exception as e:
         logger.error(f"Error retrieving index information: {e}")
         raise SystemExit(1)
+
 
 def _cmd_build(args: argparse.Namespace) -> None:
     client = _get_client()
@@ -183,9 +185,10 @@ def _cli_parser() -> argparse.ArgumentParser:
         help="Embedding batch size",
     )
     build_cmd.add_argument(
-        "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"
+        "-m", "--model", default=DEFAULT_EMBED_MODEL, help=f"Embedding model to use"
     )
     build_cmd.add_argument(
+        "-s",
         "--section-rows",
         type=int,
         default=DEFAULT_SECTION_ROWS,
@@ -211,48 +214,54 @@ def _cli_parser() -> argparse.ArgumentParser:
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     search_cmd.add_argument(
-        "--top-k", type=int, default=DEFAULT_TOP_K, help="Number of results to return"
+        "-k",
+        "--top-k",
+        type=int,
+        default=DEFAULT_TOP_K,
+        help="Number of results to return",
     )
     search_cmd.add_argument(
-        "--extended-search",
         "-e",
+        "--extended-search",
         action="store_true",
         default=DEFAULT_EXTS,
         help="If true, section-scoped search will be applied on retieved docs, then metadata with this will be returned",
     )
     search_cmd.add_argument(
-        "--no-extended-search",
         "-E",
+        "--no-extended-search",
         action="store_false",
         dest="extended_search",
-        help=""
+        help="",
     )
     search_cmd.add_argument(
+        "-K",
         "--top-k-extended",
         type=int,
         default=DEFAULT_EXTS_TOP_K,
         help="Number of results to return",
     )
     search_cmd.add_argument(
+        "-S",
         "--section-rows-extended",
         type=int,
         default=DEFAULT_EXTS_SECTION_ROWS,
         help="Number of rows per section for extended search (only applicable with --extended-search)",
     )
     search_cmd.add_argument(
-        "--read-file-contents",
         "-r",
+        "--read-file-contents",
         action="store_true",
         dest="read_results",
         default=DEFAULT_SHOW_CONTENTS,
         help="If true, the content of retrieved documents will be printed to stdout along with metadata",
     )
     search_cmd.add_argument(
-        "--no-read-file-contents",
         "-R",
+        "--no-read-file-contents",
         action="store_false",
         dest="read_results",
-        help=""
+        help="",
     )
     search_cmd.add_argument("query", help="Search query string")
     search_cmd.set_defaults(func=_cmd_search)
@@ -275,6 +284,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     info_cmd.set_defaults(func=_cmd_info)
 
     parser.add_argument(
+        "-l",
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],

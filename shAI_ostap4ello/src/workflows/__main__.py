@@ -29,6 +29,7 @@ def _cli_parser():
     )
 
     parser.add_argument(
+        "-l",
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -43,6 +44,7 @@ def _cli_parser():
         "query", type=str, help="The query to process with the RAG pipeline"
     )
     find_cmd.add_argument(
+        "-m",
         "--model", default=llm_main.DEFAULT_MODEL, help="The generation model to use for RAG"
     )
     find_cmd.add_argument(
@@ -51,30 +53,34 @@ def _cli_parser():
         help="Path to document directory",
     )
     find_cmd.add_argument(
+        "-k",
         "--top-k",
         type=int,
         default=db_main.DEFAULT_TOP_K,
         help="Number of results to return for the initial search",
     )
     find_cmd.add_argument(
+        "-i",
         "--index-path-within-db",
         default=db_main.DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     find_cmd.add_argument(
-        "--extended-search",
         "-e",
+        "--extended-search",
         action="store_true",
         default=db_main.DEFAULT_EXTS,
         help="If true, section-scoped find will be applied on retieved docs, then metadata with this will be returned",
     )
     find_cmd.add_argument(
+        "-K",
         "--top-k-extended",
         type=int,
         default=db_main.DEFAULT_EXTS_TOP_K,
         help="Number of results to return",
     )
     find_cmd.add_argument(
+        "-S",
         "--section-rows-extended",
         type=int,
         default=db_main.DEFAULT_EXTS_SECTION_ROWS,

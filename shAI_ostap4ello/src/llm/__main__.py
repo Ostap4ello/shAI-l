@@ -74,6 +74,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         # formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
+        "-l",
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -84,11 +85,12 @@ def _cli_parser() -> argparse.ArgumentParser:
 
     generate_cmd = sub.add_parser(
         "generate",
+        aliases=["g", "gen"],
         help="Generate a response from the LLM",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     generate_cmd.add_argument(
-        "--model", default=DEFAULT_MODEL, help="Model to use for generation"
+        "-m", "--model", default=DEFAULT_MODEL, help="Model to use for generation"
     )
     generate_cmd.add_argument(
         "--stream", action="store_true", default=True, help="Enable streaming output"
@@ -108,6 +110,7 @@ def _cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     embed_cmd.add_argument(
+        "-m",
         "--model",
         default=DEFAULT_EMBED_MODEL,
         help="Model to use for embedding generation",

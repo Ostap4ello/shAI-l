@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import datetime
 import json
 
 import logging
@@ -7,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_INDEX_PATH_WITHIN_DB = ".index"
-CONFIG_SCHEMA = {"model": ""}
+CONFIG_SCHEMA = {"model": "", "timestamp": ""}
 
 
 def get_empty_config() -> dict:
@@ -39,6 +40,7 @@ def get_default_index_path_within_db() -> str:
 def save_index_config(config_path: Path, config: dict) -> None:
     if not is_config_valid(config):
         raise RuntimeError(f"Erroroneous db config ({config_path})")
+    config["timestamp"] = datetime.now().isoformat()
     config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
 
 

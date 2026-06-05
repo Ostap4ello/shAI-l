@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+from openai import OpenAI
 from pathlib import Path
 from typing import List
-
-from openai import OpenAI
+from datetime import datetime
+import numpy as np
 
 from .utils.documents import (
     list_db_documents,
@@ -15,14 +16,13 @@ from .utils.config import (
     load_index_config,
     resolve_index_paths,
     save_index_config,
-    get_empty_config as get_empty_db_config
+    get_empty_config as get_empty_db_config,
 )
 from .utils.faiss_utils import (
     build_index,
     load_index,
     save_index,
 )
-
 from ..llm import embed_strings
 
 import logging
@@ -36,7 +36,7 @@ def build(
     model: str,
     batch_size: int = 32,
     index_path_within_db: str = get_default_index_path_within_db(),
-    section_rows: int = 0
+    section_rows: int = 0,
 ) -> None:
     # Ensure index_path_within_db is a hidden folder
     if not str(index_path_within_db).startswith("."):
@@ -72,6 +72,82 @@ def build(
     save_index_config(config_path, index_config)
 
     logger.info(f"Successfully built index for: {db_dir.resolve()}")
+
+
+def update(
+    db_path: str,
+    client: OpenAI,
+    batch_size: int = 32,
+    index_path_within_db: str = get_default_index_path_within_db(),
+    section_rows: int = 0,
+) -> None:
+    if not check(db_path, index_path_within_db):
+        raise RuntimeError("Index not found. Run build() first.")
+    db_dir = Path(db_path)
+
+    index_path, meta_path, config_path = resolve_index_paths(
+        db_path, index_path_within_db
+    )
+
+    logger.info(f"Loading database: {db_dir.resolve()}")
+    index_config = load_index_config(config_path)
+    model = index_config["model"]
+    old_index, old_metadata_list = load_index(index_path, meta_path)
+    db_mtime = get_index_info(db_path, index_path_within_db)["timestamp"]
+
+    file_to_index = {}
+    for i, meta in enumerate(old_metadata_list):
+        idx = meta["path"] + " " + str(meta.get("from", ""))
+        file_to_index[idx] = i
+
+    logger.info(f"Listing documents in {db_dir.resolve()}")
+    doc_paths = list_db_documents(db_dir)
+
+    embed_queue = []
+    metadata = []
+    vectors = []
+
+    for doc_path in doc_paths:
+        doc_mtime = datetime.fromtimestamp(Path(doc_path).stat().st_mtime).isoformat()
+
+        if doc_mtime > db_mtime:
+            embed_queue.append(doc_path)
+            continue
+
+        found = False
+        for idx in file_to_index.keys():
+            if idx.startswith(str(doc_path) + " "):
+                vectors.append(old_index.reconstruct(file_to_index[idx]))
+                metadata.append(old_metadata_list[file_to_index[idx]])
+                found = True
+                break
+
+        if not found:
+            embed_queue.append(doc_path)
+
+
+    if len(embed_queue) == 0:
+        logger.info("No new or updated documents found. Index is up to date.")
+        save_index_config(config_path, index_config)  # updates timestamp in config
+        return
+
+    logger.info(f"Loading new/updated documents ({len(embed_queue)})")
+    if section_rows == 0:
+        texts, updated_metadata = load_documents(embed_queue)
+    elif section_rows > 0:
+        texts, updated_metadata = load_documents_in_sections(embed_queue, section_rows)
+    else:
+        raise RuntimeError("Section size cannot be less then 0")
+
+    logger.info(f"Updating database index")
+    updated_vectors = embed_strings(client, model, texts, batch_size)
+    vectors = np.vstack(vectors + updated_vectors.tolist())
+    metadata = metadata + updated_metadata
+    index = build_index(vectors)
+    save_index(index, metadata, index_path, meta_path)
+
+    save_index_config(config_path, index_config)  # updates timestamp in config
+    logger.info(f"Successfully updated index for: {db_dir.resolve()}")
 
 
 def check(

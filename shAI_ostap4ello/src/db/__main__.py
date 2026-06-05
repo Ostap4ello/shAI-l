@@ -7,7 +7,7 @@ import os
 from openai import OpenAI
 from typing import List, Optional
 
-from .db import build, get_index_info, search, check, search_in_files_dynamic
+from . import *
 from ..llm import get_client
 
 import logging
@@ -33,6 +33,22 @@ DEFAULT_EXTS_SECTION_ROWS = 20
 
 def _get_client() -> OpenAI:
     return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
+
+
+def _cmd_update(args: argparse.Namespace) -> None:
+    client = _get_client()
+    db_path = os.path.expanduser(args.db_path)
+    try:
+        update(
+            db_path=db_path,
+            index_path_within_db=args.index_path_within_db,
+            client=client,
+            batch_size=args.batch_size,
+            section_rows=args.section_rows,
+        )
+    except Exception as e:
+        logger.error(f"Error during index update: {e}")
+        raise SystemExit(1)
 
 
 def _cmd_info(args: argparse.Namespace) -> None:
@@ -195,7 +211,40 @@ def _cli_parser() -> argparse.ArgumentParser:
             "If set, indexes by sections of the chosen size instead of the whole document"
         ),
     )
+
     build_cmd.set_defaults(func=_cmd_build)
+
+    update_cmd = sub.add_parser(
+        "update",
+        help="Update the index",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    update_cmd.add_argument(
+        "--db-path",
+        default=DEFAULT_DB_PATH,
+        help="Path to document directory",
+    )
+    update_cmd.add_argument(
+        "--index-path-within-db",
+        default=DEFAULT_INDEX_PATH_WITHIN_DB,
+        help="Index subdirectory name (must start with a dot to be hidden)",
+    )
+    update_cmd.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
+        help="Embedding batch size",
+    )
+    update_cmd.add_argument(
+        "-s",
+        "--section-rows",
+        type=int,
+        default=DEFAULT_SECTION_ROWS,
+        help=(
+            "If set, indexes by sections of the chosen size instead of the whole document"
+        ),
+    )
+    update_cmd.set_defaults(func=_cmd_update)
 
     search_cmd = sub.add_parser(
         "search",

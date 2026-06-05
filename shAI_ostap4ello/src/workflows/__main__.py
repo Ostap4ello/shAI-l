@@ -7,22 +7,14 @@ import logging
 import sys
 import signal
 
-from ..db.__main__ import (
-    DEFAULT_DB_PATH,
-    DEFAULT_INDEX_PATH_WITHIN_DB,
-    DEFAULT_TOP_K_EXTENDED,
-    DEFAULT_EXTENDED_SEARCH,
-)
+from ..db import __main__ as db_main
+from ..llm import __main__ as llm_main
 
 from . import rag_simple, rag_extended
 from ..llm import get_client
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
-DEFAULT_API_KEY = "ollama"
-DEFAULT_MODEL = "qwen3:1.7b"
-DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
 DEFAULT_LOG_LEVEL = "INFO"
 
 
@@ -51,27 +43,42 @@ def _cli_parser():
         "query", type=str, help="The query to process with the RAG pipeline"
     )
     find_cmd.add_argument(
+        "--model", default=llm_main.DEFAULT_MODEL, help="The generation model to use for RAG"
+    )
+    find_cmd.add_argument(
         "--db-path",
-        default=DEFAULT_DB_PATH,
+        default=db_main.DEFAULT_DB_PATH,
         help="Path to document directory",
     )
     find_cmd.add_argument(
+        "--top-k",
+        type=int,
+        default=db_main.DEFAULT_TOP_K,
+        help="Number of results to return for the initial search",
+    )
+    find_cmd.add_argument(
         "--index-path-within-db",
-        default=DEFAULT_INDEX_PATH_WITHIN_DB,
+        default=db_main.DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
     find_cmd.add_argument(
         "--extended-search",
         "-e",
         action="store_true",
-        default=DEFAULT_EXTENDED_SEARCH,
+        default=db_main.DEFAULT_EXTS,
         help="If true, section-scoped find will be applied on retieved docs, then metadata with this will be returned",
     )
     find_cmd.add_argument(
         "--top-k-extended",
         type=int,
-        default=DEFAULT_TOP_K_EXTENDED,
+        default=db_main.DEFAULT_EXTS_TOP_K,
         help="Number of results to return",
+    )
+    find_cmd.add_argument(
+        "--section-rows-extended",
+        type=int,
+        default=db_main.DEFAULT_EXTS_SECTION_ROWS,
+        help="Number of rows per section for extended search (only applicable with --extended-search)",
     )
 
     find_cmd.set_defaults(func=_cmd_rag)
@@ -80,7 +87,7 @@ def _cli_parser():
 
 
 def _get_client() -> OpenAI:
-    return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
+    return get_client(llm_main.DEFAULT_API_BASE_URL, llm_main.DEFAULT_API_KEY)
 
 
 def _cmd_rag(args: argparse.Namespace) -> None:
@@ -89,22 +96,22 @@ def _cmd_rag(args: argparse.Namespace) -> None:
         if args.extended_search:
             results = rag_extended(
                 client=client,
-                gen_model=DEFAULT_MODEL,
+                gen_model=args.model,
                 query=args.query,
                 db_path=args.db_path,
                 index_path_within_db=args.index_path_within_db,
-                top_k=5,
+                top_k=args.top_k,
                 top_k_extended=args.top_k_extended,
-                section_size=100,  # TODO: make this configurable
+                section_size=args.section_rows_extended,
             )
         else:
             results = rag_simple(
                 client=client,
-                gen_model=DEFAULT_MODEL,
+                gen_model=args.model,
                 query=args.query,
                 db_path=args.db_path,
                 index_path_within_db=args.index_path_within_db,
-                top_k=5,
+                top_k=args.top_k,
             )
     except Exception as e:
         logger.error(f"Error in RAG pipeline: {e}")

@@ -18,12 +18,17 @@ DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
-DEFAULT_EXTENDED_SEARCH = False
-DEFAULT_TOP_K = 5
-DEFAULT_TOP_K_EXTENDED = 10
 DEFAULT_DB_PATH = "~/.local/share/shai_db"
 DEFAULT_INDEX_PATH_WITHIN_DB = ".index"
 DEFAULT_BATCH_SIZE = 32
+DEFAULT_SHOW_CONTENTS = False
+
+DEFAULT_TOP_K = 5
+DEFAULT_SECTION_ROWS = 0
+
+DEFAULT_EXTS = False
+DEFAULT_EXTS_TOP_K = 10
+DEFAULT_EXTS_SECTION_ROWS = 20
 
 
 def _get_client() -> OpenAI:
@@ -96,6 +101,8 @@ def _cmd_search(args: argparse.Namespace) -> None:
         raise SystemExit(1)
 
     if args.extended_search:
+        top_k_extended = args.top_k_extended
+        section_rows_extended = args.section_rows_extended
         logger.info("Performing extended search on retrieved documents")
         paths = []
         for r in results:
@@ -112,7 +119,8 @@ def _cmd_search(args: argparse.Namespace) -> None:
                 client=client,
                 model=db_model,
                 query=args.query,
-                top_k=args.top_k_extended,
+                top_k=top_k_extended,
+                section_rows=section_rows_extended,
             )
         except Exception as e:
             logger.warning(f"Error during db search: {e}")
@@ -180,7 +188,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     build_cmd.add_argument(
         "--section-rows",
         type=int,
-        default=0,
+        default=DEFAULT_SECTION_ROWS,
         help=(
             "If set, indexes by sections of the chosen size instead of the whole document"
         ),
@@ -209,21 +217,42 @@ def _cli_parser() -> argparse.ArgumentParser:
         "--extended-search",
         "-e",
         action="store_true",
-        default=DEFAULT_EXTENDED_SEARCH,
+        default=DEFAULT_EXTS,
         help="If true, section-scoped search will be applied on retieved docs, then metadata with this will be returned",
+    )
+    search_cmd.add_argument(
+        "--no-extended-search",
+        "-E",
+        action="store_false",
+        dest="extended_search",
+        help=""
     )
     search_cmd.add_argument(
         "--top-k-extended",
         type=int,
-        default=DEFAULT_TOP_K_EXTENDED,
+        default=DEFAULT_EXTS_TOP_K,
         help="Number of results to return",
     )
     search_cmd.add_argument(
-        "--read-results",
-        "-R",
+        "--section-rows-extended",
+        type=int,
+        default=DEFAULT_EXTS_SECTION_ROWS,
+        help="Number of rows per section for extended search (only applicable with --extended-search)",
+    )
+    search_cmd.add_argument(
+        "--read-file-contents",
+        "-r",
         action="store_true",
-        default=False,
+        dest="read_results",
+        default=DEFAULT_SHOW_CONTENTS,
         help="If true, the content of retrieved documents will be printed to stdout along with metadata",
+    )
+    search_cmd.add_argument(
+        "--no-read-file-contents",
+        "-R",
+        action="store_false",
+        dest="read_results",
+        help=""
     )
     search_cmd.add_argument("query", help="Search query string")
     search_cmd.set_defaults(func=_cmd_search)

@@ -33,14 +33,14 @@ def get_default_config() -> configparser.ConfigParser:
         "db_path": "~/.local/share/shai_db",
         "index_path_within_db": ".index",
         "batch_size": "32",
-        "top_k": "5",
-        "top_k_extended": "10",
-        "extended_search": "false",
-    }
+        "show_contents": "false",
 
-    config["rag"] = {
         "top_k": "5",
-        "model": "qwen2.5:1.5b",
+        "section_rows": "0",
+
+        "extended_search": "false",
+        "top_k_extended": "10",
+        "extended_section_rows": "20",
     }
 
     config["utils"] = {
@@ -181,24 +181,25 @@ def propagate_config() -> None:
         "db", "batch_size", fallback=32
     )
     db_main.DEFAULT_TOP_K = config.getint("db", "top_k", fallback=5)
-    db_main.DEFAULT_TOP_K_EXTENDED = config.getint(
+    db_main.DEFAULT_SECTION_ROWS = config.getint(
+        "db", "section_rows", fallback=0
+    )
+    db_main.DEFAULT_EXTS = config.getboolean(
+        "db", "extended_search", fallback=False
+    )
+    db_main.DEFAULT_EXTS_TOP_K = config.getint(
         "db", "top_k_extended", fallback=10
     )
-    db_main.DEFAULT_EXTENDED_SEARCH = config.getboolean(
-        "db", "extended_search", fallback=False
+    db_main.DEFAULT_EXTS_SECTION_ROWS = config.getint(
+        "db", "extended_section_rows", fallback=20
+    )
+    db_main.DEFAULT_SHOW_CONTENTS = config.getboolean(
+        "db", "show_contents", fallback=False
     )
 
     # Propagate RAG defaults (from default config)
     from ..workflows import __main__ as ws_main
     ws_main.DEFAULT_LOG_LEVEL = default_log_level
-    ws_main.DEFAULT_API_BASE_URL = config.get(
-        "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
-    )
-    ws_main.DEFAULT_API_KEY = config.get("llm", "api_key", fallback="ollama")
-    ws_main.DEFAULT_MODEL = config.get("rag", "model", fallback="qwen3:1.7b")
-    ws_main.DEFAULT_EMBED_MODEL = config.get(
-        "llm", "embed_model", fallback="ibm/granite-embedding:125m"
-    )
 
     from ..utils import __main__ as utils_main
     utils_main.DEFAULT_LOG_LEVEL = default_log_level

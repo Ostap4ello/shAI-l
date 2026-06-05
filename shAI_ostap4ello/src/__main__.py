@@ -29,7 +29,7 @@ DEFAULT_MODEL = "qwen3:1.7b"
 DEFAULT_LOG_LEVEL = "INFO"
 
 
-def _cmd_ollama_init(args: argparse.Namespace) -> None:
+def _cmd_ollama_init(_: argparse.Namespace) -> None:
     init_shai()
 
 def init_shai():

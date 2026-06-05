@@ -60,6 +60,14 @@
             ["hello world", "-e", "--top-k-extended", "14"],
             ["hello world", "-e", "--top-k", "14"]
         ]
+      },
+      {
+        "argv": ["update"],
+        "children": [
+            ["-h"],
+            ["--help"],
+            ["--db-path", "$DB_PATH"]
+        ]
       }
     ]
   },

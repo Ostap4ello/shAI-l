@@ -24,7 +24,7 @@ def get_default_config() -> configparser.ConfigParser:
     }
 
     config["llm"] = {
-        "model": "qwen3:1.7b",
+        "model": "qwen2.5:1.5b",
         "embed_model": "ibm/granite-embedding:125m",
         "api_base_url": "http://127.0.0.1:11434/v1",
         "api_key": "ollama",
@@ -41,7 +41,7 @@ def get_default_config() -> configparser.ConfigParser:
 
     config["rag"] = {
         "top_k": "5",
-        "model": "qwen3:1.7b",
+        "model": "qwen2.5:1.5b",
     }
 
     config["utils"] = {

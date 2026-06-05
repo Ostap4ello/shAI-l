@@ -136,8 +136,9 @@ def cli_parser() -> argparse.ArgumentParser:
         "--log-level",
         type=str,
         required=False,
-        default="WARNING",
-        help="Set the logging level (default: WARNING)",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default=DEFAULT_LOG_LEVEL,
+        help="Set the logging level",
     )
     _interpreter_parser.set_defaults(func=_interpreter_cmd)
 

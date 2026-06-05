@@ -19,8 +19,7 @@ def get_default_config() -> configparser.ConfigParser:
 
     config["general"] = {
         "keep_ollama_running": "false",
-        # TODO:
-        # "log_level": "INFO",
+        "log_level": "INFO",
     }
 
     config["llm"] = {
@@ -151,7 +150,8 @@ def propagate_config() -> None:
 
     # Propagate LLM defaults (from default config)
     from ..llm import __main__ as llm_main
-
+    default_log_level = config.get("general", "log_level", fallback="INFO")
+    llm_main.DEFAULT_LOG_LEVEL = default_log_level
     llm_main.DEFAULT_API_BASE_URL = config.get(
         "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
     )
@@ -163,6 +163,7 @@ def propagate_config() -> None:
 
     # Propagate DB defaults (from default config)
     from ..db import __main__ as db_main
+    db_main.DEFAULT_LOG_LEVEL = default_log_level
     db_main.DEFAULT_API_BASE_URL = config.get(
         "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
     )
@@ -189,7 +190,7 @@ def propagate_config() -> None:
 
     # Propagate RAG defaults (from default config)
     from ..workflows import __main__ as ws_main
-
+    ws_main.DEFAULT_LOG_LEVEL = default_log_level
     ws_main.DEFAULT_API_BASE_URL = config.get(
         "llm", "api_base_url", fallback="http://127.0.0.1:11434/v1"
     )
@@ -200,6 +201,7 @@ def propagate_config() -> None:
     )
 
     from ..utils import __main__ as utils_main
+    utils_main.DEFAULT_LOG_LEVEL = default_log_level
     utils_main.DEFAULT_DOCKER_CONTAINER_NAME = config.get(
         "utils", "ollama_container_name", fallback="ollama-node-1"
     )
@@ -217,5 +219,11 @@ def propagate_config() -> None:
     utils_main.DEFAULT_OLLAMA_URL = config.get(
         "utils", "ollama_url", fallback="http://127.0.0.1:11434/"
     )
+
+    from .. import __main__ as src_main
+    src_main.DEFAULT_LOG_LEVEL = default_log_level
+
+    from ..interpreter import __main__ as interpreter_main
+    interpreter_main.DEFAULT_LOG_LEVEL = default_log_level
 
     logger.debug("Config propagated to module defaults.")

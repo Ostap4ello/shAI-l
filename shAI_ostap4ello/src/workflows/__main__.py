@@ -23,6 +23,7 @@ DEFAULT_API_BASE_URL = "http://127.0.0.1:11434/v1"
 DEFAULT_API_KEY = "ollama"
 DEFAULT_MODEL = "qwen3:1.7b"
 DEFAULT_EMBED_MODEL = "ibm/granite-embedding:125m"
+DEFAULT_LOG_LEVEL = "INFO"
 
 
 def _cli_parser():
@@ -39,7 +40,7 @@ def _cli_parser():
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default="INFO",
+        default=DEFAULT_LOG_LEVEL,
         help="Set the logging level (default: INFO)",
     )
 

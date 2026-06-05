@@ -75,7 +75,9 @@ This functionality can be accessed via these CLI subcommands, which are describe
 
 <br>
 
-## Development
+## Development & Contribution
+
+- **Application architecture** is described in [docs/architecture.md](https://github.com/Ostap4ello/shAI-l/blob/master/docs/architecture.md)  
 
 - **Development installation**: Install the application in .venv (see [setup](#setup)).
 
@@ -89,11 +91,11 @@ This functionality can be accessed via these CLI subcommands, which are describe
     ```
 
 - **Testing**:
-    - Performance tests: read [test-ctf readme](https://github.com/Ostap4ello/shAI-l/blob/master/test-ctf/README.md)  
+    - Performance or Regression tests: read [test readme](https://github.com/Ostap4ello/shAI-l/blob/master/test/README.md)  
     <br>
 
 - **Run Modules Directly**:
-If you're developing iv .venv, you can run modules directly:
+If you're developing in .venv, you can run modules directly:
 
     ```bash
     # Main CLI

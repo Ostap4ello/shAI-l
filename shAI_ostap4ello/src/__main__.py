@@ -4,7 +4,6 @@ from pathlib import Path
 import sys
 import signal
 
-
 from .db.__main__ import _cli_parser as _db_cli_parser
 from .llm.__main__ import _cli_parser as _llm_cli_parser
 from .workflows.__main__ import _cli_parser as _w_cli_parser
@@ -18,6 +17,7 @@ from .utils import (
     stop_ollama,
     wait_ollama_ready,
 )
+from .llm import get_client, generate, embed_string
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +40,7 @@ def init_shai():
     db_path = Path(get_config_value("db", "db_path", str)).expanduser().resolve()
     logger.info(f"Creating db folder({db_path})")
     db_path.mkdir(parents=True, exist_ok=True)
+    print(f"Database folder created at {db_path}")
 
     models = [
         get_config_value("llm", "model", str),
@@ -47,13 +48,13 @@ def init_shai():
     ]
     logger.info(f"Initializing Ollama container for configured models ({models})")
     url = get_config_value("utils", "ollama_url", str)
-    was_ollama_running = is_ollama_running(
-        get_config_value("utils", "ollama_container_name")
-    )
+    name = get_config_value("utils", "ollama_container_name", str)
+    gpus = get_config_value("utils", "ollama_gpus", str)
+    was_ollama_running = is_ollama_running(name)
 
     if not was_ollama_running:
         try:
-            start_ollama(context_length=3200, gpus="none", name="tmp_shai", create=True)
+            start_ollama(context_length=3200, gpus=gpus, name=name, create=True)
         except Exception as e:
             logger.error(f"Error: {e}")
             raise SystemExit(1)
@@ -62,7 +63,7 @@ def init_shai():
             wait_ollama_ready(url)
         except Exception as e:
             logger.error(f"Error: {e}")
-            stop_ollama(name="tmp_shai", remove=True)
+            stop_ollama(name=name, remove=True)
             raise SystemExit(1)
 
     for model in models:
@@ -71,12 +72,36 @@ def init_shai():
         except Exception as e:
             logger.error(f"Error: {e}")
 
+    # Warm up the models by making a simple request to the API
+    try:
+        base_url = get_config_value("llm", "api_base_url", str)
+        api_key = get_config_value("llm", "api_key", str)
+        client = get_client(base_url, api_key)
+        logger.info("Warming up the models with a test request...")
+        generate(
+            client=client,
+            model=get_config_value("llm", "model", str),
+            user_input="Say one word - hello",
+        )
+        embed_string(
+            client=client,
+            model=get_config_value("llm", "embed_model", str),
+            string="hello"
+        )
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        stop_ollama(name=name, remove=True)
+        raise SystemExit(1)
+
     if not was_ollama_running:
         try:
-            stop_ollama(name="tmp_shai", remove=True)
+            stop_ollama(name=name, remove=False)
         except Exception as e:
             logger.error(f"Error: {e}")
             raise SystemExit(1)
+
+    print("Pulled models and warmed up successfully.")
+    print("Done.")
 
 
 def cli_parser() -> argparse.ArgumentParser:

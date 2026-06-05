@@ -51,6 +51,7 @@ def shai(argv):
     else:
         logger.info(f"PASS: argv {argv} completed successfully")
         logger.debug(f"stdout: {result.stdout}\n")
+        score += 1
 
 
 def _recursive_run(test_case: dict | list | str, base_argv: list):

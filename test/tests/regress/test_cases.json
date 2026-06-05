@@ -49,7 +49,7 @@
         ]
       },
       {
-        "argv": ["check"],
+        "argv": ["info"],
         "children": [
             ["--db-path", "$DB_PATH"]
         ]

@@ -28,6 +28,21 @@ DEFAULT_BATCH_SIZE = 32
 def _get_client() -> OpenAI:
     return get_client(DEFAULT_API_BASE_URL, DEFAULT_API_KEY)
 
+def _cmd_info(args: argparse.Namespace) -> None:
+    db_path = os.path.expanduser(args.db_path)
+    if not check(db_path, args.index_path_within_db):
+        print("Index not found.")
+        raise SystemExit(1)
+
+    try:
+        print("Index Information:")
+        print(f"  Database path: {db_path}")
+        info = get_index_info(db_path, args.index_path_within_db)
+        for key, value in info.items():
+            print(f"  {key}: {value}")
+    except Exception as e:
+        logger.error(f"Error retrieving index information: {e}")
+        raise SystemExit(1)
 
 def _cmd_build(args: argparse.Namespace) -> None:
     client = _get_client()
@@ -212,31 +227,22 @@ def _cli_parser() -> argparse.ArgumentParser:
     search_cmd.add_argument("query", help="Search query string")
     search_cmd.set_defaults(func=_cmd_search)
 
-    check_cmd = sub.add_parser(
-        "check",
-        help="Check if index exists",
+    info_cmd = sub.add_parser(
+        "info",
+        help="Retrieve index information, if index exists",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    check_cmd.add_argument(
+    info_cmd.add_argument(
         "--db-path",
         default=DEFAULT_DB_PATH,
         help="Path to document directory",
     )
-    check_cmd.add_argument(
+    info_cmd.add_argument(
         "--index-path-within-db",
         default=DEFAULT_INDEX_PATH_WITHIN_DB,
         help="Index subdirectory name (must start with a dot to be hidden)",
     )
-    check_cmd.set_defaults(
-        func=lambda args: print(
-            "Index exists."
-            if check(
-                db_path=os.path.expanduser(args.db_path),
-                index_path_within_db=args.index_path_within_db,
-            )
-            else "Index not found."
-        )
-    )
+    info_cmd.set_defaults(func=_cmd_info)
 
     parser.add_argument(
         "--log-level",

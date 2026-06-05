@@ -67,11 +67,32 @@ The application provides a command-line interface (CLI) for interacting with var
 shai -h
 ```
 
+
+**NOTE 1:** Ensure that the ollama docker image is running before using shAI, as it relies
+on it for LLM interactions. 
+```bash
+# Check if ollama is running
+shai utils is-ollama-running
+# Start ollama if it's not running
+shai utils start-ollama
+```
+
+The application can be configured via configuration file located at
+`$HOME/.config/shai/config.yaml` (or specified via `--config` flag). The
+configuration file allows you to set parameters for LLM interactions, database
+settings, and other options. You can also use environment variables to override
+specific configuration values.
+
+**NOTE 2:** After updating the models in the configuration file, run `shai init`
+to pull the new models, or do it manually via `shai utils pull-model <model_name>`.
+
 This functionality can be accessed via these CLI subcommands, which are described below:
+- `workflows` - Predefined workflows that combine multiple functionalities for
+  specific use cases
 - `llm` - Direct LLM interactions (generation, embedding)
 - `db` - Database indexing and retrieval
 - `rag` - RAG-enabled generation
-- `utils` - Miscellaneous utilities (Ollama management, man page conversion)
+- `utils` - Miscellaneous utilities (Ollama/Docker management, man page conversion)
 
 <br>
 
@@ -114,11 +135,11 @@ If you're developing in .venv, you can run modules directly:
     python -m shAI_ostap4ello.src.rag find "query"
 
     # Utils module
-    python -m shAI_ostap4ello.src.utils start_ollama
-    python -m shAI_ostap4ello.src.utils stop_ollama
-    python -m shAI_ostap4ello.src.utils is_ollama_running
-    python -m shAI_ostap4ello.src.utils convert_man_pages --src-dir \<src\> --out-dir \<out\>
-    python -m shAI_ostap4ello.src.utils fetch_man_db
+    python -m shAI_ostap4ello.src.utils start-ollama
+    python -m shAI_ostap4ello.src.utils stop-ollama
+    python -m shAI_ostap4ello.src.utils is-ollama_running
+    python -m shAI_ostap4ello.src.utils convert-man-pages --src-dir \<src\> --out-dir \<out\>
+    python -m shAI_ostap4ello.src.utils fetch-man-db
     ```
 
 ## License

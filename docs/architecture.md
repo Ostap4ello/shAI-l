@@ -36,6 +36,12 @@ minimal dependencies between each other are allowed)*
 1. User runs `shai ...`, which is processed by `src/__main__.py`.
 2. `src/__main__.py` loads configurations, then calls handlers either from `src/workflows` or from low-level modules directly. (`src/workflows` may reuse functions from low-level modules)
 
+## Logging and application output
+
+- `stdout` (`print`) is used only in __main__.py, and for showing results of the
+command
+- `stderr` (`logging`) is used for all other messages and intermediate steps
+
 ## Testing
 
 Tests are put into `test/` folder. Main entrypoint is `test/test.py`. Read `test/README.md`.

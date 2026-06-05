@@ -24,7 +24,7 @@ def is_config_valid(config: dict) -> bool:
 
 
 def resolve_index_paths(
-    db_path: str, index_path_within_db: str
+    db_path: Path, index_path_within_db: Path
 ) -> tuple[Path, Path, Path]:
     index_dir = Path(db_path).expanduser().resolve() / index_path_within_db
     index_path = index_dir / "index"
@@ -33,8 +33,8 @@ def resolve_index_paths(
     return index_path, meta_path, config_path
 
 
-def get_default_index_path_within_db() -> str:
-    return DEFAULT_INDEX_PATH_WITHIN_DB
+def get_default_index_path_within_db() -> Path:
+    return Path(DEFAULT_INDEX_PATH_WITHIN_DB)
 
 
 def save_index_config(config_path: Path, config: dict) -> None:

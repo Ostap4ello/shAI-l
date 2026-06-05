@@ -3,9 +3,9 @@
 import argparse
 import signal
 import sys
-import os
 from openai import OpenAI
 from typing import List, Optional
+from pathlib import Path
 
 from . import *
 from ..llm import get_client
@@ -37,7 +37,7 @@ def _get_client() -> OpenAI:
 
 def _cmd_update(args: argparse.Namespace) -> None:
     client = _get_client()
-    db_path = os.path.expanduser(args.db_path)
+    db_path = Path(args.db_path).expanduser().resolve()
     try:
         update(
             db_path=db_path,
@@ -52,7 +52,7 @@ def _cmd_update(args: argparse.Namespace) -> None:
 
 
 def _cmd_info(args: argparse.Namespace) -> None:
-    db_path = os.path.expanduser(args.db_path)
+    db_path = Path(args.db_path).expanduser().resolve()
     if not check(db_path, args.index_path_within_db):
         print("Index not found.")
         raise SystemExit(1)
@@ -71,7 +71,7 @@ def _cmd_info(args: argparse.Namespace) -> None:
 def _cmd_build(args: argparse.Namespace) -> None:
     client = _get_client()
     model = args.model
-    db_path = os.path.expanduser(args.db_path)
+    db_path = Path(args.db_path).expanduser().resolve()
     # TODO: better error handling
     try:
         build(
@@ -91,7 +91,7 @@ def _cmd_build(args: argparse.Namespace) -> None:
 
 def _cmd_search(args: argparse.Namespace) -> None:
     read_results = args.read_results
-    db_path = os.path.expanduser(args.db_path)
+    db_path = Path(args.db_path).expanduser().resolve()
     expected_model = DEFAULT_EMBED_MODEL
     db_model = None
     if not check(db_path, args.index_path_within_db):
@@ -146,11 +146,13 @@ def _cmd_search(args: argparse.Namespace) -> None:
         print("Results of extended search:")
         for i, result in enumerate(results, 1):
             m = result["metadata"]
-            p = m["path"]
+            p = Path(m["path"]).resolve()
             f = int(m["from"])
             t = int(m["to"])
             print(f"  {i}: {p}:{f}-{t}: (dist={result['distance']:.4f})")
             if read_results:
+                if not p.exists():
+                    lines = [f"\nFile not found: {p}\n\n"]
                 lines = open(p, "r").readlines()[f:t]
                 for line in lines:
                     print("  " + line, end="")
@@ -160,9 +162,11 @@ def _cmd_search(args: argparse.Namespace) -> None:
         print("Results:")
         for i, result in enumerate(results, 1):
             m = result["metadata"]
-            p = m["path"]
+            p = Path(m["path"]).resolve()
             print(f"  {i}: {p}: (dist={result['distance']:.4f})")
             if read_results:
+                if not p.exists():
+                    lines = [f"\nFile not found: {p}\n\n"]
                 content = open(p, "r").read()
                 for line in content.splitlines():
                     print("  " + line)

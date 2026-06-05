@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 from openai import OpenAI
 from pathlib import Path
+from pathlib import Path
 from typing import List
-from datetime import datetime
 import numpy as np
 
 from .utils.documents import (
@@ -31,11 +32,11 @@ logger = logging.getLogger(__name__)
 
 
 def build(
-    db_path: str,
+    db_path: Path,
     client: OpenAI,
     model: str,
     batch_size: int = 32,
-    index_path_within_db: str = get_default_index_path_within_db(),
+    index_path_within_db: Path = get_default_index_path_within_db(),
     section_rows: int = 0,
 ) -> None:
     # Ensure index_path_within_db is a hidden folder
@@ -75,10 +76,10 @@ def build(
 
 
 def update(
-    db_path: str,
+    db_path: Path,
     client: OpenAI,
     batch_size: int = 32,
-    index_path_within_db: str = get_default_index_path_within_db(),
+    index_path_within_db: Path = get_default_index_path_within_db(),
     section_rows: int = 0,
 ) -> None:
     if not check(db_path, index_path_within_db):
@@ -151,7 +152,7 @@ def update(
 
 
 def check(
-    db_path: str, index_path_within_db: str = get_default_index_path_within_db()
+    db_path: Path, index_path_within_db: Path = get_default_index_path_within_db()
 ) -> bool:
     index_path, meta_path, config_path = resolve_index_paths(
         db_path, index_path_within_db
@@ -160,11 +161,11 @@ def check(
 
 
 def search(
-    db_path: str,
+    db_path: Path,
     client: OpenAI,
     query: str,
     top_k: int = 5,
-    index_path_within_db: str = get_default_index_path_within_db(),
+    index_path_within_db: Path = get_default_index_path_within_db(),
 ) -> List[dict]:
     if not check(db_path, index_path_within_db):
         raise RuntimeError("Index not found. Run build() first.")
@@ -197,7 +198,7 @@ def search(
 
 
 def search_in_files_dynamic(
-    file_paths: List[str],
+    file_paths: List[Path],
     client: OpenAI,
     model: str,
     query: str,
@@ -241,8 +242,8 @@ def search_in_files_dynamic(
 
 
 def get_index_info(
-    db_path: str,
-    index_path_within_db: str = get_default_index_path_within_db(),
+    db_path: Path,
+    index_path_within_db: Path = get_default_index_path_within_db(),
 ) -> dict:
     if not check(db_path, index_path_within_db):
         raise RuntimeError("Index not found. Run build() first.")

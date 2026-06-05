@@ -1,6 +1,6 @@
 [project]
 name = "shAI-ostap4ello"
-version = "0.1"
+version = "1.0"
 authors = [
   { name="Ostap4ello", email="okpeleh@gmail.com" },
 ]

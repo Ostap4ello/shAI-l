@@ -47,7 +47,7 @@ def get_default_config() -> configparser.ConfigParser:
         "ollama_url": "http://127.0.0.1:11434/",
         "ollama_context_length": "32000",
         "ollama_gpus": "all",
-        "ollama_container_name": "ollama-node-1",
+        "ollama_container_name": "shai-ollama",
         "merge_strategy": "abort",
     }
 

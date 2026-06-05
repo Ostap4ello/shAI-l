@@ -17,10 +17,6 @@
         "argv": ["init"],
         "children": [["-h"], ["--help"]]
       },
-      {
-        "argv": ["interpreter"],
-        "children": [["-h"], ["--help"]]
-      },
       ["--create-config", "-h"],
       ["--config", "noval", "-h"]
     ]
@@ -80,7 +76,8 @@
     "argv": ["shai", "workflows"],
     "children": [
       ["find", "hello world"],
-      ["find", "hello world", "-e"]
+      ["find", "hello world", "-e"],
+      ["interpreter", "-h"]
     ]
   }
 ]

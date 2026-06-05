@@ -224,7 +224,4 @@ def propagate_config() -> None:
     from .. import __main__ as src_main
     src_main.DEFAULT_LOG_LEVEL = default_log_level
 
-    from ..interpreter import __main__ as interpreter_main
-    interpreter_main.DEFAULT_LOG_LEVEL = default_log_level
-
     logger.debug("Config propagated to module defaults.")

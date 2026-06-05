@@ -11,7 +11,6 @@ from .workflows.__main__ import _cli_parser as _w_cli_parser
 from .utils.__main__ import _cli_parser as _utils_cli_parser
 
 from .config import DEFAULT_CONFIG_PATH, load_config, get_config_value
-from .interpreter.interpreter import main as interpreter_main
 from .utils import (
     is_ollama_running,
     pull_model,
@@ -77,10 +76,6 @@ def init_shai():
             raise SystemExit(1)
 
 
-def _interpreter_cmd(args: argparse.Namespace) -> None:
-    interpreter_main(args.config, args.log_level)
-
-
 def cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="ShAI-CLI")
     parser.add_argument(
@@ -136,18 +131,6 @@ def cli_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     init_parser.set_defaults(func=_cmd_ollama_init)
-
-    _interpreter_parser = subparsers.add_parser("interpreter", help="ShAI shell")
-    _interpreter_parser.add_argument(
-        "--log-level",
-        "-l",
-        type=str,
-        required=False,
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default=DEFAULT_LOG_LEVEL,
-        help="Set the logging level",
-    )
-    _interpreter_parser.set_defaults(func=_interpreter_cmd)
 
     return parser
 

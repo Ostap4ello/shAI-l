@@ -10,7 +10,7 @@ import signal
 from ..db import __main__ as db_main
 from ..llm import __main__ as llm_main
 
-from . import rag_simple, rag_extended
+from . import rag_simple, rag_extended, interpreter
 from ..llm import get_client
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,9 @@ def _cli_parser():
     )
     find_cmd.add_argument(
         "-m",
-        "--model", default=llm_main.DEFAULT_MODEL, help="The generation model to use for RAG"
+        "--model",
+        default=llm_main.DEFAULT_MODEL,
+        help="The generation model to use for RAG",
     )
     find_cmd.add_argument(
         "--db-path",
@@ -86,8 +88,12 @@ def _cli_parser():
         default=db_main.DEFAULT_EXTS_SECTION_ROWS,
         help="Number of rows per section for extended search (only applicable with --extended-search)",
     )
-
     find_cmd.set_defaults(func=_cmd_rag)
+
+    interp_cmd = subparsers.add_parser(
+        "interpreter", help="Interpreter for testing classifier (proof of concept)"
+    )
+    interp_cmd.set_defaults(func=_cmd_interpreter)
 
     return parser
 
@@ -124,6 +130,10 @@ def _cmd_rag(args: argparse.Namespace) -> None:
         raise SystemExit(1)
 
     print(results)
+
+
+def _cmd_interpreter(_: argparse.Namespace) -> None:
+    interpreter()
 
 
 def main(argv: Optional[List[str]] = None) -> None:

@@ -49,6 +49,7 @@ def _cmd_update(args: argparse.Namespace) -> None:
     except Exception as e:
         logger.error(f"Error during index update: {e}")
         raise SystemExit(1)
+    print("Index update complete.")
 
 
 def _cmd_info(args: argparse.Namespace) -> None:

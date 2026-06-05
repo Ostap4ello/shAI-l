@@ -140,6 +140,11 @@ def update(
     else:
         raise RuntimeError("Section size cannot be less then 0")
 
+    if len(texts) == 0:
+        logger.info("Nothing to embed.")
+        save_index_config(config_path, index_config)  # updates timestamp in config
+        return
+
     logger.info(f"Updating database index")
     updated_vectors = embed_strings(client, model, texts, batch_size)
     vectors = np.vstack(vectors + updated_vectors.tolist())

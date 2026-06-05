@@ -64,10 +64,11 @@ def load_documents(doc_paths: List[Path]) -> Tuple[List[str], List[dict]]:
     for idx, path in enumerate(doc_paths, start=1):
         logger.debug(f"\rLoading {idx}/{total}: {path}")
         try:
-            content = path.read_text(encoding="utf-8", errors="ignore")
+            content = open(path, "r").read()
         except OSError:
             continue
         if not content.strip():
+            logger.warning(f"Document is empty: {path}. Skipping.")
             continue
         texts.append(content)
         metadata.append({"path": str(path)})
@@ -106,6 +107,9 @@ def _load_document_in_sections(
     metadata: List[dict] = []
 
     lines = open(doc_path, "r").readlines()
+    if len(lines) == 0:
+        logger.warning(f"Document is empty: {doc_path}. Skipping.")
+        return sections, metadata
     for i in range(0, len(lines), section_rows):
         sections.append("".join(lines[i : i + 20]))
         metadata.append({"path": str(doc_path), "from": i, "to": i + 20})

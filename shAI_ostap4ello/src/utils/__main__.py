@@ -29,6 +29,9 @@ def _cmd_start_ollama(args: argparse.Namespace) -> None:
         f"Starting Ollama with context length {args.context_length}, gpus {args.gpus}, name {args.name}..."
     )
     try:
+        if is_ollama_running(args.name):
+            raise RuntimeError("Ollama is already running")
+
         start_ollama(
             context_length=args.context_length,
             gpus=args.gpus,
@@ -46,6 +49,9 @@ def _cmd_stop_ollama(args: argparse.Namespace) -> None:
         f"Ollama Docker Container, name {args.name}..."
     )
     try:
+        if not is_ollama_running(args.name):
+            raise RuntimeError("Ollama is not running")
+
         stop_ollama(name=args.name, remove=args.remove)
     except Exception as e:
         logger.error(f"Error: {e}")

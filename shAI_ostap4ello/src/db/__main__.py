@@ -66,7 +66,6 @@ def _cmd_build(args: argparse.Namespace) -> None:
             batch_size=args.batch_size,
             section_rows=args.section_rows,
         )
-        print("Index build complete.")
     except Exception as e:
         logger.error(f"Error during index build: {e}")
         raise SystemExit(1)

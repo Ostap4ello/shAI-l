@@ -115,7 +115,7 @@ def embed_strings(
 
     for i in range(0, total, batch_size):
         batch = strings[i : i + batch_size]
-        logger.debug(f"Embedding batch - {i}-{min(i+batch_size,total)}/{total})")
+        logger.info(f"Embedding batch - ({i}-{min(i+batch_size,total)}/{total})")
         resp = client.embeddings.create(model=model, input=batch)
         logger.debug(f"Received  embedding batch.")
         batch_vecs = [np.array(item.embedding, dtype=np.float32) for item in resp.data]

@@ -102,7 +102,6 @@ def _cmd_ls_models(args: argparse.Namespace) -> None:
     """List available models via the Ollama HTTP API."""
     try:
         models = ls_models(DEFAULT_OLLAMA_URL)
-        print(models)
         if not models:
             print("No models found.")
             return
@@ -111,7 +110,7 @@ def _cmd_ls_models(args: argparse.Namespace) -> None:
             name = model.get("name", "<unknown>")
             size = model.get("size")
             if isinstance(size, int):
-                print(f"Name: {name}\nSize: {size//10**6}MB\n")
+                print(f"- Name: {name} Size: {size//10**6}MB")
             else:
                 print(name)
     except Exception as e:

@@ -43,7 +43,7 @@ def save_index_config(config_path: Path, config: dict) -> None:
 
 
 def load_index_config(config_path: Path) -> dict:
-    logger.info(f"Loading index config from: {config_path}")
+    logger.debug(f"Loading index config from: {config_path}")
     config = {}
 
     config = json.loads(config_path.read_text(encoding="utf-8"))

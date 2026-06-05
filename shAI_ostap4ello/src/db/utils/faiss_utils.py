@@ -45,7 +45,7 @@ def build_index(vectors: np.ndarray) -> faiss.Index:
 def save_index(
     index: faiss.Index, metadata: List[dict], index_path: Path, meta_path: Path
 ) -> None:
-    logger.info(f"Saving index to: {index_path}")
+    logger.debug(f"Saving index to: {index_path}")
     faiss.write_index(index, str(index_path))
     meta_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 

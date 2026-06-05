@@ -44,7 +44,7 @@ def build(
             f"index_path_within_db must start with a dot ('.'): got '{index_path_within_db}'"
         )
 
-    doc_dir = Path(db_path)
+    db_dir = Path(db_path)
     index_path, meta_path, config_path = resolve_index_paths(
         db_path, index_path_within_db
     )
@@ -52,15 +52,17 @@ def build(
     index_path.parent.mkdir(parents=True, exist_ok=True)
     meta_path.parent.mkdir(parents=True, exist_ok=True)
 
+    logger.info(f"Loading documents from: {db_dir.resolve()}")
     if section_rows == 0:
-        texts, metadata = load_documents(list_db_documents(doc_dir))
+        texts, metadata = load_documents(list_db_documents(db_dir))
     elif section_rows > 0:
         texts, metadata = load_documents_in_sections(
-            list_db_documents(doc_dir), section_rows
+            list_db_documents(db_dir), section_rows
         )
     else:
         raise RuntimeError("Section size cannot be less then 0")
 
+    logger.info(f"Creating database index")
     vectors = embed_strings(client, model, texts, batch_size)
     index = build_index(vectors)
     save_index(index, metadata, index_path, meta_path)
@@ -68,6 +70,8 @@ def build(
     index_config = get_empty_db_config()
     index_config["model"] = model
     save_index_config(config_path, index_config)
+
+    logger.info(f"Successfully built index for: {db_dir.resolve()}")
 
 
 def check(
@@ -93,10 +97,12 @@ def search(
         db_path, index_path_within_db
     )
 
+    logger.info(f"Loading database: {Path(db_path).resolve()}")
     model = load_index_config(config_path)["model"]
 
     index, metadata = load_index(index_path, meta_path)
     query_vec = embed_strings(client, model, [query], batch_size=1)
+    logger.info(f"Searching database")
     distances, indices = index.search(query_vec, top_k)
 
     results: List[dict] = []

@@ -32,7 +32,7 @@ ALLOWED_EXTENSIONS = [
 
 
 def list_db_documents(doc_dir: Path) -> List[Path]:
-    logger.info(f"Listing documents in: {doc_dir}")
+    logger.debug(f"Listing documents in: {doc_dir}")
     if not doc_dir.exists() or not doc_dir.is_dir():
         logger.error(f"Document directory not found: {doc_dir}")
         raise RuntimeError(f"Document directory not found: {doc_dir}")

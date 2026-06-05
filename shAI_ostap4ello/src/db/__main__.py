@@ -43,14 +43,16 @@ def _cmd_build(args: argparse.Namespace) -> None:
             batch_size=args.batch_size,
             section_rows=args.section_rows,
         )
+        print("Index build complete.")
     except Exception as e:
-        logger.warning(f"Error during index build: {e}")
+        logger.error(f"Error during index build: {e}")
         raise SystemExit(1)
 
     print("Index build complete.")
 
 
 def _cmd_search(args: argparse.Namespace) -> None:
+    read_results = args.read_results
     db_path = os.path.expanduser(args.db_path)
     expected_model = DEFAULT_EMBED_MODEL
     db_model = None
@@ -64,7 +66,7 @@ def _cmd_search(args: argparse.Namespace) -> None:
         if expected_model != db_model:
             logger.warning(
                 f"This database uses {db_model} embeddings (instead"
-                "of {expected_model}, specified in your config/args)"
+                f"of {expected_model}, specified in your config/args)"
             )
         results = search(
             db_path=db_path,
@@ -78,6 +80,7 @@ def _cmd_search(args: argparse.Namespace) -> None:
         raise SystemExit(1)
 
     if args.extended_search:
+        logger.info("Performing extended search on retrieved documents")
         paths = []
         for r in results:
             paths.append(r["metadata"]["path"])
@@ -105,24 +108,25 @@ def _cmd_search(args: argparse.Namespace) -> None:
             p = m["path"]
             f = int(m["from"])
             t = int(m["to"])
-            print(f"[{i}]")
-            print(f"  Distance: {result['distance']:.4f}")
-            print(f"  File: {p}:{f}-{t}:")
-            lines = open(p, "r").readlines()[f:t]
-            print("  ---")
-            for line in lines:
-                print("  " + line, end="")
-            print("  ---")
+            print(f"  {i}: {p}:{f}-{t}: (dist={result['distance']:.4f})")
+            if read_results:
+                lines = open(p, "r").readlines()[f:t]
+                for line in lines:
+                    print("  " + line, end="")
+                print("  ---")
         print()
     else:
         print("Results:")
         for i, result in enumerate(results, 1):
-            print(f"[{i}]")
-            print(f"  Distance: {result['distance']:.4f}")
-            print(f"  Metadata:")
-            for key, value in result["metadata"].items():
-                print(f"    {key}: {value}")
-            print()
+            m = result["metadata"]
+            p = m["path"]
+            print(f"  {i}: {p}: (dist={result['distance']:.4f})")
+            if read_results:
+                content = open(p, "r").read()
+                for line in content.splitlines():
+                    print("  " + line)
+                print("  ---")
+        print()
 
 
 def _cli_parser() -> argparse.ArgumentParser:
@@ -197,6 +201,13 @@ def _cli_parser() -> argparse.ArgumentParser:
         type=int,
         default=DEFAULT_TOP_K_EXTENDED,
         help="Number of results to return",
+    )
+    search_cmd.add_argument(
+        "--read-results",
+        "-R",
+        action="store_true",
+        default=False,
+        help="If true, the content of retrieved documents will be printed to stdout along with metadata",
     )
     search_cmd.add_argument("query", help="Search query string")
     search_cmd.set_defaults(func=_cmd_search)

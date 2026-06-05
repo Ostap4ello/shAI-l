@@ -29,7 +29,6 @@
     "argv": ["shai", "llm"],
     "children": [
       ["embed", "hello world"],
-      ["embed", "hello world"],
       ["generate", "choose random color", "--no-stream"],
       ["generate", "choose random color", "--stream"],
       ["generate", "choose random color"]
@@ -71,10 +70,10 @@
   {
     "argv": ["shai", "utils"],
     "children": [
-      ["is_ollama_running"],
-      ["ls_models"],
-      ["convert_man_pages", "-h"],
-      ["fetch_man_db", "-h"]
+      ["is-ollama-running"],
+      ["ls-models"],
+      ["convert-man-pages", "-h"],
+      ["fetch-man-db", "-h"]
     ]
   },
   {

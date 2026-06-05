@@ -152,7 +152,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     )
 
     parser_start = subparsers.add_parser(
-        "start_ollama", help="Run the Ollama Docker container"
+        "start-ollama", help="Run the Ollama Docker container"
     )
     parser_start.add_argument(
         "--create",
@@ -178,7 +178,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_start.set_defaults(func=_cmd_start_ollama)
 
     parser_stop = subparsers.add_parser(
-        "stop_ollama", help="Stop the Ollama Docker container"
+        "stop-ollama", help="Stop the Ollama Docker container"
     )
     parser_stop.add_argument(
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
@@ -192,7 +192,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_stop.set_defaults(func=_cmd_stop_ollama)
 
     parser_status = subparsers.add_parser(
-        "is_ollama_running", help="Check if the Ollama Docker container is running"
+        "is-ollama-running", help="Check if the Ollama Docker container is running"
     )
     parser_status.add_argument(
         "--name", type=str, default=DEFAULT_DOCKER_CONTAINER_NAME, help="Container name"
@@ -200,7 +200,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_status.set_defaults(func=_cmd_is_ollama_running)
 
     parser_pull = subparsers.add_parser(
-        "pull_model",
+        "pull-model",
         help="Pull a model via the Ollama HTTP API",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -208,7 +208,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_pull.set_defaults(func=_cmd_pull_model)
 
     parser_rm = subparsers.add_parser(
-        "rm_model",
+        "rm-model",
         help="Remove a model via the Ollama HTTP API",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -216,14 +216,14 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_rm.set_defaults(func=_cmd_rm_model)
 
     parser_ls = subparsers.add_parser(
-        "ls_models",
+        "ls-models",
         help="List available models via the Ollama HTTP API",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser_ls.set_defaults(func=_cmd_ls_models)
 
     parser_convert = subparsers.add_parser(
-        "convert_man_pages",
+        "convert-man-pages",
         help="Convert gz'd groff files to ASCII text"
         + " (recursively from src-dir to out-dir for all gz files found in src-dir)",
     )
@@ -236,7 +236,7 @@ def _cli_parser() -> argparse.ArgumentParser:
     parser_convert.set_defaults(func=_cmd_convert)
 
     fetch_man_cmd = subparsers.add_parser(
-        "fetch_man_db",
+        "fetch-man-db",
         help="Fetch system man pages to text file database",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
